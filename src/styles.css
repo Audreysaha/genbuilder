@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+  font-family: 'Inter', sans-serif;
+  @apply bg-gray-900 text-gray-100; /* Default dark background */
+}
+
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(90deg, #818cf8, #c084fc);
+}
+
+/* Dark mode overrides */
+.dark {
+  /* Add any specific dark mode overrides here */
+}
