@@ -1,91 +1,54 @@
 import React, { useState, useEffect } from 'react';
+import {RotateCcw, RotateCw } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import lowcode from '../assets/images/lowcode.jpeg';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCode, FiSettings, FiPlay, FiSearch, FiEye, FiBox, FiColumns, FiLayers, FiLayout, FiList, FiMaximize, FiDivide, FiMoreVertical, FiSidebar,FiCheckSquare, FiTable, FiGitBranch, FiPackage, FiType, FiStar, FiVideo, FiLink, FiHexagon, FiAlertCircle, FiPlus, FiMove, FiChevronRight, FiFileText, FiSmartphone, FiTablet, FiMonitor, FiGrid, FiAlignLeft, FiImage, FiAnchor } from 'react-icons/fi';
+import { FiCode, FiSettings, FiPlay,FiColumns, FiLayers, FiCheckSquare, FiType, FiSearch,  FiSend, FiEdit2, FiChevronDown, FiNavigation,FiCornerDownRight, FiLayout, FiHash,  FiSidebar,FiCreditCard, FiVideo,FiChevronRight, FiGrid, FiAlignLeft, FiImage,  } from 'react-icons/fi';
 import { FaMobileAlt, FaTabletAlt, FaLaptop } from 'react-icons/fa';
 
 const FlutterFlowClone = () => {
-  const [canvasItems, setCanvasItems] = useState([])
-  const navigate = useNavigate()
-  const [darkMode, setDarkMode] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [canvasItems, setCanvasItems] = useState([]);
+  const [darkMode] = useState(true);
   const [activeTab, setActiveTab] = useState('widgets');
   const [selectedWidget, setSelectedWidget] = useState(null);
   const [widgets, setWidgets] = useState([]);
   const [deviceSize, setDeviceSize] = useState('mobile');
   const [showCode, setShowCode] = useState(false);
   const [zoom, setZoom] = useState(100);
+  const [history, setHistory] = useState([]);
+  const [future, setFuture] = useState([]);
+  const [value, setValue] = useState("inital");
+  const [active, setActive] = useState(null);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
-  const [topTab, setTopTab] = useState('widgets');
-
-  const [expandedSections, setExpandedSections] = useState({
-  visual: false,
-  containers: false,
-  inputForms: false,
-  reusable: false,
-});
-
-const handleDragStart = (e, type) => {
-  e.dataTransfer.setData('widgetType', type);
-};
-
-const handleDrop = (e) => {
-    e.preventDefault();
-    const widgetType = e.dataTransfer.getData('widgetType');
-    setCanvasItems((prev) => [...prev, { id: Date.now(), type: widgetType }]);
+//undo and do button
+  const handleUndoClick = () => {
+  setActive("undo");
+    if (onUndo) onUndo();
+  };
+  const handleRedoClick = () => {
+  setActive("redo");
+    if (onRedo) onRedo();
   };
 
-const RenderWidget = ({ type }) => {
-  switch (type) {
-    case 'text':
-      return <div className="text-lg font-semibold">Sample Text</div>;
-    case 'icon':
-      return <FiStar size={24} className="text-yellow-500" />;
-    case 'button':
-      return <button className="px-4 py-2 bg-blue-500 text-white rounded">Button</button>;
-    case 'video':
-      return <div className="w-48 h-28 bg-black text-white flex items-center justify-center">Video</div>;
-    case 'link':
-      return <a href="#" className="text-blue-500 underline">Link</a>;
-    case 'shape':
-      return <div className="w-16 h-16 bg-indigo-300 rounded-full" />;
-    case 'alert':
-      return <div className="bg-red-100 text-red-800 p-2 rounded">Alert Box</div>;
-    default:
-      return null;
-  }
-};
+    const onUndo = () => {
+    if (history.length === 0) return;
+    const previous = history[history.length - 1];
+    setHistory((prev) => prev.slice(0, -1));
+    setFuture((prev) => [value, ...prev]);
+    setValue(previous);
+  };
 
-const visualItems = [
-  { type: 'text', label: 'Text', icon: FiType },
-  { type: 'icon', label: 'Icon', icon: FiStar },
-  { type: 'button', label: 'Button', icon: FiSmartphone },
-  { type: 'video', label: 'Video', icon: FiVideo },
-  { type: 'link', label: 'Link', icon: FiLink },
-  { type: 'shape', label: 'Shape', icon: FiHexagon },
-  { type: 'alert', label: 'Alert', icon: FiAlertCircle },
-  { type: 'more', label: 'Install more', icon: FiPlus }
-];
-
-const [mode, setMode] = useState("Edit");
-
-
-const toggleSection = (section) => {
-  setExpandedSections((prev) => ({
-    ...prev,
-    [section]: !prev[section],
-  }));
-};
-
-//for toolbar
-const [language, setLanguage] = useState("EN");
+  const onRedo = () => {
+    if (future.length === 0) return;
+    const next = future[0];
+    setFuture((prev) => prev.slice(1));
+    setHistory((prev) => [...prev, value]);
+    setValue(next);
+  };
+ 
+  //language selector
+  const [language, setLanguage] = useState("en");
   const [langOpen, setLangOpen] = useState(false);
 
   const toggleLangMenu = () => setLangOpen(!langOpen);
@@ -94,114 +57,11 @@ const [language, setLanguage] = useState("EN");
     setLanguage(lang);
     setLangOpen(false);
   };
-  const bgColor = darkMode ? "bg-black" : "bg-white";
-  const borderColor = darkMode ? "border-gray-700" : "border-gray-200";
-  const avatarBg = darkMode ? "bg-gray-800" : "bg-blue-600";
-  const textColor = darkMode ? "text-white" : "text-black";
+  const bgColor = "bg-white";
+  const borderColor = "border-gray-200";
   
-
-const addWidget = (type) => {
-    const newWidget = {
-      id: Date.now(),
-      type,
-      x: 100,
-      y: 100,
-      props: {
-        text: type === 'button' ? 'Button' : type === 'text' ? 'Text' : '',
-        color: '#4F46E5',
-        size: 'md',
-        width: type === 'container' ? 200 : 'auto'
-      }
-    };
-    setWidgets([...widgets, newWidget]);
-    setSelectedWidget(newWidget.id);
-  };
-
-const updateWidget = (id, updates) => {
-    setWidgets(widgets.map(w => 
-      w.id === id ? { ...w, ...updates } : w
-    ));
-  };
-
-const renderWidget = (widget) => {
-    const isSelected = selectedWidget === widget.id;
-    
-    const baseStyles = {
-      position: 'absolute',
-      left: `${widget.x}px`,
-      top: `${widget.y}px`,
-      border: isSelected ? '2px dashed #4F46E5' : 'none',
-      padding: widget.type === 'container' ? '16px' : '0',
-      borderRadius: widget.props.rounded ? '8px' : '0',
-      backgroundColor: widget.type === 'container' ? (darkMode ? '#374151' : '#E5E7EB') : 'transparent',
-      width: widget.props.width === 'auto' ? 'auto' : `${widget.props.width}px`,
-      cursor: 'move',
-      userSelect: 'none'
-    };
-
-    switch (widget.type) {
-      case 'button':
-        return (
-          <motion.div
-            style={{
-              ...baseStyles,
-              backgroundColor: widget.props.color,
-              padding: '8px 16px',
-              borderRadius: '6px',
-              color: 'white',
-              textAlign: 'center'
-            }}
-            drag
-            dragMomentum={false}
-            onDragEnd={(e, info) => updateWidget(widget.id, { x: widget.x + info.offset.x, y: widget.y + info.offset.y })}
-            onClick={() => setSelectedWidget(widget.id)}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            {widget.props.text}
-          </motion.div>
-        );
-      case 'text':
-        return (
-          <motion.div
-            style={{
-              ...baseStyles,
-              color: darkMode ? 'white' : 'black',
-              fontSize: widget.props.size === 'sm' ? '14px' : widget.props.size === 'md' ? '16px' : '18px'
-            }}
-            drag
-            dragMomentum={false}
-            onDragEnd={(e, info) => updateWidget(widget.id, { x: widget.x + info.offset.x, y: widget.y + info.offset.y })}
-            onClick={() => setSelectedWidget(widget.id)}
-          >
-            {widget.props.text}
-          </motion.div>
-        );
-      case 'container':
-        return (
-          <motion.div
-            style={baseStyles}
-            drag
-            dragMomentum={false}
-            onDragEnd={(e, info) => updateWidget(widget.id, { x: widget.x + info.offset.x, y: widget.y + info.offset.y })}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedWidget(widget.id);
-            }}
-          >
-            <div style={{ minHeight: '60px' }}>
-              {widgets.filter(w => w.parentId === widget.id).map(child => renderWidget(child))}
-            </div>
-          </motion.div>
-        );
-   
-      default:
-        return null;
-    }
-  };
-
-
-const getDeviceDimensions = () => {
+  //devices
+  const getDeviceDimensions = () => {
     switch (deviceSize) {
       case 'mobile':
         return { width: 375, height: 580 };
@@ -214,115 +74,307 @@ const getDeviceDimensions = () => {
     }
   };
 
-const { width, height } = getDeviceDimensions();
+  // AI/Edit
+const [mode, setMode] = useState("Edit");
+
+  // Input Contols
+const visualItems = [
+  { type: 'submit-button', label: 'Submit Button', icon: FiSend },
+  { type: 'textfield', label: 'Text Field', icon: FiEdit2 },
+  { type: 'checkbox', label: 'Checkbox', icon: FiCheckSquare },
+  { type: 'dropdown', label: 'Dropdown List', icon: FiChevronDown },
+  { type: 'search', label: 'Search Field', icon: FiSearch },
+];
+
+//Navigational Components
+const navigationalItems = [
+  { type: 'navbar', label: 'Navigation Bar', icon: FiNavigation },
+  { type: 'sidebar', label: 'Sidebar', icon: FiSidebar },
+  { type: 'tabs', label: 'Tabs', icon: FiGrid },
+  { type: 'breadcrumbs', label: 'Breadcrumbs', icon: FiCornerDownRight },
+]
+
+//Layout element
+const layoutElements = [
+  { type: 'grid', label: 'Grids / Columns', icon: <FiColumns /> },
+  { type: 'headers', label: 'Headers', icon: <FiType /> },
+  { type: 'footer', label: 'Footer', icon: <FiLayout /> },
+  { type: 'sidepanel', label: 'Side Panels', icon: <FiSidebar /> },
+  { type: 'card', label: 'Cards', icon: <FiCreditCard /> },
+];
+
+//topography&media 
+const topographyElements = [
+      { type: 'heading', label: 'Headings', icon: <FiHash /> },
+      { type: 'paragraph', label: 'Paragraph', icon: <FiAlignLeft /> },
+      { type: 'image' , label: 'Images', icon: <FiImage /> },
+      {  type: 'video', label: 'Videos', icon: <FiVideo /> },
+    ];
+ 
+//expanded section
+const [expandedSections, setExpandedSections] = useState({
+    topographyElements: true,
+  });
+
+  //toggle section
+  const toggleSection = (id) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  }
+  
+//handling drops
+ const handleDrop = (e) => {
+    e.preventDefault();
+    const componentType = e.dataTransfer.getData("componentType");
+
+    if (componentType) {
+      setCanvasItems((prev) => [...prev, { id: Date.now(), type: componentType }]);
+    }
+  }
+
+  //Canvas section
+  const addComponentToCanvas = (type) => {
+  setCanvasItems((prev) => [...prev, { type }]);
+};
+
+// Responsiveness
+  const [setShowResponsivePanel] = useState(false);
+
+  // Handler for tabs
+  const [topTab, setTopTab] = useState('widgets');
+
+  const handleTabClick = (tab) => {
+    setTopTab(tab);
+    if (tab === 'Responsive') {
+      setShowResponsivePanel(true);
+    } else {
+      setShowResponsivePanel(false);
+    }
+  };
+
+ 
+  const { width, height } = getDeviceDimensions();
+
+
+
+
+
+// Widget renderer (for img, video, paragraph, heading)
+const updateWidget = (id, updates) => {
+    setWidgets(widgets.map(w => 
+      w.id === id ? { ...w, ...updates } : w
+    ));
+  };
+
+const RenderWidget = ({ type }) => {
+  switch (type) {
+    case "heading":
+      return <h1 className="text-2xl font-bold">Heading Text</h1>;
+    case "paragraph":
+      return <p className="text-gray-700">This is a sample paragraph.</p>;
+    case "image":
+      return (
+        <img
+          src="https://via.placeholder.com/150"
+          alt="Placeholder"
+          className="w-[150px] h-auto"
+        />
+      );
+    case "video":
+      return (
+        <video controls className="w-[500px]">
+          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      );
+    default:
+      return null;
+  }
+};
+
 
   return (
-    <div className={`flex flex-col h-screen ${darkMode ? 'dark bg-black text-gray-100' : 'bg-white text-gray-900'}`}>
+  <div className="flex flex-col h-screen bg-white text-gray-900">
 
-<div className={`flex items-center p-2 ${bgColor} border-b ${borderColor}`}>
-  {/* LEFT SECTION */}
-  <div className="flex items-center space-x-3 text-sm">
-    {/* Logo */}
-    <div className={`w-8 h-8 rounded-full ${avatarBg} flex items-center justify-center text-white mr-2 text-xs`}>
-      GB
-    </div>
+    {/*NAVigation BAR */}
+    <div className={`flex items-center p-2 ${bgColor} border-b ${borderColor}`}>
 
-    {/* Search Bar */}
-    <div className="relative w-32">
-      <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none">
-        {/* Home Icon */}
-      </div>
-      <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-        {/* Arrows Icon */}
-      </div>
-      <input
-        type="search"
-        placeholder="Deals"
-        className={`w-full pl-6 pr-6 py-1 rounded border text-xs ${
-          darkMode ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                   : "bg-gray-100 border-gray-300 text-black placeholder-gray-600"
-        } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-      />
-    </div>
-
-    {/* Language Selector */}
-    <div className="relative">
+     {/* Left section of Navbar (4) */}
+      <div className="flex items-center space-x-3 text-sm">
+        {/*1-hamburger button*/}
+       <div className="relative inline-block text-left">
       <button
-        onClick={toggleLangMenu}
-        className={`px-1 py-0.5 border rounded text-xs ${
-          darkMode ? "bg-gray-800 border-gray-600 text-white"
-                   : "bg-gray-100 border-gray-300 text-black"
-        } flex items-center space-x-1`}
+        onClick={() => setOpen(!open)}
+        className="p-2 rounded hover:bg-indigo-200"
+        aria-expanded={open}
+        aria-haspopup="true"
+        title="Menu"
       >
-        {/* Globe icon */}
-        <svg className="w-3 h-3" /* globe svg */ />
-        <span>{language}</span>
-        <svg className={`w-3 h-3 ${langOpen ? "rotate-180" : ""}`} /* arrow svg */ />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6 text-gray-800"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
-      {langOpen && (
-        <ul className={`absolute mt-1 rounded shadow-lg w-full z-10 text-xs ${
-          darkMode ? "bg-gray-900 text-white border-gray-700"
-                   : "bg-white text-black border-gray-300"
-        }`}>
-          {["en", "span", "fr"].map((lang) => (
-            <li
-              key={lang}
-              onClick={() => changeLanguage(lang)}
-              className="px-3 py-1 hover:bg-indigo-500 hover:text-white cursor-pointer"
+
+      {/* Dropdown menu */}
+      {open && (
+        <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-md z-10">
+          <button
+            className="flex items-center w-full px-4 py-2 hover:bg-indigo-100 text-gray-700"
+            onClick={() => alert("New Workspace clicked")}
+          >
+          {/*Items of Hamburgeur */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
             >
-              {lang}
-            </li>
-          ))}
-        </ul>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h4l3 3h8a2 2 0 012 2v5a2 2 0 01-2 2H3V7z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7V5a2 2 0 012-2h4l3 3h8a2 2 0 012 2v5a2 2 0 01-2 2H3V7z" />
+            </svg>
+            New Workspace
+          </button>
+          <button
+            className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+            onClick={() => alert("Save clicked")}
+          >
+            Save
+          </button>
+          <button
+            className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+            onClick={() => alert("Save As clicked")}
+          >
+            Save As
+          </button>
+        </div>
       )}
     </div>
 
-    {/* Add Button */}
-    <button
-      className={`rounded border text-xs font-medium px-2 py-0.5 flex items-center space-x-1 ${
-        darkMode ? "bg-gray-800 border-gray-600 text-indigo-400 hover:bg-gray-700"
-                 : "bg-indigo-200 border-indigo-700 text-indigo-700 hover:bg-indigo-300"
-      }`}
-    >
-      <svg className="w-3 h-3" /* plus icon */ />
-      <span>Add</span>
-    </button>
-
-    {/* Navigation Buttons */}
-    <div className="flex space-x-1">
-      {["Assets", "Plugins", "Auth", "Backend", "More"].map((item) => (
-        <button
-          key={item}
-          className={`px-2 py-0.5 rounded border text-xs font-medium ${
-            darkMode ? "bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                     : "bg-gray-100 border-gray-300 text-black hover:bg-gray-200"
-          }`}
+        {/* 2-Search Bar */}
+        <div className="relative w-35">
+          {/*House icon */}
+          <div className="absolute inset-y-0 left-1 flex items-center pointer-events-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-4 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 9.75L12 4.5l9 5.25v9a1.5 1.5 0 01-1.5 1.5h-3a1.5 1.5 0 01-1.5-1.5v-3H9v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 013 18.75v-9z"
+              />
+            </svg>
+          </div>
+          {/*Arrow icon */}
+         <div className="absolute inset-y-0 right-2 flex flex-col items-center justify-center pointer-events-none">
+         <svg
+         xmlns="http://www.w3.org/2000/svg"
+         className="h-4 w-4 text-gray-500"
+         fill="none"
+         viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
         >
-          {item}
-        </button>
-      ))}
-    </div>
-  </div>
+        {/* Up arrow */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 9l5-5 5 5" />
+        {/* Down arrow */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 15l5 5 5-5" />
+        </svg>
+        </div>
+        <input
+            type="search"
+            placeholder="Home"
+            className="w-full pl-6 pr-6 py-1.5 rounded border text-s bg-gray-100 border-gray-300 text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
 
-  {/* SPACER */}
-  <div className="flex-grow" />
+        {/* 3-Language Selector */}
+        <div className="relative">
+          <button
+            onClick={toggleLangMenu}
+            className="h-8 px-2 border rounded text-s flex items-center space-x-1 bg-gray-100 border-gray-300 text-gray-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 0c2.5 1.5 4 4.5 4 9s-1.5 7.5-4 9m0-18C9.5 4.5 8 7.5 8 12s1.5 7.5 4 9"
+              />
+            </svg>
+            <span>{language}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`w-3 h-3 transition-transform ${langOpen ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {langOpen && (
+            <ul className="absolute mt-1 rounded shadow-lg w-full z-10 text-xs border bg-white text-black border-gray-300">
+              {["en", "de", "fr"].map((lang) => (
+                <li
+                  key={lang}
+                  onClick={() => changeLanguage(lang)}
+                  className="px-3 py-1.5 hover:bg-indigo-300 hover:text-white cursor-pointer"
+                >
+                  {lang}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-  {/* RIGHT SECTION */}
-  <div className="flex items-center space-x-4">
-    {/* Device Size Buttons */}
+        {/* 4-Zoom control */}
+        <div className="bg-gray-100 p-1 rounded border border-gray-300 inline-flex items-center space-x-2 text-s text-gray-800">
+       <span className="cursor-pointer" onClick={() => setZoom(Math.max(50, zoom - 10))} title="Zoom Out">-</span>
+       <span>{zoom}%</span>
+      <span className="cursor-pointer" onClick={() => setZoom(Math.min(150, zoom + 10))} title="Zoom In">+</span>
+      </div>
+      </div>
+
+
+  <div className="flex items-center w-full px-4 py-2 bg-white border-b">
+  <div className="w-40" />
+
+  {/* 1. Centered Device Buttons */}
+  <div className="flex-1 flex justify-center">
     <div className="flex space-x-1">
       {[
-        { icon: <FaMobileAlt size={14} />, type: "mobile" },
-        { icon: <FaTabletAlt size={14} />, type: "tablet" },
-        { icon: <FaLaptop size={14} />, type: "desktop" }
+        { icon: <FaMobileAlt size={18} />, type: "mobile" },
+        { icon: <FaTabletAlt size={18} />, type: "tablet" },
+        { icon: <FaLaptop size={20} />, type: "desktop" },
       ].map(({ icon, type }) => (
         <button
           key={type}
           onClick={() => setDeviceSize(type)}
           className={`p-1 rounded ${
-            deviceSize === type
-              ? darkMode ? "bg-black text-white" : "bg-blue-100 text-blue-800"
-              : darkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
+            deviceSize === type ? "bg-blue-100 text-blue-800" : "hover:bg-gray-200"
           }`}
           title={type}
         >
@@ -330,139 +382,135 @@ const { width, height } = getDeviceDimensions();
         </button>
       ))}
     </div>
+  </div>
 
-    {/* Zoom Controls */}
-    <div className="flex items-center space-x-1 text-xs">
-      <button
-        onClick={() => setZoom(Math.max(50, zoom - 10))}
-        className={`px-2 py-1 rounded ${
-          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
+  {/* 2. Spacer */}
+  <div className="flex-grow" />
+
+  {/* 3. Right Section Controls */}
+  <div className="flex items-center space-x-2.5">
+    
+    {/* Undo/Redo */}
+    <div className="bg-white rounded flex">
+      <div
+        onClick={handleUndoClick}
+        className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
+          active === "undo" ? "text-indigo-600 bg-indigo-100" : "text-gray-600 hover:bg-gray-200"
         }`}
-        title="Zoom Out"
+        title="Undo"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && handleUndoClick()}
       >
-        -
-      </button>
-      <span>{zoom}%</span>
-      <button
-        onClick={() => setZoom(Math.min(150, zoom + 10))}
-        className={`px-2 py-1 rounded ${
-          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
+        <RotateCcw className="w-5 h-5" />
+      </div>
+
+      <div
+        onClick={handleRedoClick}
+        className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
+          active === "redo" ? "text-indigo-600 bg-indigo-100" : "text-gray-600 hover:bg-gray-200"
         }`}
-        title="Zoom In"
+        title="Redo"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && handleRedoClick()}
       >
-        +
-      </button>
+        <RotateCw className="w-5 h-5" />
+      </div>
     </div>
 
-    {/* Dark Mode Toggle */}
-    <button
-      onClick={() => setDarkMode(!darkMode)}
-      className={`p-1.5 rounded-full ${
-        darkMode ? "bg-gray-700 text-yellow-300" : "bg-gray-200 text-gray-700"
-      }`}
-      title="Toggle Dark Mode"
-    >
-      {darkMode ? "☀️" : "🌙"}
-    </button>
-
-
-    {/* Mode Toggle: AI / Edit */}
-<div className="flex border rounded-full text-xs font-medium overflow-hidden">
-  <button
-    onClick={() => setMode("AI")}
-    className={`px-3 py-1 transition ${
-      mode === "AI"
-        ? darkMode ? "bg-indigo-600 text-white" : "bg-indigo-200 text-indigo-800"
-        : darkMode ? "bg-gray-700 text-gray-300" : "bg-white text-gray-600"
-    }`}
-  >
-    AI
-  </button>
-  <button
-    onClick={() => setMode("Edit")}
-    className={`px-3 py-1 transition ${
-      mode === "Edit"
-        ? darkMode ? "bg-indigo-600 text-white" : "bg-indigo-200 text-indigo-800"
-        : darkMode ? "bg-gray-700 text-gray-300" : "bg-white text-gray-600"
-    }`}
-  >
-    Edit
-  </button>
-</div>
-
+    {/* Mode Toggle */}
+    <div className="flex border rounded-full text-sm font-medium overflow-hidden">
+      <button
+        onClick={() => setMode("AI")}
+        className={`px-4 py-1 transition ${
+          mode === "AI" ? "bg-indigo-200 text-indigo-800" : "bg-white text-gray-800"
+        }`}
+      >
+        AI
+      </button>
+      <button
+        onClick={() => setMode("Edit")}
+        className={`px-4 py-1 transition ${
+          mode === "Edit" ? "bg-indigo-200 text-indigo-800" : "bg-white text-gray-800"
+        }`}
+      >
+        Edit
+      </button>
+    </div>
 
     {/* Preview Button */}
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center ${
-        darkMode ? "bg-green-600 hover:bg-green-700" : "bg-green-500 hover:bg-green-600"
-      } text-white`}
+      className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-green-500 hover:bg-green-600 text-white"
     >
       <FiPlay className="mr-1" />
       Preview
     </motion.button>
 
-    {/* Deploy Button */}
-    <button
-      className={`px-4 py-1.5 rounded-md text-xs font-semibold ${
-        darkMode ? "bg-purple-600 hover:bg-purple-700 text-white"
-                 : "bg-purple-500 hover:bg-purple-600 text-white"
-      }`}
+    {/* Publish Button */}
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-4 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-600 text-white"
     >
-      Deploy
-    </button>
+      Publish
+    </motion.button>
   </div>
 </div>
-
-      
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar - 1st left panel */}   
-        <div className={`w-16 ${darkMode ? 'bg-gray-500' : 'bg-white'} border-r ${darkMode ? 'border-gray-500' : 'border-gray-200'} flex flex-col items-center py-4 space-y-4`}>
-          <button 
-            onClick={() => setActiveTab('widgets')}
-            className={`p-3 rounded-lg ${activeTab === 'widgets' ? (darkMode ? 'bg-blue-600' : 'bg-blue-100 text-blue-800') : (darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200')}`}
-          >
-            <FiGrid size={20} />
-          </button>
-          <button 
-            onClick={() => setActiveTab('layers')}
-            className={`p-3 rounded-lg ${activeTab === 'layers' ? (darkMode ? 'bg-blue-600' : 'bg-blue-100 text-blue-800') : (darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200')}`}
-          >
-            <FiLayers size={20} />
-          </button>
-          <button 
-            onClick={() => setShowCode(!showCode)}
-            className={`p-3 rounded-lg ${showCode ? (darkMode ? 'bg-blue-600' : 'bg-blue-100 text-blue-800') : (darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200')}`}
-          >
-            <FiCode size={20} />
-          </button>
-        </div>
-        
-      {/* Second left siderbar */}
-        {activeTab === 'widgets' && (
-        <div className={`w-64 h-full flex flex-col ${darkMode ? 'bg-gray-600' : 'bg-white'} border-r ${darkMode ? 'border-gray-500' : 'border-gray-200'} overflow-hidden`}>
-    
-       {/* Row 1: UI Builder, Responsive*/}
-<div className="border-b border-gray-300 flex">
-  {['UI Builder', 'Responsive'].map(tab => (
-    <div
-      key={tab}
-      onClick={() => setTopTab(tab)}
-      className={`
-        px-2 py-1 cursor-pointer text-[15px] capitalize transition-all
-        ${topTab === tab 
-          ? 'text-blue-500 border-b-2 border-blue-500' 
-          : darkMode 
-            ? 'text-white border-b-2 border-transparent' 
-            : 'text-gray-400 border-b-2 border-transparent'}
-      `}
-    >
-      {tab}
-    </div>
-  ))}
 </div>
+
+    
+{/* LEFT SIDE BAR*/}
+<div className="flex flex-1 overflow-hidden">
+
+ {/* 1st left panel */}   
+  <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 space-y-4">
+  <button 
+    onClick={() => setActiveTab('widgets')}
+    className={`p-3 rounded-lg ${activeTab === 'widgets' ? 'bg-blue-100 text-indigo-800' : 'hover:bg-indigo-200'}`}
+  >
+    <FiGrid size={20} />
+  </button>
+  <button 
+    onClick={() => setActiveTab('layers')}
+    className={`p-3 rounded-lg ${activeTab === 'layers' ? 'bg-white text-indigo-800' : 'hover:bg-indigo-200'}`}
+  >
+    <FiLayers size={20} />
+  </button>
+  <button 
+    onClick={() => setShowCode(!showCode)}
+    className={`p-3 rounded-lg ${showCode ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
+  >
+    <FiCode size={20} />
+  </button>
+</div>
+
+        
+{/* Second left siderbar */}
+  {activeTab === 'widgets' && (
+        <div className="w-64 h-full flex flex-col bg-white border-r border-gray-200 overflow-hidden">
+          
+          {/* Row 1: UI Builder, Responsive */}
+          <div className="border-b border-gray-300 flex">
+            {['UI Builder', 'Responsive'].map(tab => (
+              <div
+                key={tab}
+                onClick={() => handleTabClick(tab)}
+                className={`
+                  px-5 py-3 cursor-pointer text-[18px] capitalize transition-all
+                  ${topTab === tab 
+                    ? 'text-blue-500 border-b-2 border-blue-500' 
+                    : darkMode 
+                      ? 'text-black border-b-2 border-transparent' 
+                      : 'text-gray-400 border-b-2 border-transparent'}
+                `}
+              >
+                {tab}
+              </div>
+            ))}
+          </div>
 
      {/* Row 2: Search element*/}
     <div className="p-2 border-b border-gray-300 flex items-center space-x-2">
@@ -470,61 +518,41 @@ const { width, height } = getDeviceDimensions();
       <input 
         type="text" 
         placeholder="Search elements" 
-        className={`w-full bg-transparent outline-none text-sm ${darkMode ? 'text-white placeholder-gray-400' : 'text-black placeholder-gray-400'}`}
+        className={`w-full bg-transparent outline-none text-sm ${'text-black placeholder-gray-400'}`}
       />
     </div>
 
-    {/* Row 3: Elements Tree */}
-    <div className="p-2 border-b border-gray-100 flex items-center justify-between text-sm font-bold">
-  <span>Elements Tree</span>
-  <div className="flex items-center space-x-2 text-gray-600">
-    <FiEye className="cursor-pointer hover:text-gray-400" size={16} />
-    <FiMove className="cursor-pointer hover:text-gray-400" size={16} />
-  </div>
-</div>
-
-    {/* Row 4: Index */}
-<div className={`p-2 border-b border-indigo-100 flex items-center space-x-1 text-sm font-medium ${darkMode ? 'bg-indigo-00 text-white' : 'bg-indigo-100 text-blue-800'}`}>
-  <FiFileText size={16} />
-  <span>index</span>
-</div>
-
-    {/* Row 5: Search Assets */}
-    <div className="p-2 border-b border-gray-300 text-sm font-medium flex items-center space-x-2">
-       <FiSearch size={18} />
-       <input 
-        type="text" 
-        placeholder="Search assets" 
-        className={`w-full bg-transparent outline-none text-m ${darkMode ? 'text-white placeholder-gray-400' : 'text-black placeholder-gray-400'}`}
-      />
-    </div>
-
+ 
 
 <div className="h-full flex flex-col">
-<div className="flex-1 overflow-y-auto custom-scrollbar">
-  
-    {/* Visual Elements */}
-<div className="border-b border-gray-300">
+  {/* Single scrollable container wrapping all sections */}
+  <div className="flex-4 overflow-y-auto custom-scrollbar p-4 space-y-4"> 
+
+    {/* Input Controls */}
+   <div className="border-b border-gray-300">
   <div
-    className="p-3 flex items-center cursor-pointer hover:bg-indigo-500 hover:text-black"
-    onClick={() => toggleSection('visual')}
+    className="p-3 flex items-center cursor-pointer hover:bg-indigo-300 hover:text-black"
+    onClick={() => toggleSection('inputControls')}
   >
     <FiChevronRight
       className={`mr-2 transition-transform duration-200 ${
-        expandedSections.visual ? 'rotate-90' : 'rotate-0'
+        expandedSections.inputControls ? 'rotate-90' : 'rotate-0'
       }`}
       size={14}
     />
-    <span className="text-sm font-bold">Visual Elements</span>
+    <span className="text-[15px]">Input Controls</span>
   </div>
-  {expandedSections.visual && (
-    <div className="px-4 pb-3 space-y-2 text-sm text-gray-800 dark:text-gray-300">
+
+  {expandedSections.inputControls && (
+    <div className="px-4 pb-3 space-y-2 text-sm text-gray-800">
       {visualItems.map(({ type, label, icon: Icon }) => (
         <div
           key={type}
           draggable
-          onDragStart={(e) => handleDragStart(e, type)}
-          className="flex items-center cursor-grab p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          onDragStart={(e) => {
+            e.dataTransfer.setData('componentType', type); // Crucial for drop handling
+          }}
+          className="flex items-center cursor-grab p-2 rounded hover:bg-gray-200"
         >
           <Icon className="mr-2 text-indigo-700" size={16} />
           <span>{label}</span>
@@ -534,49 +562,33 @@ const { width, height } = getDeviceDimensions();
   )}
 </div>
 
-
-{/* Layout */}
+  {/* Navigational Components */}
 <div className="border-b border-gray-300">
   <div
-    className="p-3 flex items-center cursor-pointer hover:bg-indigo-500"
-    onClick={() => toggleSection('containers')}
+    className="p-3 flex items-center cursor-pointer hover:bg-indigo-300 hover:text-black"
+    onClick={() => toggleSection('navigationalItems')}
   >
     <FiChevronRight
       className={`mr-2 transition-transform duration-200 ${
-        expandedSections.containers ? 'rotate-90' : 'rotate-0'
+        expandedSections.navigationalItems ? 'rotate-90' : 'rotate-0'
       }`}
       size={14}
     />
-    <span className="text-sm font-bold">Layout Elements</span>
+    <span className="text-[15px]">Navigational Components</span>
   </div>
 
-  {expandedSections.containers && (
-    <div className="px-4 pb-3 space-y-2 text-sm text-gray">
-      {[
-        { type: 'container', label: 'Container', icon: <FiBox /> },
-        { type: 'row', label: 'Row', icon: <FiColumns /> },
-        { type: 'column', label: 'Column', icon: <FiSidebar /> },
-        { type: 'stack', label: 'Stack', icon: <FiLayers /> },
-        { type: 'card', label: 'Card', icon: <FiLayout /> },
-        { type: 'listview', label: 'Listview', icon: <FiList /> },
-        { type: 'cardview', label: 'CardView', icon: <FiGrid /> },
-        { type: 'spacer', label: 'Spacer', icon: <FiMaximize /> },
-        { type: 'divider', label: 'Divider', icon: <FiDivide /> },
-        { type: 'verticaldivider', label: 'Vertical Divider', icon: <FiMoreVertical /> },
-        { type: 'tabbar', label: 'TabBar', icon: <FiSidebar /> },
-        { type: 'pageview', label: 'PageView', icon: <FiLayout /> },
-        { type: 'formvalidation', label: 'Form Validation', icon: <FiCheckSquare /> },
-        { type: 'datatable', label: 'Data Table', icon: <FiTable /> },
-        { type: 'wrap', label: 'Wrap', icon: <FiGitBranch /> },
-        { type: 'staggeredview', label: 'StaggeredView', icon: <FiPackage /> }
-      ].map(({ type, label, icon }) => (
+  {expandedSections.navigationalItems && (
+    <div className="px-4 pb-3 space-y-2 text-[15px] text-gray-800">
+      {navigationalItems.map(({ type, label, icon: Icon }) => (
         <div
           key={type}
           draggable
-          onDragStart={(e) => e.dataTransfer.setData('widgetType', type)}
-          className="flex items-center gap-2 p-2 hover:bg-gray-250 rounded cursor-grab"
+          onDragStart={(e) => {
+            e.dataTransfer.setData('componentType', type);
+          }}
+          className="flex items-center gap-2 p-2 rounded cursor-grab hover:bg-gray-200"
         >
-          <div className="text-indigo-700">{icon}</div>
+          <Icon className="text-indigo-700" size={16} />
           <span>{label}</span>
         </div>
       ))}
@@ -584,174 +596,258 @@ const { width, height } = getDeviceDimensions();
   )}
 </div>
 
-
-{/* Input Forms */}
-<div className="border-b border-gray-300">
-  <div
-    className="p-3 flex items-center  cursor-pointer hover:bg-indigo-500"
-    onClick={() => toggleSection('inputForms')}
-  >
-  <FiChevronRight
-      className={`mr-2 transition-transform duration-200 ${
-        expandedSections.visual ? 'rotate-90' : 'rotate-0'
-      }`}
-      size={14}
-    />
-    <span className="text-sm font-bold">Input Forms</span>
-  </div>
-  {expandedSections.inputForms && (
-    <div className="px-4 pb-3 space-y-2 text-sm text-gray-400">
-      <div>Text Field</div>
-      <div>Checkbox</div>
-      <div>Radio</div>
-      <div>Dropdown</div>
-    </div>
-  )}
-</div>
-
-{/* Reusable Elements */}
-<div className="border-b border-gray-300">
-  <div
-    className="p-3 flex items-center cursor-pointer hover:bg-indigo-500"
-    onClick={() => toggleSection('reusable')}
-  >
-    <FiChevronRight
-      className={`mr-2 transition-transform duration-200 ${
-        expandedSections.reusable ? 'rotate-90' : 'rotate-0'
-      }`}
-      size={14}
-    />
-    <span className="text-sm font-bold">Reusable Elements</span>
-  </div>
-
-  {expandedSections.reusable && (
-    <div className="px-6 pb-3 space-y-2 text-sm text-gray-400">
-      <div>Header</div>
-      <div>Footer</div>
-      <div>Navbar</div>
-    </div>
-  )}
-</div>
-</div>
-</div>
-
-
-
-
-    {/* Row 6: Builder Tools (flex-grow) */}
-      <h3 className="text-sm font-medium mb-2">Layout</h3>
-
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => addWidget('container')}
-        className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} cursor-pointer flex items-center mb-2`}
-      >
-        <div className={`w-8 h-8 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'} flex items-center justify-center mr-3`}>
-          <FiGrid size={16} />
-        </div>
-        <span>Container</span>
-      </motion.div>
-
-      <h3 className="text-sm font-medium mt-4 mb-2">Basic</h3>
-
-      {/* Button */}
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => addWidget('button')}
-        className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} cursor-pointer flex items-center mb-2`}
-      >
-        <div className={`w-8 h-8 rounded ${darkMode ? 'bg-blue-600' : 'bg-blue-500'} flex items-center justify-center text-white mr-3`}>
-          <FiAnchor size={16} />
-        </div>
-        <span>Button</span>
-      </motion.div>
-
-      {/* Text */}
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => addWidget('text')}
-        className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} cursor-pointer flex items-center mb-2`}
-      >
-        <div className={`w-8 h-8 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'} flex items-center justify-center mr-3`}>
-          <FiAlignLeft size={16} />
-        </div>
-        <span>Text</span>
-      </motion.div>
-
-      {/* Image */}
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => addWidget('image')}
-        className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} cursor-pointer flex items-center`}
-      >
-        <div className={`w-8 h-8 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'} flex items-center justify-center mr-3`}>
-          <FiImage size={16} />
-        </div>
-        <span>Image</span>
-      </motion.div>
-    </div>
-)}
-
-        
-        {activeTab === 'layers' && (
-          <div className={`w-64 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'} p-4 overflow-y-auto`}>
-            <h2 className="font-bold mb-4">Layers</h2>
-            <div className="space-y-1">
-              {widgets.length === 0 ? (
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>No widgets added yet</p>
-              ) : (
-                widgets.map(widget => (
-                  <motion.div
-                    key={widget.id}
-                    whileHover={{ backgroundColor: darkMode ? '#374151' : '#E5E7EB' }}
-                    onClick={() => setSelectedWidget(widget.id)}
-                    className={`p-2 rounded cursor-pointer flex items-center ${selectedWidget === widget.id ? (darkMode ? 'bg-blue-600' : 'bg-blue-100 text-blue-800') : ''}`}
-                  >
-                    {widget.type === 'button' && <FiAnchor className="mr-2" />}
-                    {widget.type === 'text' && <FiAlignLeft className="mr-2" />}
-                    {widget.type === 'container' && <FiGrid className="mr-2" />}
-                    {widget.type === 'image' && <FiImage className="mr-2" />}
-                    <span className="text-sm capitalize">{widget.type}</span>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
-        
-        {/* Main Canvas Area */}
-        <div 
-          className="flex-1 overflow-auto p-8 flex items-center justify-center" 
-          onClick={() => setSelectedWidget(null)}
-          style={{ backgroundColor: darkMode ? '#111827' : '#F3F4F6' }}
-        >
-          <div 
-            className={`relative ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl`}
-            style={{ 
-              width: `${width * zoom / 100}px`, 
-              height: `${height * zoom / 100}px`,
-              transformOrigin: 'center center'
+    {/* Containers and Layouts*/}
+    <div className="border-b border-gray-300">
+          <div
+            className="p-3 flex items-center cursor-pointer hover:bg-indigo-300 hover:text-black select-none"
+            onClick={() => toggleSection('layoutElements')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                toggleSection('layoutElements');
+              }
             }}
           >
-            <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-            className="flex-1 min-h-[400px] bg-white border border-dashed border-gray-400 p-6"
-             >
-          {canvasItems.map((item) => (
-     <RenderWidget key={item.id} type={item.type} />
-  ))}
-</div>
-            {widgets.map(widget => renderWidget(widget))}
+            <FiChevronRight
+              className={`mr-2 transition-transform duration-200 ${
+                expandedSections.layoutElements ? 'rotate-90' : 'rotate-0'
+              }`}
+              size={14}
+            />
+            <span className="text-[15px]">Containers & Layouts</span>
           </div>
+          {expandedSections.layoutElements && (
+            <div className="px-4 pb-3 space-y-2 text-[15px] text-gray-800">
+              {layoutElements.map(({ type, label, icon }) => (
+                <div
+                  key={type}
+                  draggable
+                  onDragStart={(e) => e.dataTransfer.setData('componentType', type)}
+                  className="flex items-center gap-2 p-2 rounded cursor-grab hover:bg-gray-200"
+                >
+                  <div className="text-indigo-700">{icon}</div>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+  )}
+</div>
+
+    {/* Topography and Media */}
+<div className="border-b border-gray-300">
+   <div
+            className="p-3 flex items-center cursor-pointer hover:bg-indigo-300 hover:text-black select-none"
+            onClick={() => toggleSection('topographyElements')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                toggleSection('topographyElements');
+              }
+            }}
+          >
+        <FiChevronRight
+          className={`mr-2 transition-transform duration-200 ${
+                expandedSections.topographyElements ? 'rotate-90' : 'rotate-0'
+              }`}
+              size={14}
+            />
+          <span className="text-[15px]">Topography & Media</span>
+          </div>
+      {expandedSections.topographyElements && (
+        <div className="px-4 pb-3 space-y-2 text-[15px] text-gray-800">
+          {topographyElements.map(({ type, label, icon }) => (
+            <div
+              key={type}
+              draggable
+              onDragStart={(e) => e.dataTransfer.setData("componentType", type)}
+              className="flex items-center gap-2 p-2 rounded cursor-grab hover:bg-gray-200"
+            >
+              <div className="text-indigo-700">{icon}</div>
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
+      )}
+    </div>
+</div>
+
+
+    </div>
+    </div>
+
+
+    )}
+
+
         
+        {/* Main Canvas Area */}
+     <div 
+  className="flex-1 overflow-auto p-10 flex items-center justify-center" 
+  style={{ backgroundColor: '#F3F4F6' }} // light gray background
+   onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
+
+  <div 
+    className="relative bg-white shadow-xl"
+    style={{ 
+      width: `${width * zoom / 100}px`, 
+      height: `${height * zoom / 100}px`,
+      transform: `scale(${zoom / 100})`,
+      transformOrigin: 'center center',
+    }}
+  >
+    {/* Canvas Drop Zone */}
+   <div
+  className="canvas-area"
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={(e) => {
+    const componentType = e.dataTransfer.getData("componentType");
+    addComponentToCanvas(componentType);
+  }}
+>
+  {canvasItems.map((item) => (
+     <div key={item} className="mb-4 p-4 bg-white border rounded shadow-sm">
+      {/* Topography & Media */}
+      {item.type === "heading" && <h1 className="text-2xl font-bold">Heading</h1>}
+      {item.type === "paragraph" && <p className="text-base">This is a paragraph.</p>}
+        {item.type === "image" && (
+              <img
+                src={lowcode}
+                alt="Placeholder"
+                className="w-[250px] h-auto"
+              />
+            )}
+       {item.type === "video" && (
+              <video controls width="300">
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+
+   {/* Input Control */}
+    {item.type === "textfield" && (
+      <input
+        type="text"
+        placeholder="Enter some text"
+        className="p-2 border rounded w-full"
+      />
+    )}
+
+    {item.type === "submit-button" && (
+      <button
+        onClick={() => alert("Form submitted")}
+        className="px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Submit
+      </button>
+    )}
+    
+    {item.type === "checkbox" && (
+      <label className="inline-flex items-center space-x-2">
+        <input type="checkbox" className="form-checkbox" />
+        <span>Check me</span>
+      </label>
+    )}
+
+    {item.type === "dropdown" && (
+      <select className="p-2 border border-gray-300 rounded w-full">
+        <option>Option 1</option>
+        <option>Option 2</option>
+        <option>Option 3</option>
+      </select>
+    )}
+
+    {item.type === "search" && (
+      <input
+        type="search"
+        placeholder="Search..."
+        className="p-2 border border-gray-300 rounded w-full"
+      />
+    )}
+
+    {/*Navigational Components */}
+    {item.type === "navbar" && (
+      <nav className="bg-gray-800 p-3 text-white rounded">
+        <ul className="flex space-x-4">
+          <li>Home</li>
+          <li>About</li>
+          <li>Contact</li>
+        </ul>
+      </nav>
+    )}
+
+    {item.type === "sidebar" && (
+      <aside className="w-48 bg-gray-200 p-3 rounded">
+        <ul className="space-y-2">
+          <li>Dashboard</li>
+          <li>Settings</li>
+          <li>Profile</li>
+        </ul>
+      </aside>
+    )}
+
+    {item.type === "tabs" && (
+      <div className="rounded border p-2">
+        <div className="flex space-x-2 border-b pb-2 mb-2">
+          <button className="px-2 py-1 bg-blue-100 rounded">Tab 1</button>
+          <button className="px-2 py-1 hover:bg-gray-100 rounded">Tab 2</button>
+        </div>
+        <div>Tab content here...</div>
+      </div>
+    )}
+
+    {item.type === "breadcrumbs" && (
+      <nav className="text-sm text-gray-600">
+     <span>Home</span> &gt; <span>Library</span> &gt; <span>Data</span>
+      </nav>
+    )}
+
+{/* Layout Element */}
+ {item.type === 'grid' && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-gray-200 p-4 text-center">Column 1</div>
+          <div className="bg-gray-200 p-4 text-center">Column 2</div>
+          <div className="bg-gray-200 p-4 text-center">Column 3</div>
+        </div>
+      )}
+
+      {item.type === 'headers' && (
+        <header className="text-xl font-bold text-indigo-700">Header Section</header>
+      )}
+
+      {item.type === 'footer' && (
+        <footer className="text-sm text-center text-gray-600 border-t pt-2 mt-4">
+          © 2025 Your Company. All rights reserved.
+        </footer>
+      )}
+
+      {item.type === 'sidepanel' && (
+        <aside className="w-1/4 p-4 bg-gray-100 border">
+          Side Panel Content
+        </aside>
+      )}
+
+      {item.type === 'card' && (
+        <div className="border rounded shadow-md p-4">
+          <h2 className="text-lg font-semibold mb-2">Card Title</h2>
+          <p className="text-sm text-gray-700">This is a simple card description.</p>
+        </div>
+      )}
+
+  </div>
+))}
+</div>
+
+
+  </div>
+</div>
+
+
         {/* Right Sidebar - Properties Panel */}
-        <div className={`w-80 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-l ${darkMode ? 'border-gray-700' : 'border-gray-200'} p-4 overflow-y-auto`}>
+        <div className={`w-80 ${darkMode ? 'bg-black' : 'bg-white'} border-l ${darkMode ? 'border-gray-700' : 'border-gray-200'} p-4 overflow-y-auto`}>
           {selectedWidget ? (
             <>
               <div className="flex items-center justify-between mb-4">
