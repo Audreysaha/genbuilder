@@ -23,7 +23,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
   };
 
   return (
-    <div className={`flex items-center p-2 ${bgColor} border-b ${borderColor}`}>
+    <div className={`flex bg-indigo-900 items-center p-2 ${bgColor} border-b ${borderColor}`}>
       {/* Left section of Navbar */}
       <div className="flex items-center space-x-3 text-sm">
         {/* 1-hamburger button */}
@@ -37,7 +37,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6 text-gray-800"
+              className="w-6 h-6 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -49,9 +49,9 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
 
           {/* Dropdown menu */}
           {open && (
-            <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-md z-10">
+            <div className="absolute left-0 mt-2 w-48  border border-gray-300 bg-indigo-900 rounded shadow-md z-10">
               <button
-                className="flex items-center w-full px-4 py-2 hover:bg-indigo-100 text-gray-700"
+                className="flex items-center w-full px-4 py-2 hover:bg-indigo-100 hover:text-black text-white"
                 onClick={() => alert("New Workspace clicked")}
               >
                 <svg
@@ -76,13 +76,13 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
                 New Workspace
               </button>
               <button
-                className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+                className="w-full text-left px-4 py-2 hover:bg-indigo-100 hover:text-black text-white"
                 onClick={() => alert("Save clicked")}
               >
                 Save
               </button>
               <button
-                className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+                className="w-full text-left px-4 py-2 hover:bg-indigo-100 hover:text-black text-white"
                 onClick={() => alert("Save As clicked")}
               >
                 Save As
@@ -97,7 +97,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
           <div className="absolute inset-y-0 left-1 flex items-center pointer-events-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-4 text-gray-500"
+              className="h-8 w-4 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -114,7 +114,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
           <div className="absolute inset-y-0 right-2 flex flex-col items-center justify-center pointer-events-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-gray-500"
+              className="h-4 w-4 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -164,7 +164,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
             </svg>
           </button>
           {langOpen && (
-            <ul className="absolute mt-1 rounded shadow-lg w-full z-10 text-xs border bg-white text-black border-gray-300">
+            <ul className="absolute mt-1 rounded shadow-lg w-full z-10 text-xs border bg-indigo-900  text-white border-gray-300">
               {["en", "de", "fr"].map((lang) => (
                 <li
                   key={lang}
@@ -198,12 +198,12 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
         </div>
       </div>
 
-      <div className="flex items-center w-full px-4 py-2 bg-white border-b">
+      <div className="flex items-center w-full px-4 py-2  border-b">
         <div className="w-40" />
 
         {/* 1. Centered Device Buttons */}
         <div className="flex-1 flex justify-center">
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 text-white">
             {[
               { icon: <FaMobileAlt size={18} />, type: "mobile" },
               { icon: <FaTabletAlt size={18} />, type: "tablet" },
@@ -213,7 +213,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
                 key={type}
                 onClick={() => setDeviceSize(type)}
                 className={`p-1 rounded ${
-                  deviceSize === type ? "bg-blue-100 text-blue-800" : "hover:bg-gray-200"
+                  deviceSize === type ? "bg-blue-100 text-blue-800" : "hover:bg-gray-200 hover:text-black"
                 }`}
                 title={type}
               >
@@ -230,16 +230,16 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setShowCode(!showCode)}
-            className={`p-3 rounded-lg ${showCode ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
+            className={`p-3 rounded-lg text-white hover:text-black ${showCode ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
           >
             <FiCode size={20} />
           </button>
           {/* Undo/Redo */}
-          <div className="bg-white rounded flex">
+          <div className=" rounded flex">
             <div
               onClick={handleUndoClick}
               className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
-                active === "undo" ? "text-indigo-600 bg-indigo-100" : "text-gray-600 hover:bg-gray-200"
+                active === "undo" ? "text-indigo-600 bg-indigo-100" : "text-white hover:text-black hover:bg-gray-200"
               }`}
               title="Undo"
               role="button"
@@ -252,7 +252,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
             <div
               onClick={handleRedoClick}
               className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
-                active === "redo" ? "text-indigo-600 bg-indigo-100" : "text-gray-600 hover:bg-gray-200"
+                active === "redo" ? "text-indigo-600 bg-indigo-100" : "text-white hover:text-black hover:bg-gray-200"
               }`}
               title="Redo"
               role="button"
@@ -268,7 +268,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
             <button
               onClick={() => setMode("AI")}
               className={`px-4 py-1 transition ${
-                mode === "AI" ? "bg-indigo-200 text-indigo-800" : "bg-white text-gray-800"
+                mode === "AI" ? "bg-white text-indigo-900" : " text-white"
               }`}
             >
               AI
@@ -276,7 +276,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
             <button
               onClick={() => setMode("Edit")}
               className={`px-4 py-1 transition ${
-                mode === "Edit" ? "bg-indigo-200 text-indigo-800" : "bg-white text-gray-800"
+                mode === "Edit" ? "bg-white text-indigo-900" : " text-white"
               }`}
             >
               Edit

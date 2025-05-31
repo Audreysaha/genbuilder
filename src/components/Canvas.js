@@ -116,7 +116,7 @@ const Canvas = forwardRef(
 
     return (
       <div
-        className="flex-1 overflow-auto p-10 flex items-center justify-center"
+        className="flex-1 overflow-auto  p-10 flex items-center justify-center"
         style={{ backgroundColor: "#F3F4F6" }}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -127,9 +127,8 @@ const Canvas = forwardRef(
           style={{
             width: `${width}px`,
             height: `${height}px`,
-            // Retrait du transform scale pour éviter conflits d'affichage
-            // transform: `scale(${zoom / 100})`,
-            // transformOrigin: "center center",
+            transform: `scale(${zoom / 100})`,
+            transformOrigin: "center center",
           }}
         >
           <div className="relative w-full h-full bg-gray-100">

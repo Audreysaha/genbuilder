@@ -207,7 +207,7 @@ const FlutterFlowClone = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white text-gray-900">
+    <div className="flex flex-col h-screen bg-indigo-500 text-gray-900">
 
       {/* Navigation Bar */}
       <Navbar
@@ -222,7 +222,7 @@ const FlutterFlowClone = () => {
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1  overflow-hidden">
         <SidebarBuilder
           activeTab={activeTab}
           setActiveTab={setActiveTab}
