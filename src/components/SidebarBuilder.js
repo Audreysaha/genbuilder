@@ -10,8 +10,6 @@ import {
 export default function SidebarBuilder({
   activeTab,
   setActiveTab,
-  showCode,
-  setShowCode,
   topTab,
   handleTabClick,
   darkMode,
@@ -37,12 +35,6 @@ export default function SidebarBuilder({
           className={`p-3 rounded-lg ${activeTab === 'layers' ? 'bg-white text-indigo-800' : 'hover:bg-indigo-200'}`}
         >
           <FiLayers size={20} />
-        </button>
-        <button
-          onClick={() => setShowCode(!showCode)}
-          className={`p-3 rounded-lg ${showCode ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
-        >
-          <FiCode size={20} />
         </button>
       </div>
 

@@ -1,29 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Rnd } from "react-rnd";
 
 const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState(item.content || "");
-  const [src, setSrc] = useState(item.src || "");
-
-  const handleDoubleClick = () => {
-    if (item.type === "heading" || item.type === "paragraph") {
-      setIsEditing(true);
-    } else if (item.type === "image" || item.type === "video") {
-      triggerFileInput();
-    }
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    onUpdate(item.id, { content: text });
-  };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
-    setSrc(url);
     onUpdate(item.id, { src: url });
   };
 
@@ -37,36 +19,38 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   };
 
   const renderContent = () => {
+    const commonTextStyles = {
+      margin: 0,
+      padding: 0,
+      lineHeight: 1.2,
+      boxSizing: "border-box",
+      width: "100%",
+      height: "100%",
+      resize: "none",
+    };
+
     switch (item.type) {
-      // Topography
       case "heading":
-        return isEditing ? (
+        return (
           <input
-            autoFocus
             className="text-2xl font-bold w-full"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onBlur={handleBlur}
+            style={{ ...commonTextStyles }}
+            value={item.content || ""}
+            onChange={(e) =>
+              onUpdate(item.id, { content: e.target.value })
+            }
           />
-        ) : (
-          <h1 className="text-2xl font-bold cursor-text" onDoubleClick={handleDoubleClick}>
-            {item.content || "Heading"}
-          </h1>
         );
 
       case "paragraph":
-        return isEditing ? (
+        return (
           <textarea
-            autoFocus
-            className="text-gray-700 w-full h-full"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onBlur={handleBlur}
+            style={{ ...commonTextStyles, overflow: "auto" }}
+            value={item.content || ""}
+            onChange={(e) =>
+              onUpdate(item.id, { content: e.target.value })
+            }
           />
-        ) : (
-          <p className="text-gray-700 cursor-text" onDoubleClick={handleDoubleClick}>
-            {item.content || "Lorem ipsum dolor sit amet..."}
-          </p>
         );
 
       case "image":
@@ -74,11 +58,13 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
           <div
             className="w-full h-full cursor-pointer"
             onDoubleClick={triggerFileInput}
+            style={{ padding: 0, margin: 0 }}
           >
             <img
-              src={src || "https://via.placeholder.com/150"}
+              src={item.src || "https://via.placeholder.com/150"}
               alt="Canvas"
               className="w-full h-full object-cover"
+              style={{ display: "block", margin: 0, padding: 0 }}
             />
           </div>
         );
@@ -88,10 +74,11 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
           <div
             className="w-full h-full cursor-pointer"
             onDoubleClick={triggerFileInput}
+            style={{ padding: 0, margin: 0 }}
           >
-            <video className="w-full h-full" controls>
+            <video className="w-full h-full" controls style={{ display: "block" }}>
               <source
-                src={src || "https://www.w3schools.com/html/mov_bbb.mp4"}
+                src={item.src || "https://www.w3schools.com/html/mov_bbb.mp4"}
                 type="video/mp4"
               />
               Your browser does not support the video tag.
@@ -99,31 +86,28 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
           </div>
         );
 
-      // Visual items
       case "textfield":
-        return isEditing ? (
+        return (
           <input
-            autoFocus
-            className="w-full border p-1"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onBlur={handleBlur}
-          />
-        ) : (
-          <input
-            type="text"
-            className="w-full border p-1"
-            placeholder={item.content || "Enter text..."}
-            onDoubleClick={handleDoubleClick}
+            className="w-full border"
+            style={{ ...commonTextStyles, padding: "0.25rem" }}
+            value={item.content || ""}
+            onChange={(e) =>
+              onUpdate(item.id, { content: e.target.value })
+            }
           />
         );
 
       case "submit-button":
-        return <button className="bg-blue-500 text-white px-4 py-2 rounded w-full h-full">{item.content || "Submit"}</button>;
+        return (
+          <button className="bg-blue-500 text-white rounded w-full h-full" style={{ padding: "0.5rem" }}>
+            {item.content || "Submit"}
+          </button>
+        );
 
       case "checkbox":
         return (
-          <label className="flex items-center space-x-2">
+          <label className="flex items-center space-x-2" style={{ margin: 0, padding: 0 }}>
             <input type="checkbox" />
             <span>{item.content || "Check me"}</span>
           </label>
@@ -131,7 +115,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "dropdown":
         return (
-          <select className="border p-1 w-full">
+          <select className="border w-full" style={{ padding: "0.25rem", margin: 0 }}>
             <option>{item.content || "Select an option"}</option>
             <option>Option 1</option>
             <option>Option 2</option>
@@ -139,27 +123,21 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
         );
 
       case "search":
-        return isEditing ? (
-          <input
-            autoFocus
-            className="w-full border p-1"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onBlur={handleBlur}
-          />
-        ) : (
+        return (
           <input
             type="search"
-            className="w-full border p-1"
-            placeholder={item.content || "Search..."}
-            onDoubleClick={handleDoubleClick}
+            className="border w-full"
+            style={{ padding: "0.25rem", margin: 0 }}
+            value={item.content || ""}
+            onChange={(e) =>
+              onUpdate(item.id, { content: e.target.value })
+            }
           />
         );
 
-      // Navigation
       case "navbar":
         return (
-          <nav className="bg-gray-800 text-white px-4 py-2 flex space-x-4">
+          <nav className="bg-gray-800 text-white px-2 py-1 flex space-x-2" style={{ margin: 0 }}>
             <span>Home</span>
             <span>About</span>
             <span>Contact</span>
@@ -168,7 +146,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "sidebar":
         return (
-          <aside className="bg-gray-200 h-full p-2 space-y-2">
+          <aside className="bg-gray-200 h-full p-1 space-y-1" style={{ margin: 0 }}>
             <div>Dashboard</div>
             <div>Settings</div>
             <div>Logout</div>
@@ -177,51 +155,60 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "tabs":
         return (
-          <div className="flex border-b">
-            <button className="px-4 py-2 border-b-2 border-blue-500">Tab 1</button>
-            <button className="px-4 py-2">Tab 2</button>
+          <div className="flex border-b" style={{ margin: 0 }}>
+            <button className="px-2 py-1 border-b-2 border-blue-500">Tab 1</button>
+            <button className="px-2 py-1">Tab 2</button>
           </div>
         );
 
       case "breadcrumbs":
         return (
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600" style={{ margin: 0 }}>
             Home &gt; Category &gt; Page
           </div>
         );
 
-      // Layout
       case "grid":
         return (
-          <div className="grid grid-cols-2 gap-2 w-full h-full">
-            <div className="bg-gray-100 p-2">Col 1</div>
-            <div className="bg-gray-200 p-2">Col 2</div>
+          <div className="grid grid-cols-2 gap-1 w-full h-full" style={{ margin: 0 }}>
+            <div className="bg-gray-100 p-1">Col 1</div>
+            <div className="bg-gray-200 p-1">Col 2</div>
           </div>
         );
 
       case "headers":
-        return <header className="bg-blue-100 p-4 text-center font-bold">Header</header>;
+        return (
+          <header className="bg-blue-100 p-2 text-center font-bold" style={{ margin: 0 }}>
+            Header
+          </header>
+        );
 
       case "footer":
-        return <footer className="bg-gray-300 p-4 text-center">Footer Content</footer>;
+        return (
+          <footer className="bg-gray-300 p-2 text-center" style={{ margin: 0 }}>
+            Footer Content
+          </footer>
+        );
 
       case "sidepanel":
         return (
-          <div className="bg-gray-100 p-2 w-full h-full">
+          <div className="bg-gray-100 p-1 w-full h-full" style={{ margin: 0 }}>
             Side Panel Content
           </div>
         );
 
       case "card":
         return (
-          <div className="bg-white shadow p-4 rounded h-full w-full">
-            <h2 className="text-lg font-bold">Card Title</h2>
-            <p>Card content goes here.</p>
+          <div className="bg-white shadow rounded w-full h-full p-2" style={{ margin: 0 }}>
+            <h2 className="text-lg font-bold" style={{ margin: 0, padding: 0 }}>
+              Card Title
+            </h2>
+            <p style={{ margin: 0, padding: 0 }}>Card content goes here.</p>
           </div>
         );
 
       default:
-        return <div>Unknown Component</div>;
+        return <div style={{ margin: 0, padding: 0 }}>Unknown Component</div>;
     }
   };
 
@@ -249,9 +236,9 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
       }}
     >
       <div
-        className={`w-full h-full p-2 bg-white ${isSelected ? "border border-blue-500" : ""
-          }`}
+        className={`w-full h-full bg-white ${isSelected ? "border border-blue-500" : ""}`}
         data-item
+        style={{ padding: 0, margin: 0, boxSizing: "border-box" }}
       >
         {renderContent()}
       </div>

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { FaMobileAlt, FaTabletAlt, FaLaptop } from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
-import { FiPlay } from "react-icons/fi";
+import { FiCode, FiPlay } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize } ) => {
+const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCode, handleUndoClick, handleRedoClick } ) => {
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [language, setLanguage] = useState("en");
@@ -20,16 +20,6 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize } ) => {
   const changeLanguage = (lang) => {
     setLanguage(lang);
     setLangOpen(false);
-  };
-
-  const handleUndoClick = () => {
-    setActive("undo");
-    alert("Undo action");
-  };
-
-  const handleRedoClick = () => {
-    setActive("redo");
-    alert("Redo action");
   };
 
   return (
@@ -238,6 +228,12 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize } ) => {
 
         {/* 3. Right Section Controls */}
         <div className="flex items-center space-x-2.5">
+          <button
+            onClick={() => setShowCode(!showCode)}
+            className={`p-3 rounded-lg ${showCode ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
+          >
+            <FiCode size={20} />
+          </button>
           {/* Undo/Redo */}
           <div className="bg-white rounded flex">
             <div
