@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Rnd } from "react-rnd";
 
 const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
+  const {
+    backgroundColor,
+    borderColor,
+    borderWidth,
+    borderRadius,
+    color,
+    fontSize,
+    fontWeight,
+    src,
+    content,
+    type,
+  } = item;
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -12,111 +25,101 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   const triggerFileInput = () => {
     const input = document.createElement("input");
     input.type = "file";
-    if (item.type === "image") input.accept = "image/*";
-    if (item.type === "video") input.accept = "video/*";
+    if (type === "image") input.accept = "image/*";
+    if (type === "video") input.accept = "video/*";
     input.onchange = handleFileChange;
     input.click();
   };
 
-  const renderContent = () => {
-    const commonTextStyles = {
-      margin: 0,
-      padding: 0,
-      lineHeight: 1.2,
-      boxSizing: "border-box",
-      width: "100%",
-      height: "100%",
-      resize: "none",
-    };
+  const contentRef = useRef(null);
 
-    switch (item.type) {
+  const commonStyle = {
+    backgroundColor: item.backgroundColor || "transparent",
+    borderRadius: item.borderRadius ? `${item.borderRadius}px` : "0px",
+    color: item.textColor || "#000000",
+    fontSize: item.fontSize ? `${item.fontSize}px` : "inherit",
+    fontWeight: item.fontWeight || "normal",
+    border: isSelected ? "2px solid blue" : "1px solid transparent",
+    boxSizing: "border-box",
+    padding: "4px",
+    cursor: "pointer",
+    userSelect: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  const inputStyle = {
+    ...commonStyle,
+    padding: "0.25rem",
+    lineHeight: 1.2,
+    resize: "none",
+  };
+
+  useEffect(() => {
+    if ((item.width == null || item.height == null) && contentRef.current) {
+      const rect = contentRef.current.getBoundingClientRect();
+      onUpdate(item.id, {
+        width: Math.ceil(rect.width),
+        height: Math.ceil(rect.height),
+      });
+    }
+  }, [item.width, item.height, item.content, item.src]); 
+
+  const renderContent = () => {
+    switch (type) {
       case "heading":
         return (
           <input
-            className="text-2xl font-bold w-full"
-            style={{ ...commonTextStyles }}
-            value={item.content || ""}
-            onChange={(e) =>
-              onUpdate(item.id, { content: e.target.value })
-            }
+            className="w-full font-bold"
+            style={inputStyle}
+            value={content || ""}
+            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
           />
         );
 
       case "paragraph":
         return (
           <textarea
-            style={{ ...commonTextStyles, overflow: "auto" }}
-            value={item.content || ""}
-            onChange={(e) =>
-              onUpdate(item.id, { content: e.target.value })
-            }
+            className="w-full"
+            style={inputStyle}
+            value={content || ""}
+            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
           />
-        );
-
-      case "image":
-        return (
-          <div
-            className="w-full h-full cursor-pointer"
-            onDoubleClick={triggerFileInput}
-            style={{ padding: 0, margin: 0 }}
-          >
-            <img
-              src={item.src || "https://via.placeholder.com/150"}
-              alt="Canvas"
-              className="w-full h-full object-cover"
-              style={{ display: "block", margin: 0, padding: 0 }}
-            />
-          </div>
-        );
-
-      case "video":
-        return (
-          <div
-            className="w-full h-full cursor-pointer"
-            onDoubleClick={triggerFileInput}
-            style={{ padding: 0, margin: 0 }}
-          >
-            <video className="w-full h-full" controls style={{ display: "block" }}>
-              <source
-                src={item.src || "https://www.w3schools.com/html/mov_bbb.mp4"}
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
-          </div>
         );
 
       case "textfield":
         return (
           <input
             className="w-full border"
-            style={{ ...commonTextStyles, padding: "0.25rem" }}
-            value={item.content || ""}
-            onChange={(e) =>
-              onUpdate(item.id, { content: e.target.value })
-            }
+            style={inputStyle}
+            value={content || ""}
+            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
           />
         );
 
       case "submit-button":
         return (
-          <button className="bg-blue-500 text-white rounded w-full h-full" style={{ padding: "0.5rem" }}>
-            {item.content || "Submit"}
+          <button className="w-full h-full" style={commonStyle}>
+            {content || "Submit"}
           </button>
         );
 
       case "checkbox":
         return (
-          <label className="flex items-center space-x-2" style={{ margin: 0, padding: 0 }}>
+          <label
+            className="flex items-center space-x-2"
+            style={{ ...commonStyle, padding: "0.25rem" }}
+          >
             <input type="checkbox" />
-            <span>{item.content || "Check me"}</span>
+            <span>{content || "Check me"}</span>
           </label>
         );
 
       case "dropdown":
         return (
-          <select className="border w-full" style={{ padding: "0.25rem", margin: 0 }}>
-            <option>{item.content || "Select an option"}</option>
+          <select className="w-full" style={inputStyle}>
+            <option>{content || "Select an option"}</option>
             <option>Option 1</option>
             <option>Option 2</option>
           </select>
@@ -126,18 +129,49 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
         return (
           <input
             type="search"
-            className="border w-full"
-            style={{ padding: "0.25rem", margin: 0 }}
-            value={item.content || ""}
-            onChange={(e) =>
-              onUpdate(item.id, { content: e.target.value })
-            }
+            className="w-full"
+            style={inputStyle}
+            value={content || ""}
+            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
           />
+        );
+
+      case "image":
+        return (
+          <div
+            className="cursor-pointer w-full h-full"
+            onDoubleClick={triggerFileInput}
+            style={commonStyle}
+          >
+            <img
+              src={src || "https://via.placeholder.com/150"}
+              alt="Canvas"
+              className="w-full h-full object-cover"
+              style={{ borderRadius }}
+            />
+          </div>
+        );
+
+      case "video":
+        return (
+          <div
+            className="cursor-pointer w-full h-full"
+            onDoubleClick={triggerFileInput}
+            style={commonStyle}
+          >
+            <video className="w-full h-full" controls style={{ borderRadius }}>
+              <source
+                src={src || "https://www.w3schools.com/html/mov_bbb.mp4"}
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         );
 
       case "navbar":
         return (
-          <nav className="bg-gray-800 text-white px-2 py-1 flex space-x-2" style={{ margin: 0 }}>
+          <nav className="flex space-x-2 px-2 py-1" style={commonStyle}>
             <span>Home</span>
             <span>About</span>
             <span>Contact</span>
@@ -146,7 +180,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "sidebar":
         return (
-          <aside className="bg-gray-200 h-full p-1 space-y-1" style={{ margin: 0 }}>
+          <aside className="space-y-1 p-1 h-full" style={commonStyle}>
             <div>Dashboard</div>
             <div>Settings</div>
             <div>Logout</div>
@@ -155,7 +189,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "tabs":
         return (
-          <div className="flex border-b" style={{ margin: 0 }}>
+          <div className="flex border-b" style={commonStyle}>
             <button className="px-2 py-1 border-b-2 border-blue-500">Tab 1</button>
             <button className="px-2 py-1">Tab 2</button>
           </div>
@@ -163,14 +197,14 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "breadcrumbs":
         return (
-          <div className="text-sm text-gray-600" style={{ margin: 0 }}>
+          <div className="text-sm" style={commonStyle}>
             Home &gt; Category &gt; Page
           </div>
         );
 
       case "grid":
         return (
-          <div className="grid grid-cols-2 gap-1 w-full h-full" style={{ margin: 0 }}>
+          <div className="grid grid-cols-2 gap-1 w-full h-full" style={commonStyle}>
             <div className="bg-gray-100 p-1">Col 1</div>
             <div className="bg-gray-200 p-1">Col 2</div>
           </div>
@@ -178,48 +212,52 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
       case "headers":
         return (
-          <header className="bg-blue-100 p-2 text-center font-bold" style={{ margin: 0 }}>
+          <header className="text-center font-bold p-2" style={commonStyle}>
             Header
           </header>
         );
 
       case "footer":
         return (
-          <footer className="bg-gray-300 p-2 text-center" style={{ margin: 0 }}>
+          <footer className="text-center p-2" style={commonStyle}>
             Footer Content
           </footer>
         );
 
       case "sidepanel":
         return (
-          <div className="bg-gray-100 p-1 w-full h-full" style={{ margin: 0 }}>
+          <div className="p-1 w-full h-full" style={commonStyle}>
             Side Panel Content
           </div>
         );
 
       case "card":
         return (
-          <div className="bg-white shadow rounded w-full h-full p-2" style={{ margin: 0 }}>
-            <h2 className="text-lg font-bold" style={{ margin: 0, padding: 0 }}>
+          <div className="shadow p-2 w-full h-full" style={commonStyle}>
+            <h2 className="text-lg font-bold" style={{ margin: 0 }}>
               Card Title
             </h2>
-            <p style={{ margin: 0, padding: 0 }}>Card content goes here.</p>
+            <p style={{ margin: 0 }}>Card content goes here.</p>
           </div>
         );
 
       default:
-        return <div style={{ margin: 0, padding: 0 }}>Unknown Component</div>;
+        return (
+          <div ref={contentRef} style={commonStyle}>
+            {/* ton contenu */}
+            {item.content || "Unknown Component"}
+          </div>
+        );
     }
   };
 
   return (
     <Rnd
-      default={{
-        x: item.x,
-        y: item.y,
-        width: item.width || 200,
-        height: item.height || 100,
+      size={{
+        width: item.width || "auto",
+        height: item.height || "auto",
       }}
+      position={{ x: item.x || 0, y: item.y || 0 }}
       bounds="parent"
       onDragStop={(e, d) => onUpdate(item.id, { x: d.x, y: d.y })}
       onResizeStop={(e, direction, ref, delta, position) => {
@@ -234,14 +272,13 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
         e.stopPropagation();
         onSelect();
       }}
+      enableResizing={true}
+      style={{
+        border: isSelected ? "2px solid blue" : "none",
+        boxSizing: "border-box",
+      }}
     >
-      <div
-        className={`w-full h-full bg-white ${isSelected ? "border border-blue-500" : ""}`}
-        data-item
-        style={{ padding: 0, margin: 0, boxSizing: "border-box" }}
-      >
-        {renderContent()}
-      </div>
+      <div style={{ width: "100%", height: "100%" }}>{renderContent()}</div>
     </Rnd>
   );
 };

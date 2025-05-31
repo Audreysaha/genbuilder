@@ -23,16 +23,16 @@ export default function SidebarBuilder({
   return (
     <>
       {/* 1st left panel */}
-      <div className="w-16 bg-indigo-900 text-white border-r border-gray-200 flex flex-col items-center py-4 space-y-4">
+      <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 space-y-4">
         <button
           onClick={() => setActiveTab('widgets')}
-          className={`p-3 rounded-lg ${activeTab === 'widgets' ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
+          className={`p-3 rounded-lg ${activeTab === 'widgets' ? 'bg-blue-100 text-indigo-800' : 'hover:bg-indigo-200'}`}
         >
           <FiGrid size={20} />
         </button>
         <button
           onClick={() => setActiveTab('layers')}
-          className={`p-3 rounded-lg ${activeTab === 'layers' ? ' text-white' : 'hover:bg-indigo-200'}`}
+          className={`p-3 rounded-lg ${activeTab === 'layers' ? 'bg-white text-indigo-800' : 'hover:bg-indigo-200'}`}
         >
           <FiLayers size={20} />
         </button>
@@ -40,7 +40,7 @@ export default function SidebarBuilder({
 
       {/* 2nd Sidebar */}
       {activeTab === 'widgets' && (
-        <div className="w-64 h-full flex flex-col text-white bg-indigo-900 border-r border-gray-200 overflow-hidden">
+        <div className="w-64 h-full flex flex-col bg-white border-r border-gray-200 overflow-hidden">
           {/* Tabs */}
           <div className="border-b border-gray-300 flex">
             {['UI Builder', 'Responsive'].map(tab => (
@@ -50,10 +50,10 @@ export default function SidebarBuilder({
                 className={`
                   px-5 py-3 cursor-pointer text-[18px] capitalize transition-all
                   ${topTab === tab
-                    ? 'text-white border-b-2 border-blue-500'
+                    ? 'text-blue-500 border-b-2 border-blue-500'
                     : darkMode
-                      ? 'text-white border-b-2 border-transparent'
-                      : 'text-white border-b-2 border-transparent'}
+                      ? 'text-black border-b-2 border-transparent'
+                      : 'text-gray-400 border-b-2 border-transparent'}
                 `}
               >
                 {tab}
@@ -67,7 +67,7 @@ export default function SidebarBuilder({
             <input
               type="text"
               placeholder="Search elements"
-              className="w-full bg-transparent outline-none text-sm text-white placeholder-gray-400"
+              className="w-full bg-transparent outline-none text-sm text-black placeholder-gray-400"
             />
           </div>
 
@@ -118,15 +118,15 @@ export default function SidebarBuilder({
                   </div>
 
                   {expandedSections[section.id] && (
-                    <div className="px-4 pb-3 space-y-2 text-sm text-white">
+                    <div className="px-4 pb-3 space-y-2 text-sm text-gray-800">
                       {section.items.map(({ type, label, icon: Icon }) => (
                         <div
                           key={type}
                           draggable
                           onDragStart={(e) => e.dataTransfer.setData('componentType', type)}
-                          className="flex items-center gap-2 p-2 rounded cursor-grab hover:bg-indigo-400"
+                          className="flex items-center gap-2 p-2 rounded cursor-grab hover:bg-gray-200"
                         >
-                          <div className="text-white">{Icon ? <Icon size={16} /> : null}</div>
+                          <div className="text-indigo-700">{Icon ? <Icon size={16} /> : null}</div>
                           <span>{label}</span>
                         </div>
                       ))}

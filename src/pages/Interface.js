@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // import { motion, AnimatePresence } from 'framer-motion';
 import { FiColumns, FiCheckSquare, FiType, FiSearch, FiSend, FiEdit2, FiChevronDown, FiNavigation, FiCornerDownRight, FiLayout, FiHash, FiSidebar, FiCreditCard, FiVideo, FiGrid, FiAlignLeft, FiImage, } from 'react-icons/fi';
 import Canvas from '../components/Canvas';
@@ -18,7 +18,6 @@ const FlutterFlowClone = () => {
 
   const canvasRef = useRef();
 
-  // Undo / Redo handlers
   const handleUndoClick = () => {
     canvasRef.current?.undo();
   };
@@ -26,13 +25,11 @@ const FlutterFlowClone = () => {
     canvasRef.current?.redo();
   };
 
-  // Sélection d'un widget dans le canvas
   const handleSelectWidget = (widgetId) => {
     const widget = canvasItems.find((w) => w.id === widgetId);
     setSelectedWidget(widget || null);
   };
 
-  // Dimensions selon l'appareil sélectionné
   const getDeviceDimensions = () => {
     switch (deviceSize) {
       case 'mobile':
@@ -46,7 +43,6 @@ const FlutterFlowClone = () => {
     }
   };
 
-  // Listes d'éléments par catégorie
   const visualItems = [
     { type: 'submit-button', label: 'Submit Button', icon: FiSend },
     { type: 'textfield', label: 'Text Field', icon: FiEdit2 },
@@ -82,7 +78,6 @@ const FlutterFlowClone = () => {
     topographyElements: true,
   });
 
-  // Toggle d'une section
   const toggleSection = (id) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -90,7 +85,6 @@ const FlutterFlowClone = () => {
     }));
   };
 
-  // Ajout d'un composant dans le canvas
   const addComponentToCanvas = (componentType) => {
     const baseItem = {
       id: Date.now(),
@@ -99,13 +93,13 @@ const FlutterFlowClone = () => {
       y: 50,
       width: 200,
       height: 100,
-      props: {}, // on centralise les props ici pour faciliter la MAJ
+      props: {},
     };
 
     let newItem = { ...baseItem };
 
     switch (componentType) {
-      // 🧱 Topography
+      // Topography
       case 'heading':
         newItem.props = { content: 'Titre', fontSize: 24 };
         break;
@@ -113,7 +107,7 @@ const FlutterFlowClone = () => {
         newItem.props = { content: 'Paragraphe', fontSize: 16 };
         break;
 
-      // 📸 Media
+      // Media
       case 'image':
         newItem.props = { src: 'https://via.placeholder.com/150', alt: 'Image' };
         break;
@@ -121,7 +115,7 @@ const FlutterFlowClone = () => {
         newItem.props = { src: 'https://www.youtube.com/embed/dQw4w9WgXcQ' };
         break;
 
-      // 🖊️ Form Elements
+      // Form Elements
       case 'textfield':
         newItem.props = { placeholder: 'Entrer du texte...', value: '' };
         break;
@@ -138,7 +132,7 @@ const FlutterFlowClone = () => {
         newItem.props = { placeholder: 'Rechercher...', value: '' };
         break;
 
-      // 📚 Layout
+      // Layout
       case 'grid':
         newItem.props = { columns: 2 };
         break;
@@ -155,7 +149,7 @@ const FlutterFlowClone = () => {
         newItem.props = { content: 'Carte' };
         break;
 
-      // 🧭 Navigation
+      // Navigation
       case 'navbar':
         newItem.props = { items: ['Accueil', 'À propos', 'Contact'] };
         break;
@@ -176,38 +170,55 @@ const FlutterFlowClone = () => {
     setCanvasItems((prev) => [...prev, newItem]);
   };
 
-  // Gestion du panneau responsive (inactif ici)
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
 
-  // Gestion onglets du haut
   const [topTab, setTopTab] = useState('widgets');
   const handleTabClick = (tab) => {
     setTopTab(tab);
     setShowResponsivePanel(tab === 'Responsive');
   };
 
-  // Dimensions pour le canvas
   const { width, height } = getDeviceDimensions();
 
-  // Mise à jour d’un widget dans canvasItems (propagation des props dans l’objet props)
-  const updateWidget = (id, updates) => {
+  // const updateWidget = (id, updates) => {
+  //   setCanvasItems((prevItems) =>
+  //     prevItems.map((item) =>
+  //       item.id === id ? { ...item, props: { ...item.props, ...updates } } : item
+  //     )
+  //   );
+
+  //   if (selectedWidget?.id === id) {
+  //     setSelectedWidget((prev) => ({
+  //       ...prev,
+  //       props: { ...prev.props, ...updates },
+  //     }));
+  //   }
+  // };
+
+  const updateItem = (id, updatedAttributes) => {
     setCanvasItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, props: { ...item.props, ...updates } } : item
+        item.id === id ? { ...item, ...updatedAttributes } : item
       )
     );
 
-    // Si le widget édité est celui sélectionné, on met à jour la sélection aussi pour re-render la SidebarProperties
     if (selectedWidget?.id === id) {
-      setSelectedWidget((prev) => ({
-        ...prev,
-        props: { ...prev.props, ...updates },
-      }));
+      setSelectedWidget((prev) => ({ ...prev, ...updatedAttributes }));
     }
   };
 
+  useEffect(() => {
+    if (selectedWidget) {
+      const updated = canvasItems.find(item => item.id === selectedWidget.id);
+      if (updated && updated !== selectedWidget) {
+        setSelectedWidget(updated);
+      }
+    }
+  }, [canvasItems]);
+  
+
   return (
-    <div className="flex flex-col h-screen bg-indigo-500 text-gray-900">
+    <div className="flex flex-col h-screen bg-white text-gray-900">
 
       {/* Navigation Bar */}
       <Navbar
@@ -222,7 +233,7 @@ const FlutterFlowClone = () => {
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
-      <div className="flex flex-1  overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         <SidebarBuilder
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -249,13 +260,8 @@ const FlutterFlowClone = () => {
           onSelectWidget={handleSelectWidget}
         />
 
-        <SidebarProperties
-          selectedWidget={selectedWidget}
-          widgets={canvasItems}
-          setWidgets={setCanvasItems}
-          updateWidget={updateWidget}
-          darkMode={darkMode}
-        />
+      <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
+
       </div>
 
       <HTMLPreviewModal
