@@ -29,8 +29,6 @@ export default function Header() {
   ];
 
   return (
-
-    
     <header className="bg-gradient-to-b from-black to-indigo-900 bg-no-repeat bg-center sticky top-0 z-50 backdrop-blur-">
       <nav className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
         <div className="flex items-center justify-between h-32">

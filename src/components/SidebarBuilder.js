@@ -43,19 +43,8 @@ export default function SidebarBuilder({
         <div className="w-64 h-full flex flex-col bg-white border-r border-gray-200 overflow-hidden">
           {/* Tabs */}
           <div className="border-b border-gray-300 flex">
-            {['UI Builder', 'Responsive'].map(tab => (
-              <div
-                key={tab}
-                onClick={() => handleTabClick(tab)}
-                className={`
-                  px-5 py-3 cursor-pointer text-[18px] capitalize transition-all
-                  ${topTab === tab
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : darkMode
-                      ? 'text-black border-b-2 border-transparent'
-                      : 'text-gray-400 border-b-2 border-transparent'}
-                `}
-              >
+            {['UI Builder'].map(tab => (
+              <div>
                 {tab}
               </div>
             ))}

@@ -3,6 +3,8 @@ import { FaMobileAlt, FaTabletAlt, FaLaptop } from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCode, handleUndoClick, handleRedoClick } ) => {
   const [open, setOpen] = useState(false);
@@ -10,8 +12,9 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
   const [language, setLanguage] = useState("en");
   const [mode, setMode] = useState("Edit");
   const [active, setActive] = useState(null);
-  const bgColor = "bg-gray-50"; // Exemple de couleur de fond
-  const borderColor = "border-gray-300"; // Exemple de couleur de bordure
+  const bgColor = "bg-white"; // Bg-Color
+  const borderColor = "border-gray-300"; // Border-color
+  const navigate = useNavigate();
 
   const toggleLangMenu = () => {
     setLangOpen(!langOpen);
@@ -22,22 +25,26 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
     setLangOpen(false);
   };
 
+  const handleDashboard = () => {
+     navigate('/Landing'); // This will redirect to the interface page
+  };
+
   return (
-    <div className={`flex items-center p-2 ${bgColor} border-b ${borderColor}`}>
+    <div className={`flex items-center h-[55px] p-2 ${bgColor} border-b ${borderColor}`}>
       {/* Left section of Navbar */}
       <div className="flex items-center space-x-3 text-sm">
         {/* 1-hamburger button */}
         <div className="relative inline-block text-left">
           <button
             onClick={() => setOpen(!open)}
-            className="p-2 rounded hover:bg-indigo-200"
+            className="p-2 rounded hover:bg-indigo-600"
             aria-expanded={open}
             aria-haspopup="true"
             title="Menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6 text-gray-800"
+              className="w-6 h-6 text-black"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -50,29 +57,16 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
           {/* Dropdown menu */}
           {open && (
             <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-md z-10">
+               <button
+                className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+                onClick={handleDashboard}
+              >
+               <ArrowLeftIcon className="h-4 w-4 mr-5" /> Back to Dashboard
+              </button>
               <button
                 className="flex items-center w-full px-4 py-2 hover:bg-indigo-100 text-gray-700"
                 onClick={() => alert("New Workspace clicked")}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 7h4l3 3h8a2 2 0 012 2v5a2 2 0 01-2 2H3V7z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 7V5a2 2 0 012-2h4l3 3h8a2 2 0 012 2v5a2 2 0 01-2 2H3V7z"
-                  />
-                </svg>
                 New Workspace
               </button>
               <button
@@ -87,17 +81,24 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
               >
                 Save As
               </button>
+               <button
+                className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+                onClick={() => alert("Darkmode")}
+              >
+                Switch to Darkmode
+              </button>
+              
             </div>
           )}
         </div>
 
         {/* 2-Search Bar */}
-        <div className="relative w-35">
+        <div className="relative w-[160px]">
           {/* House icon */}
           <div className="absolute inset-y-0 left-1 flex items-center pointer-events-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-4 text-gray-500"
+              className="h-6 w-4 text-gray-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -127,7 +128,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
           <input
             type="search"
             placeholder="Home"
-            className="w-full pl-6 pr-6 py-1.5 rounded border text-s bg-gray-100 border-gray-300 text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-6 pr-6 py-1 rounded border text-s bg-gray-100 border-gray-300 text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
@@ -135,7 +136,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
         <div className="relative">
           <button
             onClick={toggleLangMenu}
-            className="h-8 px-2 border rounded text-s flex items-center space-x-1 bg-gray-100 border-gray-300 text-gray-700"
+            className="h-7 px-2 border rounded text-s flex items-center space-x-1 bg-gray-100 border-gray-300 text-gray-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +170,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
                 <li
                   key={lang}
                   onClick={() => changeLanguage(lang)}
-                  className="px-3 py-1.5 hover:bg-indigo-300 hover:text-white cursor-pointer"
+                  className="px-3 py-1 hover:bg-indigo-300 hover:text-white cursor-pointer"
                 >
                   {lang}
                 </li>

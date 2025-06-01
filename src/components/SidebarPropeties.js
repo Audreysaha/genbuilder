@@ -1,14 +1,14 @@
 import React from "react";
 
 const SidebarProperties = ({ item, onUpdate }) => {
-  if (!item) return <div className="p-4">No element Selected</div>;
+  if (!item) return <div className="p-14">No element Selected</div>;
 
   const updateProp = (key, value) => {
     onUpdate(item.id, { [key]: value });
   };
 
   return (
-    <div className="p-4 space-y-4 w-64 border-l bg-gray-50 h-full overflow-y-auto">
+    <div className="p-4 space-y-4 w-[350px] border-l bg-gray-50 h-full overflow-y-auto">
       <h2 className="text-lg font-bold">Properties</h2>
 
       {/* Contenu textuel */}
