@@ -1,7 +1,7 @@
 import React from "react";
 
 const SidebarProperties = ({ item, onUpdate }) => {
-  if (!item) return <div className="p-4">Aucun élément sélectionné</div>;
+  if (!item) return <div className="p-4">No element Selected</div>;
 
   const updateProp = (key, value) => {
     onUpdate(item.id, { [key]: value });
@@ -9,12 +9,12 @@ const SidebarProperties = ({ item, onUpdate }) => {
 
   return (
     <div className="p-4 space-y-4 w-64 border-l bg-gray-50 h-full overflow-y-auto">
-      <h2 className="text-lg font-bold">Propriétés</h2>
+      <h2 className="text-lg font-bold">Properties</h2>
 
       {/* Contenu textuel */}
       {(item.type === "heading" || item.type === "paragraph" || item.type === "textfield" || item.type === "button" || item.type === "submit-button") && (
         <div>
-          <label className="block text-sm font-medium">Contenu</label>
+          <label className="block text-sm font-medium">Content</label>
           <input
             type="text"
             className="w-full border px-2 py-1"
@@ -27,7 +27,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
       {/* Source image */}
       {item.type === "image" && (
         <div>
-          <label className="block text-sm font-medium">URL de l’image</label>
+          <label className="block text-sm font-medium">Image's URL</label>
           <input
             type="text"
             className="w-full border px-2 py-1"
@@ -40,7 +40,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
       {/* Couleur de fond (pertinent pour beaucoup de types sauf image/heading/paragraph) */}
       {item.type !== "image" && (
         <div>
-          <label className="block text-sm font-medium">Couleur de fond</label>
+          <label className="block text-sm font-medium">Background Color</label>
           <input
             type="color"
             className="w-full"
@@ -53,7 +53,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
       {/* Couleur du texte */}
       {item.type !== "image" && (
         <div>
-          <label className="block text-sm font-medium">Couleur du texte</label>
+          <label className="block text-sm font-medium">Text Color</label>
           <input
             type="color"
             className="w-full"
@@ -66,7 +66,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
       {/* Taille de police */}
       {item.type !== "image" && (
         <div>
-          <label className="block text-sm font-medium">Taille de police (px)</label>
+          <label className="block text-sm font-medium">Font Size(px)</label>
           <input
             type="number"
             className="w-full border px-2 py-1"
@@ -78,7 +78,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
 
       {/* Arrondi des bords */}
       <div>
-        <label className="block text-sm font-medium">Arrondi des bords</label>
+        <label className="block text-sm font-medium">Border Radius</label>
         <input
           type="range"
           min="0"
@@ -90,7 +90,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
 
       {/* Largeur / Hauteur */}
       <div>
-        <label className="block text-sm font-medium">Largeur (px)</label>
+        <label className="block text-sm font-medium">Width(px)</label>
         <input
           type="number"
           value={item.width || 100}
@@ -100,7 +100,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Hauteur (px)</label>
+        <label className="block text-sm font-medium">Height (px)</label>
         <input
           type="number"
           value={item.height || 50}

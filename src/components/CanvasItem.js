@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import lowcode from "../assets/images/lowcode.jpeg";
 import { Rnd } from "react-rnd";
 
 const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
@@ -144,7 +145,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
             style={commonStyle}
           >
             <img
-              src={src || "https://via.placeholder.com/150"}
+              src={lowcode}
               alt="Canvas"
               className="w-full h-full object-cover"
               style={{ borderRadius }}
@@ -244,7 +245,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
       default:
         return (
           <div ref={contentRef} style={commonStyle}>
-            {/* ton contenu */}
+            {/* Your content */}
             {item.content || "Unknown Component"}
           </div>
         );

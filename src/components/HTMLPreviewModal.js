@@ -23,7 +23,7 @@ const HTMLPreviewModal = ({ show, onClose, widgets }) => {
             exit={{ scale: 0.9, opacity: 0 }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Code HTML généré</h2>
+              <h2 className="text-xl font-bold">Generated HTML Code</h2>
               <button onClick={onClose}>❌</button>
             </div>
             <textarea
@@ -36,13 +36,13 @@ const HTMLPreviewModal = ({ show, onClose, widgets }) => {
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                 onClick={() => navigator.clipboard.writeText(htmlCode)}
               >
-                Copier
+                Copy
               </button>
               <button
                 className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
                 onClick={onClose}
               >
-                Fermer
+                Close
               </button>
             </div>
           </motion.div>
