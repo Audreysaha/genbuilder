@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import API from '../utils/API';
+import { LocalStorageManager } from '../utils/LocalStorageManager';
 
 function Login() {
   const navigate = useNavigate();
@@ -22,23 +24,31 @@ function Login() {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email.includes('@')) newErrors.email = 'Valid email is required';
-    if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
+    const api = new API();
     e.preventDefault();
     if (validateForm()) {
       setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        console.log('Login submitted:', formData);
-        setIsLoading(false);
-        // Redirect or handle successful login
-        navigate('/interface', { state: { formData }});
-      }, 1500);
+
+      api.postData(api.apiUrl + "/api/auth/login", formData, false)
+        .then((res) => {
+          if (res.token) {
+            LocalStorageManager.setItem("token", res.token)
+            navigate('/interface', { state: { formData } });
+          } else {
+            setErrors({ general: "Invalid credentials" });
+            setIsLoading(false);
+          }
+        }).catch((err) => {
+          setIsLoading(false);
+          const message = err?.response?.data?.message || "Login failed. Please try again.";
+          setErrors({ general: message });
+        })
     }
   };
 
@@ -49,7 +59,7 @@ function Login() {
           <ArrowLeftIcon className="h-5 w-5 mr-1" />
           Back to home
         </Link>
-        
+
         <h2 className="mt-6 text-center text-3xl font-extrabold text-indigo-600">
           Login to Account
         </h2>
@@ -58,7 +68,7 @@ function Login() {
       </div>
 
       <div className="mt-4 sm:mx-auto w-full max-w-2xl flex justify-center">
-      <div className="bg-gray-1000 py-10 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
+        <div className="bg-gray-1000 py-10 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-m font-medium text-gray-300 mb-2">
@@ -75,7 +85,7 @@ function Login() {
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
-                 className={`bg-black block w-[105%] pl-10 pr-3 py-1 border ${errors.email ? 'border-red-500' : 'border-gray-600'} rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                  className={`bg-black block w-[105%] pl-10 pr-3 py-1 border ${errors.email ? 'border-red-500' : 'border-gray-600'} rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
                   placeholder="Email"
                 />
               </div>
@@ -140,14 +150,18 @@ function Login() {
                   </>
                 ) : 'Login'}
               </button>
+              {errors.general && (
+                <p className="text-red-400 text-sm text-center">{errors.general}</p>
+              )}
+
             </div>
             {/* Sign up prompt */}
-           <div className="mt-4 text-sm text-center text-gray-300">
-           Don’t have an account?{' '}
-           <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
-          Sign up
-          </Link>
-          </div>
+            <div className="mt-4 text-sm text-center text-gray-300">
+              Don’t have an account?{' '}
+              <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                Sign up
+              </Link>
+            </div>
           </form>
 
           <div className="mt-6">
@@ -179,24 +193,24 @@ function Login() {
                   href="#"
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600"
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 533.5 544.3"  xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-   <path
-    d="M533.5 278.4c0-17.8-1.6-35-4.7-51.7H272v97.9h146.8c-6.3 33.9-25.6 62.7-54.8 81.9v67h88.7c52-47.9 82-118.3 82-195.1z"
-    fill="#4285f4"
-  />
-  <path
-    d="M272 544.3c73.4 0 135.2-24.3 180.3-66.2l-88.7-67c-24.7 16.6-56.5 26.3-91.6 26.3-70.4 0-130-47.6-151.5-111.4h-89v69.9c45.1 89.6 137.6 148.4 240.5 148.4z"
-    fill="#34a853"
-  />
-  <path
-    d="M120.5 321.1c-10.3-30.4-10.3-63.1 0-93.5v-69.9h-89c-37.6 73-37.6 160.6 0 233.6l89-70.2z"
-    fill="#fbbc04"
-  />
-  <path
-    d="M272 107.7c38.8-.6 76.2 14.1 104.6 40.7l78.5-78.5C402.7 24.7 340.9 0 272 0 169.1 0 76.6 58.8 31.5 148.4l89 69.9c21.5-63.8 81.1-111.4 151.5-111.4z"
-    fill="#ea4335"
-  />                  
-  </svg>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path
+                      d="M533.5 278.4c0-17.8-1.6-35-4.7-51.7H272v97.9h146.8c-6.3 33.9-25.6 62.7-54.8 81.9v67h88.7c52-47.9 82-118.3 82-195.1z"
+                      fill="#4285f4"
+                    />
+                    <path
+                      d="M272 544.3c73.4 0 135.2-24.3 180.3-66.2l-88.7-67c-24.7 16.6-56.5 26.3-91.6 26.3-70.4 0-130-47.6-151.5-111.4h-89v69.9c45.1 89.6 137.6 148.4 240.5 148.4z"
+                      fill="#34a853"
+                    />
+                    <path
+                      d="M120.5 321.1c-10.3-30.4-10.3-63.1 0-93.5v-69.9h-89c-37.6 73-37.6 160.6 0 233.6l89-70.2z"
+                      fill="#fbbc04"
+                    />
+                    <path
+                      d="M272 107.7c38.8-.6 76.2 14.1 104.6 40.7l78.5-78.5C402.7 24.7 340.9 0 272 0 169.1 0 76.6 58.8 31.5 148.4l89 69.9c21.5-63.8 81.1-111.4 151.5-111.4z"
+                      fill="#ea4335"
+                    />
+                  </svg>
                 </a>
               </div>
             </div>

@@ -26,7 +26,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
   };
 
   const handleDashboard = () => {
-     navigate('/Landing'); // This will redirect to the interface page
+     navigate('/'); // This will redirect to the interface page
   };
 
   return (
@@ -58,10 +58,11 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
           {open && (
             <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-md z-10">
                <button
-                className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+                className="w-full flex items-center text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
                 onClick={handleDashboard}
               >
-               <ArrowLeftIcon className="h-4 w-4 mr-5" /> Back to Dashboard
+               <ArrowLeftIcon className="h-4 w-4 mr-5" />
+               <p>Back to Dashboard</p>
               </button>
               <button
                 className="flex items-center w-full px-4 py-2 hover:bg-indigo-100 text-gray-700"

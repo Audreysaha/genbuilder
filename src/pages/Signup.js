@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import API from '../utils/API';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -11,10 +12,23 @@ export default function Signup() {
     password: '',
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Your authentication logic here...
-    navigate('/interface');
+    setIsLoading(true);
+    const api = new API();
+
+    try {
+      const res = await api.postData(api.apiUrl + "/api/auth/register", formData, false);
+      alert(res.message);
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+      alert("Registration failed.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -28,8 +42,6 @@ export default function Signup() {
         <h2 className="mt-6 text-center text-3xl font-extrabold text-indigo-600">
           Create your Account
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-400">
-        </p>
       </div>
 
       <div className="mt-4 sm:mx-auto w-[25%] max-w-2xl justify-center">
@@ -46,7 +58,7 @@ export default function Signup() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-black block w-full px-3 py-2  border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="bg-black block w-full px-3 py-2 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Name"
               />
             </div>
@@ -88,9 +100,12 @@ export default function Signup() {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                disabled={isLoading}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
+                  isLoading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
               >
-                Register
+                {isLoading ? "Registering..." : "Register"}
               </button>
             </div>
           </form>
@@ -105,6 +120,6 @@ export default function Signup() {
           </div>
         </div>
       </div>
-      </div>
-);
+    </div>
+  );
 }
