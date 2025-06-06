@@ -3,6 +3,8 @@ import React from "react";
 const SidebarProperties = ({ item, onUpdate }) => {
   if (!item) return <div className="p-14">No element Selected</div>;
 
+
+
   const updateProp = (key, value) => {
     onUpdate(item.id, { [key]: value });
   };

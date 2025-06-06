@@ -40,7 +40,7 @@ export default function SidebarBuilder({
 
       {/* 2nd Sidebar */}
       {activeTab === 'widgets' && (
-        <div className="w-64 h-full flex flex-col bg-white border-r border-gray-200 overflow-hidden">
+       <div className="w-64 h-screen flex flex-col bg-white border-r border-gray-200 overflow-hidden">
           {/* Tabs */}
           <div className="border-b border-gray-300 flex">
             {['UI Builder'].map(tab => (
@@ -51,13 +51,13 @@ export default function SidebarBuilder({
           </div>
 
           {/* Search */}
-          <div className="p-2 border-b border-gray-300 flex items-center space-x-2">
-            <FiSearch size={18} />
+          <div className="p-2 border-b border-gray-300 rounded-lg p-500 flex items-center space-x-2">
             <input
               type="text"
               placeholder="Search elements"
               className="w-full bg-transparent outline-none text-sm text-black placeholder-gray-400"
             />
+              <FiSearch size={18} />
           </div>
 
           {/* Scrollable Content */}

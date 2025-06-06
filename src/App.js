@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import Register from './pages/Signup';
 import Interface from './pages/Interface';
 import Docs from './pages/Docs';
+import Chat from './pages/Chat';
+
 
 
 
@@ -19,6 +21,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/interface" element={<Interface />} />
         <Route path="/docs" element={<Docs />} />
+        <Route path="/Chat" element={<Chat />} />
       </Routes>
     </Router>
   );

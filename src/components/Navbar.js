@@ -4,7 +4,8 @@ import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
 
 const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCode, handleUndoClick, handleRedoClick } ) => {
   const [open, setOpen] = useState(false);
@@ -267,14 +268,17 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
 
           {/* Mode Toggle */}
           <div className="flex border rounded-full text-sm font-medium overflow-hidden">
-            <button
-              onClick={() => setMode("AI")}
-              className={`px-4 py-1 transition ${
-                mode === "AI" ? "bg-indigo-200 text-indigo-800" : "bg-white text-gray-800"
+          <Link
+          to="/Chat"
+          className={`px-4 py-1 transition ${
+          mode === "AI"
+            ? "bg-indigo-200 text-indigo-800"
+              : "bg-white text-gray"
               }`}
+          onClick={() => setMode("AI")}
             >
-              AI
-            </button>
+          AI
+  </Link>
             <button
               onClick={() => setMode("Edit")}
               className={`px-4 py-1 transition ${
