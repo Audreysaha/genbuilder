@@ -6,6 +6,7 @@ import SidebarBuilder from '../components/SidebarBuilder';
 import SidebarProperties from '../components/SidebarPropeties';
 import Navbar from '../components/Navbar';
 import HTMLPreviewModal from '../components/HTMLPreviewModal';
+import Chat from './Chat';
 
 const FlutterFlowClone = () => {
   const [canvasItems, setCanvasItems] = useState([]);
@@ -15,6 +16,7 @@ const FlutterFlowClone = () => {
   const [deviceSize, setDeviceSize] = useState('mobile');
   const [showCode, setShowCode] = useState(false);
   const [zoom, setZoom] = useState(100);
+  const [mode, setMode] = useState("Edit");
 
   const canvasRef = useRef();
 
@@ -180,21 +182,6 @@ const FlutterFlowClone = () => {
 
   const { width, height } = getDeviceDimensions();
 
-  // const updateWidget = (id, updates) => {
-  //   setCanvasItems((prevItems) =>
-  //     prevItems.map((item) =>
-  //       item.id === id ? { ...item, props: { ...item.props, ...updates } } : item
-  //     )
-  //   );
-
-  //   if (selectedWidget?.id === id) {
-  //     setSelectedWidget((prev) => ({
-  //       ...prev,
-  //       props: { ...prev.props, ...updates },
-  //     }));
-  //   }
-  // };
-
   const updateItem = (id, updatedAttributes) => {
     setCanvasItems((prevItems) =>
       prevItems.map((item) =>
@@ -230,6 +217,8 @@ const FlutterFlowClone = () => {
         setDeviceSize={setDeviceSize}
         handleUndoClick={handleUndoClick}
         handleRedoClick={handleRedoClick}
+        mode={mode}
+        setMode={setMode}
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
@@ -259,8 +248,13 @@ const FlutterFlowClone = () => {
           addComponentToCanvas={addComponentToCanvas}
           onSelectWidget={handleSelectWidget}
         />
-
-      <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
+      {
+        mode == "Edit" ? (
+          <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
+        ) : (
+          <Chat />
+        )
+      }
 
       </div>
 

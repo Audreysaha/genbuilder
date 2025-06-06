@@ -57,9 +57,9 @@ function Chat() {
   };
 
   return (
-    <div className="h-screen w-full bg-gray-50 flex">
-      {/* Chat box pinned to right */}
-      <div className="w-[400px] ml-auto border-l border-gray-200 bg-white shadow-lg flex flex-col">
+    <div className="bg-gray-50 h-full">
+      Chat box pinned to right
+      <div className="w-[400px] ml-auto border-l border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
           <h2 className="font-semibold text-gray-700">Chat</h2>
@@ -73,7 +73,7 @@ function Chat() {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">

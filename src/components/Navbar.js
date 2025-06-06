@@ -3,15 +3,24 @@ import { FaMobileAlt, FaTabletAlt, FaLaptop } from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useNavigate, Link } from 'react-router-dom';
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useNavigate, Link } from "react-router-dom";
 
-
-const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCode, handleUndoClick, handleRedoClick } ) => {
+const Navbar = ({
+  zoom,
+  setZoom,
+  deviceSize,
+  setDeviceSize,
+  showCode,
+  setShowCode,
+  handleUndoClick,
+  handleRedoClick,
+  mode,
+  setMode,
+}) => {
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [language, setLanguage] = useState("en");
-  const [mode, setMode] = useState("Edit");
   const [active, setActive] = useState(null);
   const bgColor = "bg-white"; // Bg-Color
   const borderColor = "border-gray-300"; // Border-color
@@ -27,11 +36,13 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
   };
 
   const handleDashboard = () => {
-     navigate('/'); // This will redirect to the interface page
+    navigate("/"); // This will redirect to the interface page
   };
 
   return (
-    <div className={`flex items-center h-[55px] p-2 ${bgColor} border-b ${borderColor}`}>
+    <div
+      className={`flex items-center h-[55px] p-2 ${bgColor} border-b ${borderColor}`}
+    >
       {/* Left section of Navbar */}
       <div className="flex items-center space-x-3 text-sm">
         {/* 1-hamburger button */}
@@ -51,19 +62,23 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
 
           {/* Dropdown menu */}
           {open && (
             <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-md z-10">
-               <button
+              <button
                 className="w-full flex items-center text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
                 onClick={handleDashboard}
               >
-               <ArrowLeftIcon className="h-4 w-4 mr-5" />
-               <p>Back to Dashboard</p>
+                <ArrowLeftIcon className="h-4 w-4 mr-5" />
+                <p>Back to Dashboard</p>
               </button>
               <button
                 className="flex items-center w-full px-4 py-2 hover:bg-indigo-100 text-gray-700"
@@ -83,13 +98,12 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
               >
                 Save As
               </button>
-               <button
+              <button
                 className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
                 onClick={() => alert("Darkmode")}
               >
                 Switch to Darkmode
               </button>
-              
             </div>
           )}
         </div>
@@ -123,8 +137,16 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 9l5-5 5 5" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 15l5 5 5-5" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7 9l5-5 5 5"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7 15l5 5 5-5"
+              />
             </svg>
           </div>
           <input
@@ -163,7 +185,11 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
           {langOpen && (
@@ -216,7 +242,9 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
                 key={type}
                 onClick={() => setDeviceSize(type)}
                 className={`p-1 rounded ${
-                  deviceSize === type ? "bg-blue-100 text-blue-800" : "hover:bg-gray-200"
+                  deviceSize === type
+                    ? "bg-blue-100 text-blue-800"
+                    : "hover:bg-gray-200"
                 }`}
                 title={type}
               >
@@ -233,7 +261,7 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setShowCode(!showCode)}
-            className={`p-3 rounded-lg ${showCode ? 'bg-blue-100 text-white' : 'hover:bg-indigo-200'}`}
+            className={`p-3 rounded-lg ${showCode ? "bg-blue-100 text-white" : "hover:bg-indigo-200"}`}
           >
             <FiCode size={20} />
           </button>
@@ -242,7 +270,9 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
             <div
               onClick={handleUndoClick}
               className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
-                active === "undo" ? "text-indigo-600 bg-indigo-100" : "text-gray-600 hover:bg-gray-200"
+                active === "undo"
+                  ? "text-indigo-600 bg-indigo-100"
+                  : "text-gray-600 hover:bg-gray-200"
               }`}
               title="Undo"
               role="button"
@@ -255,7 +285,9 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
             <div
               onClick={handleRedoClick}
               className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
-                active === "redo" ? "text-indigo-600 bg-indigo-100" : "text-gray-600 hover:bg-gray-200"
+                active === "redo"
+                  ? "text-indigo-600 bg-indigo-100"
+                  : "text-gray-600 hover:bg-gray-200"
               }`}
               title="Redo"
               role="button"
@@ -268,21 +300,22 @@ const Navbar = ( { zoom, setZoom, deviceSize, setDeviceSize, showCode,setShowCod
 
           {/* Mode Toggle */}
           <div className="flex border rounded-full text-sm font-medium overflow-hidden">
-          <Link
-          to="/Chat"
-          className={`px-4 py-1 transition ${
-          mode === "AI"
-            ? "bg-indigo-200 text-indigo-800"
-              : "bg-white text-gray"
+            <div
+              className={`px-4 py-1 transition ${
+                mode === "AI"
+                  ? "bg-indigo-200 text-indigo-800"
+                  : "bg-white text-gray"
               }`}
-          onClick={() => setMode("AI")}
+              onClick={() => setMode("AI")}
             >
-          AI
-  </Link>
+              AI
+            </div>
             <button
               onClick={() => setMode("Edit")}
               className={`px-4 py-1 transition ${
-                mode === "Edit" ? "bg-indigo-200 text-indigo-800" : "bg-white text-gray-800"
+                mode === "Edit"
+                  ? "bg-indigo-200 text-indigo-800"
+                  : "bg-white text-gray-800"
               }`}
             >
               Edit
