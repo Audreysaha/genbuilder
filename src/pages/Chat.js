@@ -59,7 +59,7 @@ function Chat() {
   return (
     <div className="bg-gray-50 h-full">
       Chat box pinned to right
-      <div className="w-[400px] ml-auto border-l border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
+      <div className="w-[400px] border-l border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
           <h2 className="font-semibold text-gray-700">Chat</h2>
@@ -73,7 +73,7 @@ function Chat() {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 p-4">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
@@ -95,7 +95,7 @@ function Chat() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                  className={`rounded-lg px-3 py-2 text-sm ${
                     message.role === 'user'
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-100 text-gray-800'
@@ -111,7 +111,7 @@ function Chat() {
               </div>
             ))
           )}
-          <div ref={messagesEndRef} />
+          <div />
         </div>
 
         {/* Message Input */}
