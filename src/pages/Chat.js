@@ -58,10 +58,10 @@ function Chat() {
 
   return (
     <div className="bg-gray-50 h-full">
-      Chat box pinned to right
-      <div className="w-[400px] ml-auto border-l border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
+      <div className="w-[280px] h-[70vh] ml-auto mt-4 mr-4 border border-gray-200 bg-white shadow-lg flex flex-col justify-between rounded-lg">
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-8">
           <h2 className="font-semibold text-gray-700">Chat</h2>
           <button
             onClick={handleRefresh}
@@ -130,7 +130,7 @@ function Chat() {
                 }}
                 placeholder="Ask your question..."
                 className="w-full pl-3 resize-none rounded-lg border border-gray-300 bg-white py-3 pr-10 text-sm text-black focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                rows={3}
+                rows={2}
               />
 
               {/* Send Button */}
@@ -147,7 +147,7 @@ function Chat() {
               </button>
               {/* File Upload Pin - Bottom Left */}
               <label className="absolute bottom-2 left-2 text-gray-500 hover:text-blue-500 cursor-pointer">
-              <Paperclip size={18} />
+              <Paperclip size={16} />
               <input
                 type="file"
                 className="hidden"

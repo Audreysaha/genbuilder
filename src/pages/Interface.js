@@ -248,6 +248,7 @@ const FlutterFlowClone = () => {
           addComponentToCanvas={addComponentToCanvas}
           onSelectWidget={handleSelectWidget}
         />
+
       {
         mode == "Edit" ? (
           <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
@@ -255,7 +256,7 @@ const FlutterFlowClone = () => {
           <Chat />
         )
       }
-
+      
       </div>
 
       <HTMLPreviewModal
