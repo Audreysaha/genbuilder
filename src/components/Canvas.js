@@ -3,17 +3,30 @@ import React, {
   useState,
   useImperativeHandle,
   forwardRef,
+  useMemo,
 } from "react";
 import CanvasItem from "./CanvasItem";
+import debounce from "lodash.debounce";
+import API from "../utils/API";
 
 const Canvas = forwardRef(
   (
-    { width, height, zoom, canvasItems, setCanvasItems, addComponentToCanvas, onSelectWidget },
+    {
+      width,
+      height,
+      zoom,
+      canvasItems,
+      setCanvasItems,
+      addComponentToCanvas,
+      onSelectWidget,
+      projectId
+    },
     ref
   ) => {
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [undoStack, setUndoStack] = useState([]);
     const [redoStack, setRedoStack] = useState([]);
+    const api = new API();
 
     const pushToUndoStack = (items) => {
       setUndoStack((prev) => [...prev, items]);
@@ -29,8 +42,27 @@ const Canvas = forwardRef(
       }
     };
 
+    const saveCanvasToDatabase = async () => {
+      console.log(projectId)
+      try {
+        await api.putData(api.apiUrl + `/api/project/update/${projectId}`, {canvasItems}, false);
+      } catch (error) {
+        console.error("Erreur de sauvegarde :", error);
+      }
+    };
+
+    const debouncedSave = useMemo(
+      () => debounce(saveCanvasToDatabase, 3000),
+      [canvasItems]
+    );
+
+    useEffect(() => {
+      if (canvasItems.length > 0) {
+        debouncedSave();
+      }
+    }, [canvasItems]);
+
     const handleCanvasClick = (e) => {
-      // Si on clique sur un item, on ne désélectionne pas ici
       if (e.target.dataset.item) return;
       setSelectedItemId(null);
       if (onSelectWidget) onSelectWidget(null);

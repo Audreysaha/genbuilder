@@ -43,8 +43,8 @@ export default function SidebarBuilder({
        <div className="w-64 h-screen flex flex-col bg-white border-r border-gray-200 overflow-hidden">
           {/* Tabs */}
           <div className="border-b border-gray-300 flex">
-            {['UI Builder'].map(tab => (
-              <div>
+            {['UI Builder'].map((tab, _index) => (
+              <div key={_index}>
                 {tab}
               </div>
             ))}
