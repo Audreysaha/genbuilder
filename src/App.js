@@ -9,8 +9,6 @@ import Docs from './pages/Docs';
 import Chat from './pages/Chat';
 
 
-
-
 function App() {
   return (
     <Router>

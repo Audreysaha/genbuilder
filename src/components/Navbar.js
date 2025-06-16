@@ -300,27 +300,28 @@ const Navbar = ({
 
           {/* Mode Toggle */}
           <div className="flex border rounded-full text-sm font-medium overflow-hidden">
-            <div
-              className={`px-4 py-1 transition ${
-                mode === "AI"
-                  ? "bg-indigo-200 text-indigo-800"
-                  : "bg-white text-gray"
-              }`}
-              onClick={() => setMode("AI")}
-            >
-              AI
-            </div>
-            <button
-              onClick={() => setMode("Edit")}
-              className={`px-4 py-1 transition ${
-                mode === "Edit"
-                  ? "bg-indigo-200 text-indigo-800"
-                  : "bg-white text-gray-800"
-              }`}
-            >
-              Edit
-            </button>
-          </div>
+  <button
+    onClick={() => setMode("AI")}
+    className={`px-4 py-1 transition focus:outline-none cursor-pointer ${
+      mode === "AI"
+        ? "bg-indigo-200 text-indigo-800"
+        : "bg-white text-gray-800"
+    }`}
+  >
+    AI
+  </button>
+  <button
+    onClick={() => setMode("Edit")}
+    className={`px-4 py-1 transition focus:outline-none cursor-pointer ${
+      mode === "Edit"
+        ? "bg-indigo-200 text-indigo-800"
+        : "bg-white text-gray-800"
+    }`}
+  >
+    Edit
+  </button>
+</div>
+
 
           {/* Preview Button */}
           <motion.button
