@@ -69,7 +69,7 @@ const FlutterFlowClone = () => {
       case "tablet":
         return { width: 555, height: 540 };
       case "desktop":
-        return { width: 1655cd G, height: 490 };
+        return { width: 1655, height: 490 };
       default:
         return { width: 375, height: 667 };
     }
