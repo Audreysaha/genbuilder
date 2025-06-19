@@ -15,16 +15,12 @@ const navigation = [
     name: 'Pricing',
     href: '#pricing',
   },
-  {
-    name: 'Blog',
-    href: '#',
-  },
 ];
 
 const company = [
   {
     name: 'About',
-    href: '#',
+    href: '/Docs',
   },
   {
     name: 'Careers',
@@ -32,10 +28,6 @@ const company = [
   },
   {
     name: 'Contact',
-    href: '#',
-  },
-  {
-    name: 'Privacy',
     href: '#',
   },
 ];
@@ -136,7 +128,7 @@ export default function Footer() {
                 <ul className="mt-4 space-y-4">
                   <li>
                     <a
-                      href="#"
+                      href="/Docs"
                       className="text-base text-gray-500 hover:text-indigo-500"
                     >
                       Documentation
@@ -144,7 +136,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/Docs"
                       className="text-base text-gray-500 hover:text-indigo-500"
                     >
                       Guides
@@ -152,18 +144,10 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="Docs"
                       className="text-base text-gray-500 hover:text-indigo-500"
                     >
                       Blog
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base text-gray-500 hover:text-indigo-500"
-                    >
-                      Webinars
                     </a>
                   </li>
                 </ul>
@@ -175,7 +159,7 @@ export default function Footer() {
                 <ul className="mt-4 space-y-4">
                   <li>
                     <a
-                      href="#"
+                      href="/Docs"
                       className="text-base text-gray-500 hover:text-indigo-500"
                     >
                       Privacy
@@ -183,7 +167,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/Docs"
                       className="text-base text-gray-500 hover:text-indigo-500"
                     >
                       Terms
@@ -191,7 +175,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/Docs"
                       className="text-base text-gray-500 hover:text-indigo-500"
                     >
                       Cookie Policy

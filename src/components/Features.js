@@ -8,9 +8,9 @@ const features = [
     icon: ArrowDownIcon,
   },
   {
-    name: 'Pre-built Templates',
+    name: 'Code Generation',
     description:
-      'Jumpstart your project with professionally designed templates for common use cases.',
+      'Provide you with clean and optimized code in multiple formats',
     icon: DeviceTabletIcon,
   },
   {

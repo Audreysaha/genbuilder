@@ -65,7 +65,7 @@ export default function Docs() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Navigation */}
           <div className="w-full md:w-64 flex-shrink-0">
-            <div className="bg-gray-800 p-6 rounded-lg sticky top-4">
+            <div className="bg-gray-700 p-6 rounded-lg sticky top-4">
               <h2 className="text-xl font-bold text-white mb-6 flex items-center">
                 <BookOpenIcon className="h-6 w-6 mr-2" />
                 Documentation
@@ -90,7 +90,7 @@ export default function Docs() {
               <section 
                 key={index}
                 id={section.title.toLowerCase().replace(' ', '-')}
-                className="bg-gray-800 p-8 rounded-lg mb-6"
+                className="bg-gray-700 p-8 rounded-lg mb-6"
               >
                 <div className="flex items-center mb-4">
                   {section.icon}
@@ -100,7 +100,7 @@ export default function Docs() {
                 
                 <div className="space-y-4">
                   {section.subsections.map((subsection, subIndex) => (
-                    <div key={subIndex} className="bg-gray-700 p-4 rounded-lg">
+                    <div key={subIndex} className="bg-gray-600 p-4 rounded-lg">
                       <h3 className="text-lg font-medium text-white mb-2">{subsection}</h3>
                       <p className="text-gray-300">Detailed documentation coming soon...</p>
                     </div>

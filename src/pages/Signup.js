@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon,EnvelopeIcon,UserIcon} from '@heroicons/react/24/outline';
 import API from '../utils/API';
 
 export default function Signup() {
@@ -44,41 +44,48 @@ export default function Signup() {
         </h2>
       </div>
 
-      <div className="mt-4 sm:mx-auto w-[25%] max-w-2xl justify-center">
-        <div className="bg-black py-14 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
+       <div className="mt-4 sm:mx-auto w-[25%] max-w-2xl justify-center">
+        <div className="bg-black py-6 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="block text-m font-medium text-gray-300 mb-2">
+              <label htmlFor="name" className="block text-m font-medium text-gray-300">
                 Full Name
               </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-black block w-full px-3 py-2 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Name"
-              />
+              <div className="relative mt-2">
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="bg-black block w-full pl-9 pr-2 py-2 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Name"
+                />
+              </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-m font-medium text-gray-300">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-2 block w-full px-3 py-2 bg-black border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="email"
-              />
-            </div>
+            <label htmlFor="Email" className="block text-m font-medium text-gray-300">
+            Email
+            </label>
+            <div className="relative mt-2">
+            <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+            id="Email"
+            name="Email"
+            type="Email"
+            autoComplete="Email"
+            required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="block w-full pl-10 pr-3 py-2 bg-black border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="Email"
+          />
+          </div>
+          </div>
+
 
             <div>
               <label htmlFor="password" className="block text-m font-medium text-gray-300">

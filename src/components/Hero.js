@@ -7,7 +7,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   const handleGetStartedClick = () => {
-    navigate('/interface'); // This will redirect to the interface page
+    navigate('/project_dashboard'); // This will redirect to the interface page
   };
 
   const handleWatchDemoClick = () => {

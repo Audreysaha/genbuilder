@@ -17,11 +17,12 @@ export default function CTA() {
           </div>
           <div className="ml-3 inline-flex rounded-md shadow">
             <a
-              href="#features"
-              className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 bg-opacity-60 hover:bg-opacity-70"
+              href="/Docs"
+              className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 bg-opacity-60 hover:bg-opacity-70 transition-all duration-300 ease-in-out"
             >
-              Learn more
+            Learn more
             </a>
+
           </div>
         </div>
       </div>

@@ -39,7 +39,7 @@ function Login() {
         .then((res) => {
           if (res.token) {
             LocalStorageManager.setItem("token", res.token)
-            navigate('/interface', { state: { formData } });
+            navigate('/project_dashboard', { state: { formData } });
           } else {
             setErrors({ general: "Invalid credentials" });
             setIsLoading(false);

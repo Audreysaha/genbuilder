@@ -58,7 +58,7 @@ function Chat() {
 
   return (
     <div className="bg-gray-50 h-full">
-      <div className="w-[300px] ml-auto border-l border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
+      <div className="w-[300px] ml-auto border-b border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-4 py-1">
           <h2 className="font-semibold text-gray-700">Chat</h2>

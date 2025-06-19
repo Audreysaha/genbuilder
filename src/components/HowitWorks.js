@@ -18,14 +18,14 @@ export function HowItWorks() {
     },
     {
       icon: <Database className="w-6 h-6" />,
-      title: "Data Modeling",
-      description: "Define your data structure with our visual database designer",
+      title: "Project Managament",
+      description: "Create and Manage your projects",
       color: "from-blue-500 to-cyan-500"
     },
     {
       icon: <Code className="w-6 h-6" />,
-      title: "Logic Building",
-      description: "Create complex workflows without writing code",
+      title: "Code Preview",
+      description: "Live Preview is available for testing UI designs",
       color: "from-emerald-500 to-teal-500"
     },
     {

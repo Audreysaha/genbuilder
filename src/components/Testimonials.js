@@ -1,34 +1,34 @@
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/solid';
+import Audrey from '../assets/images/Audrey.jpg';
+import Rosvel from '../assets/images/Rosvel.jpg';
 
 const testimonials = [
   {
-    name: 'Sarah Johnson',
+    name: 'Audrey Saha',
     role: 'Marketing Director',
     company: 'Acme Inc.',
-    image:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=height=80&fit=facearea&facepad=2&w=256&h=256&q=80',
+    image: Audrey,
     quote:
-      'We built our entire customer portal in just 2 weeks with LowCodePro. It would have taken months with traditional development.',
+      'We built our entire customer portal in just 2 weeks with GenBuilder. It would have taken months with traditional development.',
     rating: 5,
   },
   {
-    name: 'Michael Chen',
+    name: 'Sandjon Henri',
     role: 'CTO',
     company: 'StartupXYZ',
     image:
       'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=height=80&fit=facearea&facepad=2&w=256&h=256&q=80',
     quote:
-      'As a technical founder, I appreciate how LowCodePro lets me prototype ideas quickly without getting bogged down in implementation details.',
+      'As a technical founder, I appreciate how GenBuilder lets me prototype ideas quickly without getting bogged down in implementation details.',
     rating: 5,
   },
   {
-    name: 'Emma Rodriguez',
+    name: 'Rosvel Ngoune',
     role: 'Product Manager',
     company: 'Global Corp',
-    image:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=height=80&fit=facearea&facepad=2&w=256&h=256&q=80',
+    image: Rosvel,
     quote:
-      'Our internal tools team has reduced development time by 70% since switching to LowCodePro. The business loves how quickly we can respond to their needs.',
+      'Our internal tools team has reduced development time by 70% since switching to GenBuilder. The business loves how quickly we can respond to their needs.',
     rating: 4,
   },
 ];

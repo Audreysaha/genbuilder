@@ -1,22 +1,52 @@
-import React, { useEffect, useRef, useState } from 'react';
-// import { motion, AnimatePresence } from 'framer-motion';
-import { FiColumns, FiCheckSquare, FiType, FiSearch, FiSend, FiEdit2, FiChevronDown, FiNavigation, FiCornerDownRight, FiLayout, FiHash, FiSidebar, FiCreditCard, FiVideo, FiGrid, FiAlignLeft, FiImage, } from 'react-icons/fi';
-import Canvas from '../components/Canvas';
-import SidebarBuilder from '../components/SidebarBuilder';
-import SidebarProperties from '../components/SidebarPropeties';
-import Navbar from '../components/Navbar';
-import HTMLPreviewModal from '../components/HTMLPreviewModal';
-import Chat from './Chat';
+import React, { useEffect, useRef, useState } from "react";
+import { FaHeading,FaCreditCard,FaEllipsisV,FaEllipsisH, FaFont } from "react-icons/fa";
+import { HiH1,HiH2,HiH3, HiLink, HiMiniBars3, HiWindow } from "react-icons/hi2";
+import {
+  FiColumns,
+  FiCheckSquare,
+  FiType,
+  FiSearch,
+  FiSend,
+  FiEdit,
+  FiChevronDown,
+  FiHash,
+  FiSidebar,
+  FiCreditCard,
+  FiVideo,
+  FiGrid,
+  FiAlignLeft,
+  FiImage,
+  FiList,
+  FiSquare,
+  FiPause,
+  FiUnderline,
+  FiStar,
+  
+  
+} from "react-icons/fi";
+import Canvas from "../components/Canvas";
+import SidebarBuilder from "../components/SidebarBuilder";
+import SidebarProperties from "../components/SidebarPropeties";
+import Navbar from "../components/Navbar";
+import HTMLPreviewModal from "../components/HTMLPreviewModal";
+import Chat from "./Chat";
+import { useParams } from "react-router-dom";
+import API from "../utils/API";
 
 const FlutterFlowClone = () => {
   const [canvasItems, setCanvasItems] = useState([]);
   const [darkMode] = useState(true);
-  const [activeTab, setActiveTab] = useState('widgets');
+  const [activeTab, setActiveTab] = useState("widgets");
   const [selectedWidget, setSelectedWidget] = useState(null);
-  const [deviceSize, setDeviceSize] = useState('mobile');
+  const [deviceSize, setDeviceSize] = useState("mobile");
   const [showCode, setShowCode] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [mode, setMode] = useState("Edit");
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const api = new API();
+  const { projectId } = useParams();
 
   const canvasRef = useRef();
 
@@ -34,51 +64,66 @@ const FlutterFlowClone = () => {
 
   const getDeviceDimensions = () => {
     switch (deviceSize) {
-      case 'mobile':
-        return { width: 375, height: 580 };
-      case 'tablet':
-        return { width: 768, height: 597 };
-      case 'desktop':
-        return { width: 1050, height: 468 };
+      case "mobile":
+        return { width: 375, height: 540 };
+      case "tablet":
+        return { width: 555, height: 540 };
+      case "desktop":
+        return { width: 1655cd G, height: 490 };
       default:
         return { width: 375, height: 667 };
     }
   };
 
   const visualItems = [
-    { type: 'submit-button', label: 'Submit Button', icon: FiSend },
-    { type: 'textfield', label: 'Text Field', icon: FiEdit2 },
-    { type: 'checkbox', label: 'Checkbox', icon: FiCheckSquare },
-    { type: 'dropdown', label: 'Dropdown List', icon: FiChevronDown },
-    { type: 'search', label: 'Search Field', icon: FiSearch },
-  ];
-
-  const navigationalItems = [
-    { type: 'navbar', label: 'Navigation Bar', icon: FiNavigation },
-    { type: 'sidebar', label: 'Sidebar', icon: FiSidebar },
-    { type: 'tabs', label: 'Tabs', icon: FiGrid },
-    { type: 'breadcrumbs', label: 'Breadcrumbs', icon: FiCornerDownRight },
+    { type: "submit-button", label: "Submit", icon: FiSend },
+    { type: "textfield", label: "TextField", icon: FiEdit },
+    { type: "Input", label: "Text", icon: FiType },
+    { type: "checkbox", label: "Checkbox", icon: FiCheckSquare },
+    { type: "icon", label: "Icon", icon: FiStar },
+    { type: "dropdown", label: "Dropdown", icon: FiChevronDown },
+    { type: "search", label: "Search", icon: FiSearch },
+    { type: "MultipleSelect", label: "List", icon: FiList },
+    
+    
   ];
 
   const layoutElements = [
-    { type: 'grid', label: 'Grids / Columns', icon: FiColumns },
-    { type: 'headers', label: 'Headers', icon: FiType },
-    { type: 'footer', label: 'Footer', icon: FiLayout },
-    { type: 'sidepanel', label: 'Side Panels', icon: FiSidebar },
-    { type: 'card', label: 'Cards', icon: FiCreditCard },
+    { type: "container", label: "Container", icon: FiSquare},
+    { type: "grid", label: "Grid", icon: FiGrid},
+    { type: "div", label: "Div", icon: FiColumns },
+    { type: "H flex", label: "H flex", icon: FaEllipsisH},
+    { type: "V flex", label: "V flex", icon: FaEllipsisV},
+    { type: "sidebar", label: "SideBar", icon: FiSidebar },
+    { type: "card", label: "Cards", icon: FaCreditCard },
+    { type: "NavBar", label: "NavBar", icon:HiWindow },
   ];
 
   const topographyElements = [
-    { type: 'heading', label: 'Headings', icon: FiHash },
-    { type: 'paragraph', label: 'Paragraph', icon: FiAlignLeft },
-    { type: 'image', label: 'Images', icon: FiImage },
-    { type: 'video', label: 'Videos', icon: FiVideo },
+    { type: "H1", label: "H1", icon: HiH1 },
+    { type: "H2", label: "H2", icon: HiH2 },
+    { type: "H3", label: "H3", icon: HiH3 },
+  
+    { type: "Link", label: "Links", icon: HiLink },
+    { type: "Menu", label: "Menu", icon: HiMiniBars3 },
+    { type: "Underline", label: "Underline", icon: FiUnderline},
+    { type: "H1", label: "",  },
+    
+    
   ];
+
+  const mediaElements = [
+  { type: "image", label: "Images", icon: FiImage },
+  { type: "video", label: "Videos", icon: FiVideo },
+  ]
 
   // Sections extensibles
   const [expandedSections, setExpandedSections] = useState({
-    topographyElements: true,
-  });
+  topographyElements: true,
+  inputControls: true, 
+  layoutElements: true,
+  mediaElements: true,
+});
 
   const toggleSection = (id) => {
     setExpandedSections((prev) => ({
@@ -102,71 +147,77 @@ const FlutterFlowClone = () => {
 
     switch (componentType) {
       // Topography
-      case 'heading':
-        newItem.props = { content: 'Titre', fontSize: 24 };
+      case "heading":
+        newItem.props = { content: "Titre", fontSize: 24 };
         break;
-      case 'paragraph':
-        newItem.props = { content: 'Paragraphe', fontSize: 16 };
+      case "paragraph":
+        newItem.props = { content: "Paragraphe", fontSize: 16 };
         break;
 
       // Media
-      case 'image':
-        newItem.props = { src: 'https://via.placeholder.com/150', alt: 'Image' };
+      case "image":
+        newItem.props = {
+          src: "https://via.placeholder.com/150",
+          alt: "Image",
+        };
         break;
-      case 'video':
-        newItem.props = { src: 'https://www.youtube.com/embed/dQw4w9WgXcQ' };
+      case "video":
+        newItem.props = { src: "https://www.youtube.com/embed/dQw4w9WgXcQ" };
         break;
 
       // Form Elements
-      case 'textfield':
-        newItem.props = { placeholder: 'Entrer du texte...', value: '' };
+      case "textfield":
+        newItem.props = { placeholder: "Entrer du texte...", value: "" };
         break;
-      case 'submit-button':
-        newItem.props = { label: 'Envoyer' };
+      case "submit-button":
+        newItem.props = { label: "Envoyer" };
         break;
-      case 'checkbox':
-        newItem.props = { label: 'Accepter les termes', checked: false };
+      case "checkbox":
+        newItem.props = { label: "Accepter les termes", checked: false };
         break;
-      case 'dropdown':
-        newItem.props = { options: ['Option 1', 'Option 2', 'Option 3'], selected: 'Option 1' };
+      case "dropdown":
+        newItem.props = {
+          options: ["Option 1", "Option 2", "Option 3"],
+          selected: "Option 1",
+        };
         break;
-      case 'search':
-        newItem.props = { placeholder: 'Rechercher...', value: '' };
+      case "search":
+        newItem.props = { placeholder: "Rechercher...", value: "" };
         break;
 
       // Layout
-      case 'grid':
+      case "grid":
         newItem.props = { columns: 2 };
         break;
-      case 'headers':
-        newItem.props = { content: 'En-tête' };
+      case "headers":
+        newItem.props = { content: "En-tête" };
         break;
-      case 'footer':
-        newItem.props = { content: 'Pied de page' };
+      case "footer":
+        newItem.props = { content: "Pied de page" };
         break;
-      case 'sidepanel':
-        newItem.props = { content: 'Panneau latéral' };
+      case "sidepanel":
+        newItem.props = { content: "Panneau latéral" };
         break;
-      case 'card':
-        newItem.props = { content: 'Carte' };
+      case "card":
+        newItem.props = { content: "Carte" };
         break;
 
       // Navigation
-      case 'navbar':
-        newItem.props = { items: ['Accueil', 'À propos', 'Contact'] };
+      case "navbar":
+        newItem.props = { items: ["Accueil", "À propos", "Contact"] };
         break;
-      case 'sidebar':
-        newItem.props = { items: ['Menu 1', 'Menu 2', 'Menu 3'] };
+      case "sidebar":
+        newItem.props = { items: ["Menu 1", "Menu 2", "Menu 3"] };
         break;
-      case 'tabs':
-        newItem.props = { tabs: ['Tab 1', 'Tab 2'], activeTab: 'Tab 1' };
+      case "tabs":
+        newItem.props = { tabs: ["Tab 1", "Tab 2"], activeTab: "Tab 1" };
         break;
-      case 'breadcrumbs':
-        newItem.props = { path: ['Accueil', 'Section', 'Page'] };
+      case "breadcrumbs":
+        newItem.props = { path: ["Accueil", "Section", "Page"] };
         break;
 
       default:
-        newItem.props = { content: 'Composant' };
+        newItem.props = { content: "Composant" };
     }
 
     setCanvasItems((prev) => [...prev, newItem]);
@@ -174,12 +225,8 @@ const FlutterFlowClone = () => {
 
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
 
-  const [topTab, setTopTab] = useState('widgets');
-  const handleTabClick = (tab) => {
-    setTopTab(tab);
-    setShowResponsivePanel(tab === 'Responsive');
-  };
-
+  const [topTab, setTopTab] = useState("widgets");
+  
   const { width, height } = getDeviceDimensions();
 
   const updateItem = (id, updatedAttributes) => {
@@ -196,17 +243,45 @@ const FlutterFlowClone = () => {
 
   useEffect(() => {
     if (selectedWidget) {
-      const updated = canvasItems.find(item => item.id === selectedWidget.id);
+      const updated = canvasItems.find((item) => item.id === selectedWidget.id);
       if (updated && updated !== selectedWidget) {
         setSelectedWidget(updated);
       }
     }
   }, [canvasItems]);
-  
+
+  useEffect(() => {
+    if (!projectId) {
+      setError("No ID provided.");
+      setLoading(false);
+      return;
+    }
+
+    const fetchProject = async () => {
+      try {
+        const res = await api.getData(
+          api.apiUrl + `/api/project/load/${projectId}`
+        );
+        if (!res) {
+          throw new Error("Projet not FOUND.");
+        }
+        setProject(res);
+        if (res?.canvasItems?.length) {
+          setCanvasItems(res.canvasItems);
+        }
+      } catch (err) {
+        console.error(err);
+        setError("ERROR when loading projet.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [projectId]);
 
   return (
     <div className="flex flex-col h-screen bg-white text-gray-900">
-
       {/* Navigation Bar */}
       <Navbar
         zoom={zoom}
@@ -227,18 +302,18 @@ const FlutterFlowClone = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           topTab={topTab}
-          handleTabClick={handleTabClick}
           darkMode={darkMode}
           expandedSections={expandedSections}
           toggleSection={toggleSection}
           visualItems={visualItems}
-          navigationalItems={navigationalItems}
+          mediaElements={mediaElements}
           layoutElements={layoutElements}
           topographyElements={topographyElements}
           addComponentToCanvas={addComponentToCanvas} // si tu veux déclencher l'ajout depuis SidebarBuilder
         />
 
         <Canvas
+          projectId={projectId}
           ref={canvasRef}
           width={width}
           height={height}
@@ -249,6 +324,7 @@ const FlutterFlowClone = () => {
           onSelectWidget={handleSelectWidget}
         />
 
+
       {
         mode == "Edit" ? (
           <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
@@ -256,7 +332,6 @@ const FlutterFlowClone = () => {
           <Chat />
         )
       }
-      
       </div>
 
       <HTMLPreviewModal
