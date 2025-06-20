@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom';
-import {
-  ArrowRightOnRectangleIcon,
-  UserPlusIcon
-} from '@heroicons/react/24/outline';
+import {ArrowRightOnRectangleIcon,UserPlusIcon} from '@heroicons/react/24/outline';
 import { LocalStorageManager } from '../utils/LocalStorageManager';
 
 export default function Header() {
@@ -61,7 +58,7 @@ export default function Header() {
               <div onClick={() => {
                 LocalStorageManager.removeItem("token");
                 window.location.reload();
-              }} className={`flex items-center space-x-2 px-4 py-2 text-[16px] font-medium transition-all duration-300 text-white hover:text-white hover:bg-indigo-900 rounded-lg cursor-pointer`}>Logout</div>
+              }} className={`flex items-center space-x-2 px-4 py-2 text-[16px] font-medium transition-all duration-300 text-white hover:text-white hover:bg-indigo-900 rounded-lg cursor-pointer`}></div>
             ) : (
               <div className="hidden lg:flex items-center space-x-4">
                 {authLinks.map((link) => (

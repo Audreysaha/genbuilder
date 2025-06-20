@@ -1,6 +1,7 @@
 // src/App.js
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from "react";
 
 import Landing from './pages/Landing';
 import Home from './pages/Home';
@@ -11,13 +12,15 @@ import Docs from './pages/Docs';
 import Chat from './pages/Chat';
 import ProjectsDashboard from './components/ProjectsDashboard';
 import { LocalStorageManager } from './utils/LocalStorageManager';
+import Navbar from './components/Navbar';
 
-// 🔐 Composant de protection des routes privées
+
+// 🔐 Composant de protection des routes privées   Components for private route protection
 const PrivateRoute = ({ element }) => {
   const token = LocalStorageManager.getItem('token');
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   try {
@@ -26,17 +29,32 @@ const PrivateRoute = ({ element }) => {
 
     if (decoded.exp < currentTime) {
       localStorage.removeItem('token');
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/" replace />;
     }
 
     return element;
   } catch (error) {
     localStorage.removeItem('token');
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 };
 
 function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+  // Check localStorage on initial load
+  return localStorage.getItem("theme") === "dark";
+});
+useEffect(() => {
+  const root = document.documentElement;
+  if (darkMode) {
+    root.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    root.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+}, [darkMode]);
+
   return (
     <Router>
       <Routes>
@@ -55,5 +73,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

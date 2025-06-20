@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { FaMobileAlt, FaTabletAlt, FaDesktop, FaHome } from "react-icons/fa";
+import React, { useState , useEffect} from "react";
+import { FaMobileAlt, FaTabletAlt, FaDesktop, FaHome ,FaMoon, FaSun} from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate, Link } from "react-router-dom";
-import { HiChevronUpDown, HiLanguage, HiMiniArrowLeft, HiMiniArrowLeftEndOnRectangle, HiMiniBars3 } from "react-icons/hi2";
+import { HiChevronUpDown, HiLanguage, HiMiniArrowLeftEndOnRectangle, HiMiniBars3 } from "react-icons/hi2";
+import { ArrowRightOnRectangleIcon, UserPlusIcon} from '@heroicons/react/24/outline';
+import { LocalStorageManager } from "../utils/LocalStorageManager";
+
 
 const Navbar = ({
   zoom,
@@ -23,9 +25,41 @@ const Navbar = ({
   const [langOpen, setLangOpen] = useState(false);
   const [language, setLanguage] = useState("en");
   const [active, setActive] = useState(null);
+  const [darkMode, setDarkMode] = useState(() => {
+  // Check localStorage on initial load
+  return localStorage.getItem("theme") === "dark";
+});
+useEffect(() => {
+  const root = document.documentElement;
+  if (darkMode) {
+    root.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    root.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+}, [darkMode]);
+
   const bgColor = "bg-white"; // Bg-Color
   const borderColor = "border-gray-300"; // Border-color
   const navigate = useNavigate();
+
+  
+  const authLinks = [
+    {
+      name: 'Login',
+      href: '/login',
+      icon: <ArrowRightOnRectangleIcon className="h-5 w-5" />,
+      className: 'text-white hover:text-white hover:bg-indigo-900 rounded-lg'
+    },
+    {
+      name: 'Register',
+      href: '/register',
+      icon: <UserPlusIcon className="h-5 w-5" />,
+      className: 'bg-indigo-600 text-white hover:bg-indigo-900 rounded-lg shadow-lg shadow-indigo-900'
+    },
+
+  ];
 
   const toggleLangMenu = () => {
     setLangOpen(!langOpen);
@@ -36,9 +70,11 @@ const Navbar = ({
     setLangOpen(false);
   };
 
-  const handleDashboard = () => {
-    navigate("/"); // This will redirect to the interface page
-  };
+  
+
+  // const handleDashboard = () => {
+  //   navigate("/"); // This will redirect to the landing page
+  // };
 
   return (
     <div
@@ -74,20 +110,42 @@ const Navbar = ({
               >
                 Save As
               </button>
-              <button
+
+                <button
+                 onClick={() => setDarkMode((prev) => !prev)}
                 className="w-full text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
-                onClick={() => alert("Darkmode")}
-              >
-                Switch to Darkmode
+                >
+               {darkMode ? "Light Mode" : "Dark Mode"}
               </button>
-              <button
-                className="w-full flex items-center text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
-                onClick={handleDashboard}
-              >
-                <HiMiniArrowLeftEndOnRectangle className="h-6 w-5 mr-2" />
-                <p>LogOut</p>
-              </button>
-            </div>
+              
+          {/*Logout Logic+ button*/}
+            {LocalStorageManager.getItem("token") ? (
+            <button
+            className="w-full flex items-center text-left px-4 py-2 hover:bg-indigo-100 text-gray-700"
+            onClick={() => {
+            LocalStorageManager.removeItem("token");
+            window.location.reload(); // or use navigate("/") if using React Router
+            }}
+          >
+        <HiMiniArrowLeftEndOnRectangle className="h-6 w-5 mr-2" />
+        <p>Logout</p>
+        </button>
+        ) : (
+        <div className="hidden lg:flex items-center space-x-4">
+        {authLinks.map((link) => (
+        <Link
+        key={link.name}
+        to={link.href}
+        className={"flex items-center space-x-2 px-4 py-2 text-[16px] font-medium transition-all duration-300 rounded-full ${link.className}"}
+      >
+        {link.icon}
+        <span>{link.name}</span>
+      </Link>
+        ))}
+      </div>
+        )}
+           
+        </div>
           )}
         </div>
 
@@ -190,7 +248,7 @@ const Navbar = ({
           >
             <FiCode size={20} />
           </button>
-          
+
           {/* Undo/Redo */}
           <div className="bg-white rounded flex">
             <div
