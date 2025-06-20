@@ -12,7 +12,7 @@ import Footer from '../components/Footer';
 export default function Landing() {
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col">
-      <Header />
+      <Header /> 
       <main className="flex-grow">
         <Hero />
         <HowItWorks />
