@@ -19,7 +19,7 @@ const Canvas = forwardRef(
       setCanvasItems,
       addComponentToCanvas,
       onSelectWidget,
-      projectId
+      projectId,
     },
     ref
   ) => {
@@ -43,9 +43,13 @@ const Canvas = forwardRef(
     };
 
     const saveCanvasToDatabase = async () => {
-      console.log(projectId)
+      console.log(projectId);
       try {
-        await api.putData(api.apiUrl + `/api/project/update/${projectId}`, {canvasItems}, false);
+        await api.putData(
+          api.apiUrl + `/api/project/update/${projectId}`,
+          { canvasItems },
+          false
+        );
       } catch (error) {
         console.error("Error in Saving :", error);
       }
@@ -148,22 +152,22 @@ const Canvas = forwardRef(
 
     return (
       <div
-        className="flex-1 overflow-auto  p-10 flex items-center justify-center"
-        style={{ backgroundColor: "#F3F4F6" }}
+        className="flex-1 overflow-auto p-10 flex items-center justify-center dark:bg-gray-800"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={handleCanvasClick}
       >
         <div
-          className="relative bg-white shadow-xl"
+          className="relative shadow-xl"
           style={{
             width: `${width}px`,
             height: `${height}px`,
             transform: `scale(${zoom / 100})`,
             transformOrigin: "center center",
+            backgroundColor: "white", // Keep drop area white
           }}
         >
-          <div className="relative w-full h-full bg-gray-100">
+          <div className="relative w-full h-full bg-white">
             {canvasItems.map((item) => (
               <CanvasItem
                 key={item.id}

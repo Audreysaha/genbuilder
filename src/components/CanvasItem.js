@@ -99,6 +99,23 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
           />
         );
 
+  case "text":
+  return (
+    <textarea
+      className="w-full resize-none"
+      style={{
+        ...inputStyle,
+        fontWeight: item.fontWeight === "bold" ? "bold" : "normal",
+        textDecoration: item.fontStyle === "underline" ? "underline" : "none",
+        textAlign: item.textAlign || "left",
+        fontFamily: item.fontFamily || "inherit",
+      }}
+      value={content || ""}
+      onChange={(e) => onUpdate(item.id, { content: e.target.value })}
+    />
+  );
+
+
       case "submit-button":
         return (
           <button className="w-full h-full" style={commonStyle}>

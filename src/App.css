@@ -37,16 +37,34 @@
   }
 }
 
-/* Custom Scrollbar */
+
+/* Light mode */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 100, 0.4);
-  border-radius: 4px;
-}
-
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f3f4f6; /* gray-100 */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a5b4fc; /* indigo-400 */
+  border-radius: 10px;
+  border: 2px solid #f3f4f6;
+}
+
+/* Dark mode */
+html.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #1f2937; /* gray-800 */
+}
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #38396c; /* indigo-500 */
+  border: 2px solid #1f2937;
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #333a5c #243352;
+}
+html.dark .custom-scrollbar {
+  scrollbar-color: #353560 #1f2937;
 }
