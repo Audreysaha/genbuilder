@@ -79,7 +79,7 @@ const FlutterFlowClone = () => {
     { type: "icon", label: "Icon", icon: FiStar },
     { type: "dropdown", label: "Dropdown", icon: FiChevronDown },
     { type: "search", label: "Search", icon: FiSearch },
-    { type: "MultipleSelect", label: "List", icon: FiList },
+    { type: "list", label: "List", icon: FiList },
     
   ];
 
@@ -98,10 +98,7 @@ const FlutterFlowClone = () => {
     { type: "H1", label: "H1", icon: HiH1 },
     { type: "H2", label: "H2", icon: HiH2 },
     { type: "H3", label: "H3", icon: HiH3 },
-  
     { type: "Link", label: "Links", icon: HiLink },
-    { type: "Menu", label: "Menu", icon: HiMiniBars3 },
-    { type: "Underline", label: "Underline", icon: FiUnderline},
     { type: "H1", label: "",  },
     
     

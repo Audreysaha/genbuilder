@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FiGrid, FiLayers, FiSearch, FiChevronRight } from "react-icons/fi";
 
 export default function SidebarBuilder({
@@ -11,6 +11,31 @@ export default function SidebarBuilder({
   layoutElements,
   topographyElements,
 }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredVisual, setFilteredVisual] = useState(visualItems);
+  const [filteredMedia, setFilteredMedia] = useState(mediaElements);
+  const [filteredLayout, setFilteredLayout] = useState(layoutElements);
+  const [filteredTopography, setFilteredTopography] = useState(topographyElements);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredVisual(visualItems);
+      setFilteredMedia(mediaElements);
+      setFilteredLayout(layoutElements);
+      setFilteredTopography(topographyElements);
+    } else {
+      const filterItems = (items) =>
+        items.filter((item) =>
+          item.label.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+      setFilteredVisual(filterItems(visualItems));
+      setFilteredMedia(filterItems(mediaElements));
+      setFilteredLayout(filterItems(layoutElements));
+      setFilteredTopography(filterItems(topographyElements));
+    }
+  }, [searchTerm, visualItems, mediaElements, layoutElements, topographyElements]);
+
   return (
     <>
       {/* Scrollbar styles for light & dark mode */}
@@ -89,6 +114,8 @@ export default function SidebarBuilder({
                     type="text"
                     placeholder="Search"
                     className="flex-grow bg-transparent outline-none text-sm text-black dark:text-gray-200 placeholder-gray-600 dark:placeholder-gray-400"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   <FiSearch
                     size={18}
@@ -101,36 +128,44 @@ export default function SidebarBuilder({
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar pb-3">
               {/* Form Elements */}
-              <Section
-                label="Form Elements"
-                expanded={expandedSections["inputControls"]}
-                onToggle={() => toggleSection("inputControls")}
-                items={visualItems}
-              />
+              {filteredVisual.length > 0 && (
+                <Section
+                  label="Form Elements"
+                  expanded={expandedSections["inputControls"]}
+                  onToggle={() => toggleSection("inputControls")}
+                  items={filteredVisual}
+                />
+              )}
 
               {/* Layout Elements */}
-              <Section
-                label="Layout Elements"
-                expanded={expandedSections["layoutElements"]}
-                onToggle={() => toggleSection("layoutElements")}
-                items={layoutElements}
-              />
+              {filteredLayout.length > 0 && (
+                <Section
+                  label="Layout Elements"
+                  expanded={expandedSections["layoutElements"]}
+                  onToggle={() => toggleSection("layoutElements")}
+                  items={filteredLayout}
+                />
+              )}
 
               {/* Media Elements */}
-              <Section
-                label="Media Elements"
-                expanded={expandedSections["mediaElements"]}
-                onToggle={() => toggleSection("mediaElements")}
-                items={mediaElements}
-              />
+              {filteredMedia.length > 0 && (
+                <Section
+                  label="Media Elements"
+                  expanded={expandedSections["mediaElements"]}
+                  onToggle={() => toggleSection("mediaElements")}
+                  items={filteredMedia}
+                />
+              )}
 
               {/* Topography Elements */}
-              <Section
-                label="Topography Elements"
-                expanded={expandedSections["topographyElements"]}
-                onToggle={() => toggleSection("topographyElements")}
-                items={topographyElements}
-              />
+              {filteredTopography.length > 0 && (
+                <Section
+                  label="Topography Elements"
+                  expanded={expandedSections["topographyElements"]}
+                  onToggle={() => toggleSection("topographyElements")}
+                  items={filteredTopography}
+                />
+              )}
             </div>
           </div>
         )}

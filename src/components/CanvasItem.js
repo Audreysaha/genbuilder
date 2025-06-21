@@ -158,8 +158,6 @@ case "icon":
     </div>
   );
 
-
-
 case "search":
   return (
     <div style={{ position: "relative", width: "100%" }}>
@@ -192,6 +190,21 @@ case "search":
       />
     </div>
   );
+
+  case "list":
+  return (
+    <ul
+      className="list-disc pl-5 space-x-8 w-full h-full"
+      style={commonStyle}
+    >
+      {(item.content || "Item 1,Item 2,Item 3")
+        .split(",")
+        .map((li, i) => (
+          <li key={i}>{li.trim()}</li>
+        ))}
+    </ul>
+  );
+
 
 
 
@@ -248,13 +261,7 @@ case "search":
           </aside>
         );
 
-      case "tabs":
-        return (
-          <div className="flex border-b" style={commonStyle}>
-            <button className="px-2 py-1 border-b-2 border-blue-500">Tab 1</button>
-            <button className="px-2 py-1">Tab 2</button>
-          </div>
-        );
+      
 
      
 
@@ -280,12 +287,7 @@ case "search":
           </footer>
         );
 
-      case "sidepanel":
-        return (
-          <div className="p-1 w-full h-full" style={commonStyle}>
-            Side Panel Content
-          </div>
-        );
+      
 
       case "card":
         return (
