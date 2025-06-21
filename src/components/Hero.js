@@ -11,7 +11,7 @@ const Hero = () => {
   };
 
   const handleWatchDemoClick = () => {
-    navigate('/aude'); // This will redirect to the aude page
+    navigate('/Admin_dashboard'); // This will redirect to the aude page
   };
   return (
     <div className="min-h-[50vh] bg-gradient-to-b from-indigo-900 to-black text-white pt-0 pb-12 px-9 sm:px-6 flex items-center"> {/*to change the height btw header and hero*/}

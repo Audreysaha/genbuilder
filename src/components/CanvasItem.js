@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import lowcode from "../assets/images/lowcode.jpeg";
+import { FiSearch} from "react-icons/fi";
+import * as FiIcons from "react-icons/fi"; // Import icon pack
 import { Rnd } from "react-rnd";
 
 const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
@@ -15,6 +17,10 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
     content,
     type,
   } = item;
+
+  // Set default position if not provided
+  const initialX = item.x ?? Math.floor(Math.random() * 200);
+  const initialY = item.y ?? Math.floor(Math.random() * 200);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -36,14 +42,13 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
   const commonStyle = {
     backgroundColor: item.backgroundColor || "transparent",
-    borderRadius: item.borderRadius ? `${item.borderRadius}px` : "0px",
+    borderRadius: item.borderRadius ? `${item.borderRadius}px` : "10px",
     color: item.textColor || "#000000",
-    fontSize: item.fontSize ? `${item.fontSize}px` : "inherit",
+    fontSize: item.fontSize ? `${item.fontSize}px` : "Arial",
     fontWeight: item.fontWeight || "normal",
-    border: isSelected ? "2px solid blue" : "1px solid transparent",
     boxSizing: "border-box",
-    padding: "4px",
-    cursor: "pointer",
+    padding: "1px",
+    cursor: "cursor",
     userSelect: "none",
     display: "flex",
     alignItems: "center",
@@ -69,31 +74,36 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
   const renderContent = () => {
     switch (type) {
-      case "heading":
+
+  case "submit-button":
+  return (
+    <button
+      className="w-full h-full"
+      style={{
+        ...commonStyle,
+        border: isSelected ? "2px solid gray" : "1px solid #6b7280",
+        backgroundColor: item.backgroundColor || "#4f46e5", 
+        cursor: "grab",
+      }}
+      onClick={(e) => e.stopPropagation()}
+      contentEditable={true}
+      suppressContentEditableWarning={true}
+      onInput={(e) => onUpdate(item.id, { content: e.currentTarget.textContent })}
+    >
+      {content || "button"}
+    </button>
+  );
+
+  case "textfield":
         return (
           <input
-            className="w-full font-bold"
-            style={inputStyle}
-            value={content || ""}
-            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
-          />
-        );
-
-      case "paragraph":
-        return (
-          <textarea
-            className="w-full"
-            style={inputStyle}
-            value={content || ""}
-            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
-          />
-        );
-
-      case "textfield":
-        return (
-          <input
-            className="w-full border"
-            style={inputStyle}
+            className="w-full h-full border-10px"
+            style={{inputStyle,
+              backgroundColor: item.backgroundColor || "white",
+              // height: "40px", 
+              border: isSelected ? "2px solid gray" : "1px solid #6b7280",
+              borderRadius: "10px",
+            }}
             value={content || ""}
             onChange={(e) => onUpdate(item.id, { content: e.target.value })}
           />
@@ -102,62 +112,95 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   case "text":
   return (
     <textarea
-      className="w-full resize-none"
+      className="w-full h-full focus:outline-none"
+      placeholder="Enter text..." 
       style={{
         ...inputStyle,
-        fontWeight: item.fontWeight === "bold" ? "bold" : "normal",
-        textDecoration: item.fontStyle === "underline" ? "underline" : "none",
-        textAlign: item.textAlign || "left",
-        fontFamily: item.fontFamily || "inherit",
+        // height: "35px", // reduced height
+        color: item.textColor || "black",                   
+        backgroundColor: item.backgroundColor || "white",   
       }}
-      value={content || ""}
-      onChange={(e) => onUpdate(item.id, { content: e.target.value })}
+      value={item.content || ""} // Ensure content is from item
+      onChange={(e) => onUpdate(item.id, { content: e.target.value })} // Allow typing
     />
   );
 
-
-      case "submit-button":
-        return (
-          <button className="w-full h-full" style={commonStyle}>
-            {content || "Submit"}
-          </button>
-        );
-
-      case "checkbox":
+  case "checkbox":
         return (
           <label
             className="flex items-center space-x-2"
-            style={{ ...commonStyle, padding: "0.25rem" }}
+            style={{ ...commonStyle, padding: "0.25rem",
+            }}
           >
             <input type="checkbox" />
             <span>{content || "Check me"}</span>
           </label>
         );
 
-      case "dropdown":
+        case "dropdown":
         return (
-          <select className="w-full" style={inputStyle}>
+          <select className="w-full" 
+          style={{...inputStyle,
+          backgroundColor: item.backgroundColor || "#e5e7eb",
+          height: "50px",
+          }}>
             <option>{content || "Select an option"}</option>
             <option>Option 1</option>
             <option>Option 2</option>
           </select>
         );
 
-      case "search":
-        return (
-          <input
-            type="search"
-            className="w-full"
-            style={inputStyle}
-            value={content || ""}
-            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
-          />
-        );
+case "icon":
+  const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
+  return (
+    <div style={commonStyle}>
+      <SelectedIcon size={item.fontSize || 24} color={item.textColor || "#000"} />
+    </div>
+  );
+
+
+
+case "search":
+  return (
+    <div style={{ position: "relative", width: "100%" }}>
+      <FiSearch
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "12px",
+          transform: "translateY(-50%)",
+          color: "#6b7280", // Tailwind gray-500
+          pointerEvents: "none",
+          fontSize: "1rem",
+        }}
+      />
+      <input
+        type="search"
+        className="w-full"
+        placeholder="Search..."
+        style={{
+          ...inputStyle,
+          paddingLeft: "2rem", // Creates space between icon and text
+          backgroundColor: item.backgroundColor || "#e5e7eb", // gray-200
+          border: isSelected ? "2px solid blue" : "1px solid #6b7280", // gray-500
+          borderRadius: "10px",
+          height: "40px",
+          color: item.textColor || "black",
+        }}
+        value={content || ""}
+        onChange={(e) => onUpdate(item.id, { content: e.target.value })}
+      />
+    </div>
+  );
+
+
+
+
 
       case "image":
         return (
           <div
-            className="cursor-pointer w-full h-full"
+            className="cursor-grab w-full h-full"
             onDoubleClick={triggerFileInput}
             style={commonStyle}
           >
@@ -173,7 +216,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
       case "video":
         return (
           <div
-            className="cursor-pointer w-full h-full"
+            className="cursor-grab w-full h-full"
             onDoubleClick={triggerFileInput}
             style={commonStyle}
           >
@@ -213,12 +256,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
           </div>
         );
 
-      case "breadcrumbs":
-        return (
-          <div className="text-sm" style={commonStyle}>
-            Home &gt; Category &gt; Page
-          </div>
-        );
+     
 
       case "grid":
         return (
@@ -270,34 +308,37 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   };
 
   return (
-    <Rnd
-      size={{
-        width: item.width || "auto",
-        height: item.height || "auto",
-      }}
-      position={{ x: item.x || 0, y: item.y || 0 }}
-      bounds="parent"
-      onDragStop={(e, d) => onUpdate(item.id, { x: d.x, y: d.y })}
-      onResizeStop={(e, direction, ref, delta, position) => {
-        onUpdate(item.id, {
-          width: parseInt(ref.style.width),
-          height: parseInt(ref.style.height),
-          x: position.x,
-          y: position.y,
-        });
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect();
-      }}
-      enableResizing={true}
-      style={{
-        border: isSelected ? "2px solid blue" : "none",
-        boxSizing: "border-box",
-      }}
-    >
-      <div style={{ width: "100%", height: "100%" }}>{renderContent()}</div>
-    </Rnd>
+  <Rnd
+  size={{
+    width: item.width || "auto",
+    height: item.height || "auto",
+  }}
+  position={{ x: item.x ?? initialX, y: item.y ?? initialY }}
+  bounds="parent"
+  onDragStop={(e, d) => onUpdate(item.id, { x: d.x, y: d.y })}
+  onResizeStop={(e, direction, ref, delta, position) => {
+    onUpdate(item.id, {
+      width: parseInt(ref.style.width),
+      height: parseInt(ref.style.height),
+      x: position.x,
+      y: position.y,
+    });
+  }}
+  onClick={(e) => {
+    e.stopPropagation();
+    onSelect();
+  }}
+  enableResizing={true}
+  style={{
+    border: isSelected ? "2px solid blue" : "none",
+    boxSizing: "border-box",
+  }}
+>
+  <div style={{ width: "100%", height: "100%" }}>
+    {renderContent()}
+  </div>
+</Rnd>
+
   );
 };
 

@@ -123,18 +123,17 @@ const ProjectsDashboard = () => {
   };
 
   const handleDeleteProject = async (projectId) => {
-    if (window.confirm("Are you sure you want to delete this project?")) {
       try {
-        await api.deleteData(`${api.apiUrl}/api/project/remove/${projectId}`);
+        await api.deleteData(`${api.apiUrl}/api/project/remove/${projectId}`,
+          {},
+          false
+        );
         fetchProjects();
       } catch (err) {
         console.error("Error deleting project:", err);
       } finally {
         setMenuProjectId(null);
       }
-    } else {
-      setMenuProjectId(null);
-    }
   };
 
   const getRandomGradient = () => {

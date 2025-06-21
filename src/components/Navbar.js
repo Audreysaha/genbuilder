@@ -60,6 +60,7 @@ const Navbar = ({
   const api = new API();
   const user = jwtDecode(LocalStorageManager.getItem("token"));
 
+  // Modified handleCreateProject to save project but stay on the same interface
   const handleCreateProject = async () => {
     const name = prompt("Enter a project name:");
     if (!name || !name.trim()) return;
@@ -72,7 +73,8 @@ const Navbar = ({
         },
         false
       );
-      navigate("/project_dashboard", { state: { reloadProjects: true } });
+      alert("Project saved successfully!"); // Confirmation without navigation
+      // No navigation here - stays on same page
     } catch (err) {
       console.error("Error when creating Project:", err);
     }
@@ -83,8 +85,7 @@ const Navbar = ({
       name: "Login",
       href: "/login",
       icon: <ArrowRightOnRectangleIcon className="h-5 w-5" />,
-      className:
-        "text-white hover:text-white hover:bg-indigo-900 rounded-lg",
+      className: "text-white hover:text-white hover:bg-indigo-900 rounded-lg",
     },
     {
       name: "Register",
@@ -101,7 +102,7 @@ const Navbar = ({
     <div className="flex items-center justify-between h-[55px] px-4 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
       {/* Left */}
       <div className="flex items-center space-x-3">
-        {/* Hamburger */}
+        {/* menu */}
         <div className="relative">
           <button
             onClick={() => setOpen(!open)}
@@ -119,6 +120,7 @@ const Navbar = ({
               >
                 Save
               </button>
+
               <button
                 className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white"
               >
@@ -160,7 +162,10 @@ const Navbar = ({
             <FaHome className="text-gray-600 dark:text-gray-300" size={17} />
           </div>
           <div className="absolute inset-y-0 right-2 flex items-center justify-center pointer-events-none">
-            <HiChevronUpDown className="text-gray-600 dark:text-gray-300" size={18} />
+            <HiChevronUpDown
+              className="text-gray-600 dark:text-gray-300"
+              size={18}
+            />
           </div>
           <input
             type="search"
@@ -217,37 +222,36 @@ const Navbar = ({
       </div>
 
       {/* Center: Device Buttons */}
-   <div className="flex justify-center items-center space-x-1">
-  {[
-    { icon: FaMobileAlt, size: 18, type: "mobile" },
-    { icon: FaTabletAlt, size: 18, type: "tablet" },
-    { icon: FaDesktop, size: 20, type: "desktop" },
-  ].map(({ icon: Icon, size, type }) => {
-    const isActive = deviceSize === type;
-    return (
-      <button
-        key={type}
-        onClick={() => setDeviceSize(type)}
-        className={`p-1 rounded ${
-          isActive
-            ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
-            : "hover:bg-gray-200 dark:hover:bg-gray-700"
-        }`}
-        title={type}
-      >
-        <Icon
-          size={size}
-          className={`${
-            isActive
-              ? "text-blue-800 dark:text-white"
-              : "text-gray-700 dark:text-white"
-          }`}
-        />
-      </button>
-    );
-  })}
-</div>
-
+      <div className="flex justify-center items-center space-x-1">
+        {[
+          { icon: FaMobileAlt, size: 18, type: "mobile" },
+          { icon: FaTabletAlt, size: 18, type: "tablet" },
+          { icon: FaDesktop, size: 20, type: "desktop" },
+        ].map(({ icon: Icon, size, type }) => {
+          const isActive = deviceSize === type;
+          return (
+            <button
+              key={type}
+              onClick={() => setDeviceSize(type)}
+              className={`p-1 rounded ${
+                isActive
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              title={type}
+            >
+              <Icon
+                size={size}
+                className={`${
+                  isActive
+                    ? "text-blue-800 dark:text-white"
+                    : "text-gray-700 dark:text-white"
+                }`}
+              />
+            </button>
+          );
+        })}
+      </div>
 
       {/* Right Controls */}
       <div className="flex items-center space-x-2">
@@ -298,29 +302,28 @@ const Navbar = ({
         </div>
 
         {/* Mode Switch */}
- <div className="flex border border-gray-300 dark:border-gray-500 rounded-full text-sm font-medium overflow-hidden">
-  <button
-    onClick={() => setMode("AI")}
-    className={`px-4 py-1 transition-colors ${
-      mode === "AI"
-        ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-        : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-    }`}
-  >
-    AI
-  </button>
-  <button
-    onClick={() => setMode("Edit")}
-    className={`px-4 py-1 transition-colors ${
-      mode === "Edit"
-        ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-        : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-    }`}
-  >
-    Edit
-  </button>
-</div>
-
+        <div className="flex border border-gray-300 dark:border-gray-500 rounded-full text-sm font-medium overflow-hidden">
+          <button
+            onClick={() => setMode("AI")}
+            className={`px-4 py-1 transition-colors ${
+              mode === "AI"
+                ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+            }`}
+          >
+            AI
+          </button>
+          <button
+            onClick={() => setMode("Edit")}
+            className={`px-4 py-1 transition-colors ${
+              mode === "Edit"
+                ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+            }`}
+          >
+            Edit
+          </button>
+        </div>
 
         <motion.button
           whileHover={{ scale: 1.05 }}

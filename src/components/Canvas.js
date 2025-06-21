@@ -152,7 +152,7 @@ const Canvas = forwardRef(
 
     return (
       <div
-        className="flex-1 overflow-auto p-10 flex items-center justify-center dark:bg-gray-800"
+        className="flex-1 overflow-auto p-10 flex items-center justify-center dark:bg-gray-800 cursor-grab"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={handleCanvasClick}

@@ -11,6 +11,7 @@ import Interface from './pages/Interface';
 import Docs from './pages/Docs';
 import Chat from './pages/Chat';
 import ProjectsDashboard from './components/ProjectsDashboard';
+import AdminDashboard from './components/AdminDashboard';
 import { LocalStorageManager } from './utils/LocalStorageManager';
 import Navbar from './components/Navbar';
 
@@ -66,6 +67,7 @@ useEffect(() => {
 
         {/* Protected Routes */}
         <Route path="/project_dashboard" element={<PrivateRoute element={<ProjectsDashboard />} />} />
+        <Route path="/Admin_dashboard" element={<PrivateRoute element={<AdminDashboard />}/>} />
         <Route path="/interface/:projectId" element={<PrivateRoute element={<Interface />} />} />
         <Route path="/docs" element={<PrivateRoute element={<Docs />} />} />
         <Route path="/chat" element={<PrivateRoute element={<Chat />} />} />

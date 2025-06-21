@@ -74,13 +74,12 @@ const FlutterFlowClone = () => {
   const visualItems = [
     { type: "submit-button", label: "Submit", icon: FiSend },
     { type: "textfield", label: "TextField", icon: FiEdit },
-    { type: "Input", label: "Text", icon: FiType },
+    { type: "text", label: "Text", icon: FiType },
     { type: "checkbox", label: "Checkbox", icon: FiCheckSquare },
     { type: "icon", label: "Icon", icon: FiStar },
     { type: "dropdown", label: "Dropdown", icon: FiChevronDown },
     { type: "search", label: "Search", icon: FiSearch },
     { type: "MultipleSelect", label: "List", icon: FiList },
-    
     
   ];
 
