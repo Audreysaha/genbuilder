@@ -1,24 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import lowcode from "../assets/images/lowcode.jpeg";
 import { FiSearch} from "react-icons/fi";
-import * as FiIcons from "react-icons/fi"; // Import icon pack
+import * as FiIcons from "react-icons/fi"; 
 import { Rnd } from "react-rnd";
 
 const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   const {
-    backgroundColor,
-    borderColor,
-    borderWidth,
     borderRadius,
-    color,
-    fontSize,
-    fontWeight,
     src,
     content,
     type,
   } = item;
 
-  // Set default position if not provided
   const initialX = item.x ?? Math.floor(Math.random() * 200);
   const initialY = item.y ?? Math.floor(Math.random() * 200);
 
@@ -42,11 +35,11 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
 
   const commonStyle = {
     backgroundColor: item.backgroundColor || "transparent",
-    borderRadius: item.borderRadius ? `${item.borderRadius}px` : "10px",
-    color: item.textColor || "#000000",
+    borderRadius: item.borderRadius ? `${item.borderRadius}px` : "none",
+    // color: item.textColor || "#000000",
     fontSize: item.fontSize ? `${item.fontSize}px` : "Arial",
-    fontWeight: item.fontWeight || "normal",
-    boxSizing: "border-box",
+    // fontWeight: item.fontWeight || "normal",
+    // boxSizing: "border-box",
     padding: "1px",
     cursor: "cursor",
     userSelect: "none",
@@ -75,60 +68,72 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   const renderContent = () => {
     switch (type) {
 
-  case "submit-button":
+case "submit-button":
   return (
     <button
-      className="w-full h-full"
+      type="button"
+      className="w-full h-full px-4 py-2 rounded-md"
       style={{
         ...commonStyle,
-        border: isSelected ? "2px solid gray" : "1px solid #6b7280",
-        backgroundColor: item.backgroundColor || "#4f46e5", 
+        backgroundColor: item.backgroundColor || "#4f46e5",
         cursor: "grab",
       }}
-      onClick={(e) => e.stopPropagation()}
       contentEditable={true}
       suppressContentEditableWarning={true}
-      onInput={(e) => onUpdate(item.id, { content: e.currentTarget.textContent })}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(item.id); 
+      }}
+      onInput={(e) =>
+        onUpdate(item.id, { content: e.currentTarget.textContent })
+      }
     >
-      {content || "button"}
+      {content || "Submit"}
     </button>
   );
 
-  case "textfield":
-        return (
-          <input
-            className="w-full h-full border-10px"
-            style={{inputStyle,
-              backgroundColor: item.backgroundColor || "white",
-              // height: "40px", 
-              border: isSelected ? "2px solid gray" : "1px solid #6b7280",
-              borderRadius: "10px",
-            }}
-            value={content || ""}
-            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
-          />
-        );
-
-  case "text":
+case "textfield":
   return (
-    <textarea
-      className="w-full h-full focus:outline-none"
-      placeholder="Enter text..." 
+    <input
+      className="w-full h-full"
       style={{
         ...inputStyle,
-        // height: "35px", // reduced height
-        color: item.textColor || "black",                   
-        backgroundColor: item.backgroundColor || "white",   
+        border: isSelected ? "2px solid gray" : "1px solid #6b7280",
+        borderRadius: "10px",
+        cursor: "grab", // 👈 Add grab cursor
       }}
-      value={item.content || ""} // Ensure content is from item
-      onChange={(e) => onUpdate(item.id, { content: e.target.value })} // Allow typing
+      value={content || ""}
+      onChange={(e) => onUpdate(item.id, { content: e.target.value })}
+      onClick={(e) => {
+        e.stopPropagation();  
+        onSelect(item.id);    
+      }}
     />
   );
 
-  case "checkbox":
+case "text":
+  return (
+    <div
+      style={{
+        fontFamily: item.fontFamily || "Arial, sans-serif",
+        fontWeight: item.bold ? "bold" : "normal",
+        fontStyle: item.italic ? "italic" : "normal",
+        textDecoration: item.underline ? "underline" : "none",
+        fontSize: item.fontSize ? `${item.fontSize}px` : "16px",
+        color: item.textColor || "black",
+      }}
+    >
+      {item.content}
+    </div>
+  );
+
+
+
+
+case "checkbox":
         return (
           <label
-            className="flex items-center space-x-2"
+            className="h-full w-full items-center space-x-2"
             style={{ ...commonStyle, padding: "0.25rem",
             }}
           >
@@ -137,25 +142,37 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
           </label>
         );
 
-        case "dropdown":
-        return (
-          <select className="w-full" 
-          style={{...inputStyle,
-          backgroundColor: item.backgroundColor || "#e5e7eb",
-          height: "50px",
-          }}>
-            <option>{content || "Select an option"}</option>
-            <option>Option 1</option>
-            <option>Option 2</option>
-          </select>
-        );
-
 case "icon":
   const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
   return (
     <div style={commonStyle}>
       <SelectedIcon size={item.fontSize || 24} color={item.textColor || "#000"} />
     </div>
+  );
+
+case "dropdown":
+  return (
+    <select
+      className="w-full h-full"
+      style={{
+        ...inputStyle,
+        backgroundColor: item.backgroundColor || "#e5e7eb",
+        height: "50px",
+        cursor: "grab",
+        border: "none",  
+        outline: "none", 
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(item.id);
+      }}
+      value={content || "Select an option"}
+      onChange={(e) => onUpdate(item.id, { content: e.target.value })}
+    >
+      <option disabled>Select an option</option>
+      <option>Option 1</option>
+      <option>Option 2</option>
+    </select>
   );
 
 case "search":
@@ -183,30 +200,179 @@ case "search":
           border: isSelected ? "2px solid blue" : "1px solid #6b7280", // gray-500
           borderRadius: "10px",
           height: "40px",
-          color: item.textColor || "black",
+
         }}
-        value={content || ""}
-        onChange={(e) => onUpdate(item.id, { content: e.target.value })}
       />
     </div>
   );
 
-  case "list":
+case "list":
   return (
     <ul
-      className="list-disc pl-5 space-x-8 w-full h-full"
+      className="list-disc list-inside flex space-x-1 w-full h-full"
       style={commonStyle}
     >
       {(item.content || "Item 1,Item 2,Item 3")
         .split(",")
-        .map((li, i) => (
-          <li key={i}>{li.trim()}</li>
+        .map((li, i, arr) => (
+          <li
+            key={i}
+            contentEditable
+            suppressContentEditableWarning
+            onBlur={(e) => {
+              const newContent = [...arr];
+              newContent[i] = e.target.textContent;
+              onUpdate(item.id, { content: newContent.join(",") });
+            }}
+            className="cursor-text outline-none"
+          >
+            {li.trim()}
+          </li>
         ))}
     </ul>
   );
 
 
 
+
+
+case "container":
+  return (
+    <div
+      className="w-full h-full p-2 border border-dashed border-gray-400 dark:border-gray-600"
+      style={commonStyle}
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent deselecting on parent click
+        onSelect(); // Mark container as selected
+      }}
+    >
+      {item.children && item.children.length > 0 ? (
+        item.children.map((child) => (
+          <CanvasItem
+            key={child.id}
+            item={child}
+            onUpdate={(childId, updates) => {
+              const updatedChildren = item.children.map((c) =>
+                c.id === childId ? { ...c, ...updates } : c
+              );
+              onUpdate(item.id, { children: updatedChildren });
+            }}
+            isSelected={child.id === item.selectedChildId}
+            onSelect={() =>
+              onUpdate(item.id, { selectedChildId: child.id })
+            }
+          />
+        ))
+      ) : (
+        <div className="text-gray-400 text-sm italic">Drop items here...</div>
+      )}
+    </div>
+  );
+
+case "grid": {
+  // Map gridType to number of columns, default 2
+  const columnsMap = {
+    "2-cols": 2,
+    "3-cols": 3,
+    "4-cols": 4,
+    "5-cols": 5,
+    "6-cols": 6,
+  };
+  const cols = columnsMap[item.gridType] || 2;
+  const childrenInCells = Array.from({ length: cols }, () => []);
+
+  (item.children || []).forEach((child, index) => {
+    childrenInCells[index % cols].push(child);
+  });
+
+  const handleDropInColumn = (colIndex, droppedItem) => {
+    const updatedChildren = [...(item.children || [])];
+    updatedChildren.push({
+      ...droppedItem,
+      id: droppedItem.id || `child-${Date.now()}`,
+      // Optionally store column index if needed
+      parentGridId: item.id,
+      columnIndex: colIndex,
+    });
+
+    onUpdate(item.id, { children: updatedChildren });
+  };
+
+  return (
+    <div
+      className="grid gap-4 w-full h-full p-4"
+      style={{
+        ...commonStyle,
+        backgroundColor: item.backgroundColor || "transparent",
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        minHeight: 300,  // Increased size here
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {childrenInCells.map((childArray, colIndex) => (
+        <div
+          key={colIndex}
+          className="border border-gray-400 dark:border-gray-700 p-4 min-h-[150px] rounded"
+          style={{ minHeight: 150, backgroundColor: "#fafafa" }}
+          // Add your drop event handlers here, example:
+          onDrop={(e) => {
+            e.preventDefault();
+            // Extract dropped data from event - adjust as per your DnD setup
+            const data = e.dataTransfer.getData("application/json");
+            if (!data) return;
+            const droppedItem = JSON.parse(data);
+            handleDropInColumn(colIndex, droppedItem);
+          }}
+          onDragOver={(e) => e.preventDefault()} // Allow drop
+        >
+          {childArray.length > 0 ? (
+            childArray.map((child) => (
+              <CanvasItem
+                key={child.id}
+                item={child}
+                onUpdate={(childId, updates) => {
+                  const updatedChildren = item.children.map((c) =>
+                    c.id === childId ? { ...c, ...updates } : c
+                  );
+                  onUpdate(item.id, { children: updatedChildren });
+                }}
+                isSelected={isSelected && child.id === item.selectedChildId}
+                onSelect={() => onUpdate(item.id, { selectedChildId: child.id })}
+              />
+            ))
+          ) : (
+            <div className="text-gray-400 text-sm italic select-none text-center">
+              Drop items here...
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+case "navbar":
+  return (
+    <nav
+      className="flex space-x-2 px-2 py-1"
+      style={{
+        ...commonStyle,
+        backgroundColor: item.backgroundColor || "white",
+      }}
+    >
+      <span>Home</span>
+      <span>About</span>
+      <span>Contact</span>
+    </nav>
+  );
+
+ case "sidebar":
+        return (
+          <aside className="space-y-1 p-1 h-full" style={commonStyle}>
+            <div>Dashboard</div>
+            <div>Settings</div>
+            <div>Logout</div>
+          </aside>
+        );
 
 
 
@@ -243,69 +409,76 @@ case "search":
           </div>
         );
 
-      case "navbar":
-        return (
-          <nav className="flex space-x-2 px-2 py-1" style={commonStyle}>
-            <span>Home</span>
-            <span>About</span>
-            <span>Contact</span>
-          </nav>
-        );
+case "H1":
+  return (
+    <h1
+      className="text-center font-bold p-2"
+      style={{ ...commonStyle, fontSize: "2.5rem" }}
+      contentEditable
+      suppressContentEditableWarning={true}
+      onInput={(e) => item.text = e.currentTarget.textContent}
+      spellCheck={false}
+    >
+      {item.text || "Header 1"}
+    </h1>
+  );
 
-      case "sidebar":
-        return (
-          <aside className="space-y-1 p-1 h-full" style={commonStyle}>
-            <div>Dashboard</div>
-            <div>Settings</div>
-            <div>Logout</div>
-          </aside>
-        );
 
-      
+case "H2":
+  return (
+    <h2
+      className="text-center font-bold p-2"
+      style={{ ...commonStyle, fontSize: "2rem" }}
+      contentEditable
+      suppressContentEditableWarning={true}
+      onInput={(e) => item.text = e.currentTarget.textContent}
+      spellCheck={false}
+    >
+    {item.text || "Header 2"}
+    </h2>
+  );
 
-     
+case "H3":
+  return (
+    <h3
+      className="text-center font-bold p-2"
+      style={{ ...commonStyle, fontSize: "1.5rem" }}
+       contentEditable
+      suppressContentEditableWarning={true}
+      onInput={(e) => item.text = e.currentTarget.textContent}
+      spellCheck={false}
+    >
+      {item.text || "Header 3"}
+    </h3>
+  );
 
-      case "grid":
-        return (
-          <div className="grid grid-cols-2 gap-1 w-full h-full" style={commonStyle}>
-            <div className="bg-gray-100 p-1">Col 1</div>
-            <div className="bg-gray-200 p-1">Col 2</div>
-          </div>
-        );
+  case "H4":
+  return (
+    <h4
+      className="text-center font-bold p-2"
+      style={{ ...commonStyle, fontSize: "1.25rem" }}
+      contentEditable
+      suppressContentEditableWarning={true}
+      onInput={(e) => item.text = e.currentTarget.textContent}
+      spellCheck={false}
+    >
+    {item.text || "Header 4"}
+    </h4>
+  );
 
-      case "headers":
-        return (
-          <header className="text-center font-bold p-2" style={commonStyle}>
-            Header
-          </header>
-        );
-
-      case "footer":
-        return (
-          <footer className="text-center p-2" style={commonStyle}>
-            Footer Content
-          </footer>
-        );
-
-      
-
-      case "card":
-        return (
-          <div className="shadow p-2 w-full h-full" style={commonStyle}>
-            <h2 className="text-lg font-bold" style={{ margin: 0 }}>
-              Card Title
-            </h2>
-            <p style={{ margin: 0 }}>Card content goes here.</p>
-          </div>
-        );
-
-      default:
-        return (
-          <div ref={contentRef} style={commonStyle}>
-            {/* Your content */}
-            {item.content || "Unknown Component"}
-          </div>
-        );
+case "H5":
+  return (
+    <h5
+      className="text-center font-bold p-2"
+      style={{ ...commonStyle, fontSize: "1rem" }}
+      contentEditable
+      suppressContentEditableWarning={true}
+      onInput={(e) => item.text = e.currentTarget.textContent}
+      spellCheck={false}
+    >
+    {item.text || "Header 5"}
+    </h5>
+  );      
     }
   };
 

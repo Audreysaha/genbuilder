@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FaHeading,FaCreditCard,FaEllipsisV,FaEllipsisH, FaFont } from "react-icons/fa";
-import { HiH1,HiH2,HiH3, HiLink, HiMiniBars3, HiWindow } from "react-icons/hi2";
+import { FaEllipsisV,FaEllipsisH, FaFont } from "react-icons/fa";
+import { HiH1,HiH2,HiH3, HiLink,HiWindow } from "react-icons/hi2";
+import { RiH4,RiH5 } from "react-icons/ri";
 import {
   FiColumns,
   FiCheckSquare,
@@ -15,7 +16,6 @@ import {
   FiImage,
   FiList,
   FiSquare,
-  FiUnderline,
   FiStar,
   
   
@@ -90,14 +90,15 @@ const FlutterFlowClone = () => {
     { type: "H flex", label: "H flex", icon: FaEllipsisH},
     { type: "V flex", label: "V flex", icon: FaEllipsisV},
     { type: "sidebar", label: "SideBar", icon: FiSidebar },
-    { type: "card", label: "Cards", icon: FaCreditCard },
-    { type: "NavBar", label: "NavBar", icon:HiWindow },
+    { type: "navBar", label: "NavBar", icon:HiWindow },
   ];
 
   const topographyElements = [
     { type: "H1", label: "H1", icon: HiH1 },
     { type: "H2", label: "H2", icon: HiH2 },
     { type: "H3", label: "H3", icon: HiH3 },
+    { type: "H4", label: "H4", icon: RiH4},
+    { type: "H5", label: "H5", icon: RiH5 },
     { type: "Link", label: "Links", icon: HiLink },
     { type: "H1", label: "",  },
     
@@ -159,13 +160,13 @@ const FlutterFlowClone = () => {
 
       // Form Elements
       case "textfield":
-        newItem.props = { placeholder: "Entrer du texte...", value: "" };
+        newItem.props = { placeholder: "Enter text...", value: "" };
         break;
       case "submit-button":
-        newItem.props = { label: "Envoyer" };
+        newItem.props = { label: "Send" };
         break;
       case "checkbox":
-        newItem.props = { label: "Accepter les termes", checked: false };
+        newItem.props = { label: "Accept terms", checked: false };
         break;
       case "dropdown":
         newItem.props = {
@@ -174,8 +175,9 @@ const FlutterFlowClone = () => {
         };
         break;
       case "search":
-        newItem.props = { placeholder: "Rechercher...", value: "" };
+        newItem.props = { placeholder: "Search...", value: "" };
         break;
+
 
       // Layout
       case "grid":
@@ -184,20 +186,15 @@ const FlutterFlowClone = () => {
       case "headers":
         newItem.props = { content: "En-tête" };
         break;
-      case "footer":
-        newItem.props = { content: "Pied de page" };
+      case "navbar":
+        newItem.props = { items: ["Accueil", "À propos", "Contact"] };
         break;
       case "sidepanel":
         newItem.props = { content: "Panneau latéral" };
         break;
-      case "card":
-        newItem.props = { content: "Carte" };
-        break;
 
       // Navigation
-      case "navbar":
-        newItem.props = { items: ["Accueil", "À propos", "Contact"] };
-        break;
+     
       case "sidebar":
         newItem.props = { items: ["Menu 1", "Menu 2", "Menu 3"] };
         break;

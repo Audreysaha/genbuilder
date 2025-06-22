@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiGrid, FiLayers, FiSearch, FiChevronRight } from "react-icons/fi";
+import { FiGrid, FiLayers, FiSearch, FiChevronRight,FiPlus} from "react-icons/fi";
 
 export default function SidebarBuilder({
   activeTab,
@@ -36,6 +36,28 @@ export default function SidebarBuilder({
     }
   }, [searchTerm, visualItems, mediaElements, layoutElements, topographyElements]);
 
+  const pages = ["Home", "About"]; // Your pages list
+
+  // Add a new page with a prompt to enter the name
+  const handleAddPage = () => {
+    const newPage = prompt("Enter new page name:");
+    if (newPage && newPage.trim() !== "") {
+      if (pages.includes(newPage.trim())) {
+        alert("Page already exists!");
+        return;
+      }
+      setPages((prev) => [...prev, newPage.trim()]);
+    }
+  };
+
+  // Delete page by filtering it out
+  const handleDeletePage = (pageToDelete) => {
+    if (window.confirm(`Are you sure you want to delete the page "${pageToDelete}"?`)) {
+      setPages((prev) => prev.filter((p) => p !== pageToDelete));
+    }
+  };
+  const [setPages] = useState(["Home", "About", "Contact", "Services", "Blog"]);
+
   return (
     <>
       {/* Scrollbar styles for light & dark mode */}
@@ -71,32 +93,60 @@ export default function SidebarBuilder({
         }
       `}</style>
 
-      <div className="flex">
-        {/* Left tab panel */}
-        <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
-          <button
-            onClick={() => setActiveTab("widgets")}
-            className={`p-3 rounded-lg transition-colors ${
-              activeTab === "widgets"
-                ? "bg-blue-100 text-indigo-800 dark:bg-blue-700 dark:text-white"
-                : "hover:bg-indigo-200 dark:hover:bg-indigo-800 dark:text-gray-300"
-            }`}
-            aria-label="Widgets tab"
-          >
-            <FiGrid size={20} />
-          </button>
+       <div className="flex h-screen">
+      {/* Left tab panel */}
+      <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
+        <button
+          onClick={() => setActiveTab("widgets")}
+          className={`p-3 rounded-lg transition-colors ${
+            activeTab === "widgets"
+              ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
+              : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
+          }`}
+          aria-label="Widgets tab"
+          type="button"
+        >
+        <FiPlus size={20} />
+        </button>
+          
           <button
             onClick={() => setActiveTab("layers")}
             className={`p-3 rounded-lg transition-colors ${
               activeTab === "layers"
-                ? "bg-blue-100 text-indigo-800 dark:bg-blue-700 dark:text-white"
-                : "hover:bg-indigo-200 dark:hover:bg-indigo-800 dark:text-gray-300"
+                ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
+                : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
             }`}
             aria-label="Layers tab"
           >
             <FiLayers size={20} />
           </button>
         </div>
+        
+      {activeTab === "layers" && (
+        <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 overflow-y-auto">
+      <div className="flex items-center justify-between px-2 mb-3">
+      <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[25px] font-sans">Pages</div>
+      </div>
+          
+        <div className="border-b border-gray-300 dark:border-gray-700 mb-3" />
+       <ul className="space-y-2 flex-1 overflow-y-auto">
+  {pages && pages.length > 0 ? (
+    pages.map((page) => (
+      <li
+        key={page}
+        className="flex h-[50px] justify-between text-[18px] items-center cursor-pointer p-2 bg-gray-200 dark:bg-gray-800 rounded-[15px] hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-800 dark:text-gray-200"
+        onClick={() => alert(`You selected page: ${page}`)} // Replace with your own logic
+      >
+        <span className="flex-1 px-2">{page}</span>
+      </li>
+    ))
+  ) : (
+    <p className="px-2 text-gray-600 dark:text-gray-400">No pages created yet.</p>
+  )}
+</ul>
+
+        </aside>
+      )}
 
         {/* Main sidebar content */}
         {activeTab === "widgets" && (
