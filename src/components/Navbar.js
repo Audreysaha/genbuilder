@@ -8,7 +8,7 @@ import {
   FaSun,
 } from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
-import { FiCode, FiPlay } from "react-icons/fi";
+import { FiCode, FiPlay, FiSave } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -307,7 +307,7 @@ const Navbar = ({
             onClick={() => setMode("AI")}
             className={`px-4 py-1 transition-colors ${
               mode === "AI"
-                ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-400 dark:text-white"
                 : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
             }`}
           >
@@ -317,13 +317,22 @@ const Navbar = ({
             onClick={() => setMode("Edit")}
             className={`px-4 py-1 transition-colors ${
               mode === "Edit"
-                ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-400 dark:text-white"
                 : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
             }`}
           >
             Edit
           </button>
         </div>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-indigo-700 hover:bg-blue text-white dark:bg-blue dark:hover:bg-blue"
+        >
+          <FiSave className="mr-1" />
+          Save
+        </motion.button>
 
         <motion.button
           whileHover={{ scale: 1.05 }}
