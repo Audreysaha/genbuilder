@@ -1,26 +1,11 @@
-import React, { useState, useEffect } from "react";
-import {
-  FaMobileAlt,
-  FaTabletAlt,
-  FaDesktop,
-  FaHome,
-  FaMoon,
-  FaSun,
-} from "react-icons/fa";
+import React, { useState, useEffect , useRef} from "react";
+import {FaMobileAlt,FaTabletAlt,FaDesktop,FaHome,FaMoon,FaSun,} from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay, FiSave } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  HiChevronUpDown,
-  HiLanguage,
-  HiMiniArrowLeftEndOnRectangle,
-  HiMiniBars3,
-} from "react-icons/hi2";
-import {
-  ArrowRightOnRectangleIcon,
-  UserPlusIcon,
-} from "@heroicons/react/24/outline";
+import { HiChevronUpDown, HiLanguage, HiMiniArrowLeftEndOnRectangle, HiMiniBars3,} from "react-icons/hi2";
+import { ArrowRightOnRectangleIcon, UserPlusIcon,} from "@heroicons/react/24/outline";
 import { LocalStorageManager } from "../utils/LocalStorageManager";
 import API from "../utils/API";
 import { jwtDecode } from "jwt-decode";
@@ -40,10 +25,19 @@ const Navbar = ({
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [language, setLanguage] = useState("en");
+  const langRef = useRef(null);
   const [active, setActive] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
+
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  // const navigate = useNavigate();
+  const api = new API();
+  const user = jwtDecode(LocalStorageManager.getItem("token")); 
+  // const isAuthenticated = !!LocalStorageManager.getItem("token")
 
   useEffect(() => {
     const root = document.documentElement;
@@ -56,9 +50,33 @@ const Navbar = ({
     }
   }, [darkMode]);
 
-  const navigate = useNavigate();
-  const api = new API();
-  const user = jwtDecode(LocalStorageManager.getItem("token"));
+  //for menu click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    };
+     document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+ //for language click outside
+  useEffect(() => {
+  const handleClickOutsideLang = (event) => {
+    if (langRef.current && !langRef.current.contains(event.target)) {
+      setLangOpen(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutsideLang);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutsideLang);
+  };
+}, []);
 
   // Modified handleCreateProject to save project but stay on the same interface
   const handleCreateProject = async () => {
@@ -99,34 +117,32 @@ const Navbar = ({
   const isAuthenticated = !!LocalStorageManager.getItem("token");
 
   return (
-    <div className="flex items-center justify-between h-[55px] px-4 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
-      {/* Left */}
+      <div className="flex items-center justify-between h-[55px] px-4 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
+      {/* Left section */}
       <div className="flex items-center space-x-3">
-        {/* menu */}
-        <div className="relative">
+        {/* Menu Dropdown */}
+        <div className="relative" ref={menuRef}>
           <button
+            ref={buttonRef}
             onClick={() => setOpen(!open)}
             className="p-2 rounded hover:bg-indigo-200 dark:hover:bg-gray-800"
             title="Menu"
           >
             <HiMiniBars3 className="text-gray-700 dark:text-white" size={25} />
           </button>
-
           {open && (
-            <div className="absolute left-0 mt-2 w-48 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md z-10">
+            <div 
+            ref={menuRef}
+            className="absolute left-0 mt-2 w-48 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md z-10">
               <button
                 className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white"
                 onClick={handleCreateProject}
               >
                 Save
               </button>
-
-              <button
-                className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white"
-              >
+              <button className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white">
                 Save As
               </button>
-
               {isAuthenticated ? (
                 <button
                   className="w-full flex items-center text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white"
@@ -175,7 +191,7 @@ const Navbar = ({
         </div>
 
         {/* Language Selector */}
-        <div className="relative">
+        <div className="relative" ref={langRef}>
           <button
             onClick={() => setLangOpen(!langOpen)}
             className="h-7 px-2 border rounded text-sm flex items-center space-x-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white"

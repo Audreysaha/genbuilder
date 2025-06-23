@@ -1,29 +1,31 @@
-import React from "react";
+// import React from "react";
 import * as FiIcons from "react-icons/fi";
+import { FaBold, FaItalic, FaUnderline } from "react-icons/fa";
+import { VscBold } from "react-icons/vsc";
+import { HiChevronDown } from "react-icons/hi";
+import { HiItalic,HiBold,HiUnderline } from "react-icons/hi2";
 
 const SidebarProperties = ({ item, onUpdate }) => {
   if (!item)
     return (
-      <div className="p-14 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-100">
-        No element Selected
-      </div>
+      <div className="p-14 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-100">No element Selected</div>
     );
-  
-  const updateProp = (key, value) => {
+
+const updateProp = (key, value) => {
     onUpdate(item.id, { [key]: value });
   };
 
-  const availableIcons = Object.keys(FiIcons);
+const availableIcons = Object.keys(FiIcons);
 
-  const gridOptions = [
+const gridOptions = [
     { id: "2-cols", label: "2 Columns", columns: 2 },
     { id: "3-cols", label: "3 Columns", columns: 3 },
     { id: "4-cols", label: "4 Columns", columns: 4 },
     { id: "5-cols", label: "5 Columns", columns: 5 },
     { id: "6-cols", label: "6 Columns", columns: 6 },
   ];
-
-  function chunkArray(arr, size) {
+const gridRows = chunkArray(gridOptions, 2);
+function chunkArray(arr, size) {
     const chunks = [];
     for (let i = 0; i < arr.length; i += size) {
       chunks.push(arr.slice(i, i + size));
@@ -31,9 +33,7 @@ const SidebarProperties = ({ item, onUpdate }) => {
     return chunks;
   }
 
-  const gridRows = chunkArray(gridOptions, 2);
-
-  return (
+return (
     <div className="p-4 space-y-4 w-[350px] border-l bg-gray-50 dark:bg-gray-900 dark:border-gray-700 h-full overflow-y-auto">
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Properties</h2>
 
@@ -107,23 +107,116 @@ const SidebarProperties = ({ item, onUpdate }) => {
         </div>
       )}
 
-      {/* Text properties for text items */}
-      {item.type === "text" && (
-  <>
-    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-      Text Content
-    </label>
-    <textarea
-      value={item.content || ""}
-      onChange={(e) => updateProp("content", e.target.value)}
-      className="w-full p-2 border rounded resize-y bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-      rows={4}
-    />
-  </>
+{item.type === "text" && (
+  <div className="space-y-4 mb-4">
+  {/* Font Type */}
+  <div>
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+    Font Type
+  </label>
+  <select
+    value={item.fontFamily || "sans-serif"}
+    onChange={(e) => updateProp("fontFamily", e.target.value)}
+    className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+  >
+    {[
+      "Arial, sans-serif", "Verdana, sans-serif","Helvetica, sans-serif","Tahoma, sans-serif", "Trebuchet MS, sans-serif", "Gill Sans, sans-serif","Noto Sans, sans-serif",
+      "Segoe UI, sans-serif","Calibri, sans-serif","Geneva, sans-serif","Times New Roman, serif","Georgia, serif","Garamond, serif","Palatino, serif",
+      "Bookman, serif", "Courier New, monospace", "Lucida Console, monospace","Monaco, monospace","Brush Script MT, cursive","Comic Sans MS, cursive",
+      "Pacifico, cursive","Impact, fantasy","Lobster, cursive","Cursive","Fantasy","monospace","serif","sans-serif",
+    ].map((font) => (
+      <option key={font} value={font}>
+        {font}
+      </option>
+    ))}
+  </select>
+</div>
+
+   {/* Font Size */}
+   <div className="relative">
+  <label
+    htmlFor={`font-size-${item.id}`}
+    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Font Size </label>
+  <input
+    list={`font-size-options-${item.id}`}
+    id={`font-size-${item.id}`}
+    value={item.fontSize || ""}
+    onChange={(e) => updateProp("fontSize", e.target.value)}
+    placeholder="e.g. 16px or 1.5rem"
+    className="w-full p-2 pr-8 border rounded appearance-none bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  />
+  <div className="absolute right-2 top-9 pointer-events-none text-gray-500 dark:text-gray-400">
+    <HiChevronDown size={18} />
+  </div>
+</div>
+
+  {/* Text Content */}
+  <div>
+    <label
+      htmlFor={`text-content-${item.id}`}
+      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Text Content</label>
+      <textarea
+        id={`text-content-${item.id}`}
+        value={item.content || ""}
+        onChange={(e) => updateProp("content", e.target.value)}
+        className="w-full p-2 border rounded resize-none bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        rows={1}/>
+    </div>
+
+      {/* Text Color Picker */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Text Color
+      </label>
+      <input
+        type="color"
+        value={item.color || "#000000"}
+        onChange={(e) => updateProp("color", e.target.value)}
+        className="w-80 h-20 p-0 border-2 border-gray-300 dark:border-gray-600 rounded cursor-pointer bg-white dark:bg-gray-800" />
+    </div>
+
+    {/* Style Icons */}
+    <div className="flex items-center space-x-1">
+     <button
+  title="Bold"
+  onClick={() => updateProp("bold", !item.bold)}
+  className={`p-1 rounded transition ${
+    item.bold
+      ? "bg-indigo-600 text-white"
+      : "text-gray-700 dark:text-gray-300"
+  } hover:bg-indigo-200 dark:hover:bg-indigo-700`}
+>
+  <HiBold size={28} />
+</button>
+      <button
+        title="Italic"
+        onClick={() => updateProp("italic", !item.italic)}
+        className={`p-1 rounded transition ${
+          item.italic
+            ? "bg-indigo-600 text-white"
+            : "text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+        } hover:bg-indigo-200 dark:hover:bg-indigo-700 transition`}
+      >
+        <HiItalic size={28} />
+      </button>
+      <button
+        title="Underline"
+        onClick={() => updateProp("underline", !item.underline)}
+        className={`p-1 rounded transition ${
+          item.underline
+            ? "bg-indigo-600 text-white"
+            : "text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+        } hover:bg-indigo-200 dark:hover:bg-indigo-700 transition`}
+      >
+        <HiUnderline size={28}/>
+      </button>
+    </div>
+  </div>
 )}
 
 
-      {/* Other properties for non-icon, non-grid, non-text */}
+
+      {/* Other properties excluding for icon, grid, text */}
       {item.type !== "icon" && item.type !== "grid" && item.type !== "text" && (
         <>
           {/* Image URL Input */}

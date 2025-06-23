@@ -2,24 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaEllipsisV,FaEllipsisH, FaFont } from "react-icons/fa";
 import { HiH1,HiH2,HiH3, HiLink,HiWindow } from "react-icons/hi2";
 import { RiH4,RiH5 } from "react-icons/ri";
-import {
-  FiColumns,
-  FiCheckSquare,
-  FiType,
-  FiSearch,
-  FiSend,
-  FiEdit,
-  FiChevronDown,
-  FiSidebar,
-  FiVideo,
-  FiGrid,
-  FiImage,
-  FiList,
-  FiSquare,
-  FiStar,
-  
-  
-} from "react-icons/fi";
+import { FiColumns,FiCheckSquare, FiType, FiSearch, FiSend, FiEdit,FiChevronDown,FiSidebar,FiVideo,FiGrid,FiImage,FiList,FiSquare,FiStar} from "react-icons/fi";
 import Canvas from "../components/Canvas";
 import SidebarBuilder from "../components/SidebarBuilder";
 import SidebarProperties from "../components/SidebarPropeties";
@@ -29,7 +12,7 @@ import Chat from "./Chat";
 import { useParams } from "react-router-dom";
 import API from "../utils/API";
 
-const FlutterFlowClone = () => {
+const Interface = () => {
   const [canvasItems, setCanvasItems] = useState([]);
   const [darkMode] = useState(true);
   const [activeTab, setActiveTab] = useState("widgets");
@@ -90,7 +73,7 @@ const FlutterFlowClone = () => {
     { type: "H flex", label: "H flex", icon: FaEllipsisH},
     { type: "V flex", label: "V flex", icon: FaEllipsisV},
     { type: "sidebar", label: "SideBar", icon: FiSidebar },
-    { type: "navBar", label: "NavBar", icon:HiWindow },
+    { type: "navbar", label: "NavBar", icon:HiWindow },
   ];
 
   const topographyElements = [
@@ -139,14 +122,6 @@ const FlutterFlowClone = () => {
     let newItem = { ...baseItem };
 
     switch (componentType) {
-      // Topography
-      case "heading":
-        newItem.props = { content: "Titre", fontSize: 24 };
-        break;
-      case "paragraph":
-        newItem.props = { content: "Paragraphe", fontSize: 16 };
-        break;
-
       // Media
       case "image":
         newItem.props = {
@@ -183,26 +158,11 @@ const FlutterFlowClone = () => {
       case "grid":
         newItem.props = { columns: 2 };
         break;
-      case "headers":
-        newItem.props = { content: "En-tête" };
-        break;
       case "navbar":
         newItem.props = { items: ["Accueil", "À propos", "Contact"] };
         break;
       case "sidepanel":
         newItem.props = { content: "Panneau latéral" };
-        break;
-
-      // Navigation
-     
-      case "sidebar":
-        newItem.props = { items: ["Menu 1", "Menu 2", "Menu 3"] };
-        break;
-      case "tabs":
-        newItem.props = { tabs: ["Tab 1", "Tab 2"], activeTab: "Tab 1" };
-        break;
-      case "breadcrumbs":
-        newItem.props = { path: ["Accueil", "Section", "Page"] };
         break;
 
       default:
@@ -313,7 +273,6 @@ const FlutterFlowClone = () => {
           onSelectWidget={handleSelectWidget}
         />
 
-
       {
         mode == "Edit" ? (
           <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
@@ -332,4 +291,4 @@ const FlutterFlowClone = () => {
   );
 };
 
-export default FlutterFlowClone;
+export default Interface;
