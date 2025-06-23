@@ -213,135 +213,197 @@ return (
     </div>
   </div>
 )}
+     
+{/* Image URL Input */}
+{item.type === "image" && (
+  <div className="space-y-4">
+    {/* Image Upload */}
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Upload Image
+      </label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              // Update src and maybe other props on image upload
+              updateProp("src", reader.result);
 
-
-
-      {/* Other properties excluding for icon, grid, text */}
-      {item.type !== "icon" && item.type !== "grid" && item.type !== "text" && (
-        <>
-          {/* Image URL Input */}
-          {item.type === "image" && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Image's URL
-              </label>
-              <input
-                type="text"
-                className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-                value={item.src || ""}
-                onChange={(e) => updateProp("src", e.target.value)}
-              />
-            </div>
-          )}
-
-          {/* Background Color */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Background Color
-            </label>
-            <input
-              type="color"
-              className="w-full h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer bg-transparent dark:bg-gray-900"
-              value={item.backgroundColor || "#ffffff"}
-              onChange={(e) => updateProp("backgroundColor", e.target.value)}
-            />
-          </div>
-
-          {/* Text Color */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Text Color
-            </label>
-            <input
-              type="color"
-              className="w-full h-8 rounded border border-gray-300 dark:border-gray-700 cursor-pointer bg-transparent dark:bg-gray-900"
-              value={item.textColor || "#000000"}
-              onChange={(e) => updateProp("textColor", e.target.value)}
-            />
-          </div>
-
-          {/* Font Size */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Font Size (px)
-            </label>
-            <input
-              type="number"
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-              value={item.fontSize || 14}
-              onChange={(e) => updateProp("fontSize", parseInt(e.target.value))}
-            />
-          </div>
-
-          {/* Border Radius */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Border Radius
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="50"
-              value={item.borderRadius || 0}
-              onChange={(e) => updateProp("borderRadius", parseInt(e.target.value))}
-              className="w-full cursor-pointer"
-            />
-          </div>
-
-          {/* Width */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Width (px)
-            </label>
-            <input
-              type="number"
-              value={item.width || 100}
-              onChange={(e) => updateProp("width", parseInt(e.target.value))}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-
-          {/* Height */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Height (px)
-            </label>
-            <input
-              type="number"
-              value={item.height || 50}
-              onChange={(e) => updateProp("height", parseInt(e.target.value))}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-
-          {/* Position X */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Position X
-            </label>
-            <input
-              type="number"
-              value={item.x || 0}
-              onChange={(e) => updateProp("x", parseInt(e.target.value))}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-
-          {/* Position Y */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Position Y
-            </label>
-            <input
-              type="number"
-              value={item.y || 0}
-              onChange={(e) => updateProp("y", parseInt(e.target.value))}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-        </>
-      )}
+              // Optional: set default width and height if you want
+              updateProp("width", 300);
+              updateProp("height", 200);
+            };
+            reader.readAsDataURL(file);
+          }
+        }}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
     </div>
+
+    {/* Image Preview */}
+    {item.src && (
+      <img
+        src={item.src}
+        alt={item.alt || "Preview"}
+        className="mt-2 rounded max-h-40 object-contain border border-gray-300 dark:border-gray-600"
+      />
+    )}
+
+    {/* Width */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Width (px)
+      </label>
+      <input
+        type="number"
+        min={1}
+        value={item.width || ""}
+        onChange={(e) =>
+          updateProp("width", e.target.value ? parseInt(e.target.value) : "")
+        }
+        placeholder="e.g. 300"
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
+    </div>
+
+    {/* Height */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Height (px)
+      </label>
+      <input
+        type="number"
+        min={1}
+        value={item.height || ""}
+        onChange={(e) =>
+          updateProp("height", e.target.value ? parseInt(e.target.value) : "")
+        }
+        placeholder="e.g. 200"
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
+    </div>
+  </div>
+)}
+
+
+ {/* Other properties excluding icon, grid, text, and image */}
+{item.type !== "icon" && item.type !== "grid" && item.type !== "text" && item.type !== "image" && (
+  <>
+    {/* Background Color */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Background Color
+      </label>
+      <input
+        type="color"
+        className="w-full h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer bg-transparent dark:bg-gray-900"
+        value={item.backgroundColor || "#ffffff"}
+        onChange={(e) => updateProp("backgroundColor", e.target.value)}
+      />
+    </div>
+
+    {/* Text Color */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Text Color
+      </label>
+      <input
+        type="color"
+        className="w-full h-8 rounded border border-gray-300 dark:border-gray-700 cursor-pointer bg-transparent dark:bg-gray-900"
+        value={item.textColor || "#000000"}
+        onChange={(e) => updateProp("textColor", e.target.value)}
+      />
+    </div>
+
+    {/* Font Size */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Font Size (px)
+      </label>
+      <input
+        type="number"
+        min={1}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+        value={item.fontSize || 14}
+        onChange={(e) => updateProp("fontSize", parseInt(e.target.value) || 14)}
+      />
+    </div>
+
+    {/* Border Radius */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Border Radius
+      </label>
+      <input
+        type="range"
+        min="0"
+        max="50"
+        value={item.borderRadius || 0}
+        onChange={(e) => updateProp("borderRadius", parseInt(e.target.value))}
+        className="w-full cursor-pointer"
+      />
+    </div>
+
+    {/* Width */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Width (px)
+      </label>
+      <input
+        type="number"
+        min={1}
+        value={item.width || 100}
+        onChange={(e) => updateProp("width", parseInt(e.target.value) || 100)}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
+    </div>
+
+    {/* Height */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Height (px)
+      </label>
+      <input
+        type="number"
+        min={1}
+        value={item.height || 50}
+        onChange={(e) => updateProp("height", parseInt(e.target.value) || 50)}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
+    </div>
+
+    {/* Position X */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Position X
+      </label>
+      <input
+        type="number"
+        value={item.x || 0}
+        onChange={(e) => updateProp("x", parseInt(e.target.value) || 0)}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
+    </div>
+
+    {/* Position Y */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Position Y
+      </label>
+      <input
+        type="number"
+        value={item.y || 0}
+        onChange={(e) => updateProp("y", parseInt(e.target.value) || 0)}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+      />
+    </div>
+  </>
+)}
+</div>
   );
 };
 

@@ -4,7 +4,7 @@ import { FiSearch} from "react-icons/fi";
 import * as FiIcons from "react-icons/fi"; 
 import { Rnd } from "react-rnd";
 
-const CanvasItem = ({ item, onUpdate, isSelected, onSelect,updateProp }) => {
+const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   const {
     borderRadius,
     src,
@@ -113,27 +113,15 @@ case "textfield":
 
 case "text":
   return (
-  <div
-  contentEditable
-  suppressContentEditableWarning={true}
+    <div
   style={{
-    fontFamily: item.fontFamily || "Arial, sans-serif",
-    fontWeight: item.bold ? "bold" : "normal",
-    fontStyle: item.italic ? "italic" : "normal",
-    textDecoration: item.underline ? "underline" : "none",
-    fontSize: item.fontSize ? item.fontSize : "16px",
+
     color: item.textColor || "black",
-    outline: "none", // optional: remove focus outline
-    whiteSpace: "pre-wrap", // keep line breaks
-    cursor: "text",
   }}
-  onInput={(e) => updateProp("content", e.currentTarget.textContent)}
-  role="textbox"
-  aria-multiline="true"
-  spellCheck={true}
 >
-  {item.content || "Enter a text"}
+  {item.content || "Enter a text"} 
 </div>
+
   );
 
 
@@ -152,10 +140,20 @@ case "checkbox":
         );
 
 case "icon":
-  const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
+  const SelectedIcon =
+    FiIcons[item.iconName] && typeof FiIcons[item.iconName] === "function"
+      ? FiIcons[item.iconName]
+      : FiIcons.FiBox;
+
   return (
     <div style={commonStyle}>
-      <SelectedIcon size={item.fontSize || 24} color={item.textColor || "#000"} />
+      <SelectedIcon
+        size={item.fontSize || 24}
+        color={item.textColor || "#000"}
+        style={{
+          strokeWidth: 1.0,
+        }}
+      />
     </div>
   );
 

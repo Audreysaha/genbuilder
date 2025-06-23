@@ -116,6 +116,7 @@ const Canvas = forwardRef(
     };
 
     useEffect(() => {
+      
       const handleKeyDown = (e) => {
         const target = e.target;
         const isInput =
