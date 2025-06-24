@@ -25,52 +25,50 @@ const ProjectsDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const api = new API();
-  const user = jwtDecode(LocalStorageManager.getItem("token"));
+  const token = LocalStorageManager.getItem("token");
+  const user = token ? jwtDecode(token) : null;
 
   const fetchProjects = async () => {
-    try {
-      const res = await api.getData(
-        `${api.apiUrl}/api/project/${user.id}/projects`
-      );
-      setProjects(res);
-      setFilteredProjects(res);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error loading projects:", err);
-      setLoading(false);
-    }
+    if (!user) return;
+    await api.getData(`${api.apiUrl}/api/project/${user.id}/projects`)
+      .then((res) => {
+        const safeProjects = Array.isArray(res) ? res : [];
+        setProjects(safeProjects);
+        setFilteredProjects(safeProjects);
+        setLoading(false);
+      }).catch((err) => {
+        console.error("Error loading projects:", err);
+        setProjects([]);
+        setFilteredProjects([]);
+        setLoading(false);
+        throw new Error(err);
+      })
   };
 
   useEffect(() => {
-    if (location.state?.reloadProjects) {
-      fetchProjects();
-      window.history.replaceState({}, document.title);
-    } else {
-      fetchProjects();
-    }
-  }, [location.state]);
+    fetchProjects();
+  }, []);
 
   useEffect(() => {
     const filtered = projects.filter((project) =>
-      project.name.toLowerCase().includes(searchTerm.toLowerCase())
+      project.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredProjects(filtered);
   }, [searchTerm, projects]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuProjectId(null);
       }
     };
+
     if (menuProjectId !== null) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -86,17 +84,15 @@ const ProjectsDashboard = () => {
 
   const handleRenameProject = async (projectId) => {
     const currentProject = projects.find((p) => p.id === projectId);
-    const newName = window.prompt("Rename project:", currentProject?.name);
-    if (!newName || newName.trim() === "" || newName === currentProject?.name)
-      return;
+    if (!currentProject) return;
+
+    const newName = window.prompt("Rename project:", currentProject.name);
+    if (!newName || newName.trim() === "" || newName === currentProject.name) return;
 
     try {
       await api.putData(
         `${api.apiUrl}/api/project/${projectId}/projects`,
-        {
-          id: projectId,
-          name: newName.trim(),
-        },
+        { id: projectId, name: newName.trim() },
         false
       );
       fetchProjects();
@@ -109,11 +105,7 @@ const ProjectsDashboard = () => {
 
   const handleDuplicateProject = async (projectId) => {
     try {
-      await api.postData(
-        `${api.apiUrl}/api/project/duplicate/${projectId}`,
-        {},
-        false
-      );
+      await api.postData(`${api.apiUrl}/api/project/duplicate/${projectId}`, {}, false);
       fetchProjects();
     } catch (err) {
       console.error("Error duplicating project:", err);
@@ -123,17 +115,14 @@ const ProjectsDashboard = () => {
   };
 
   const handleDeleteProject = async (projectId) => {
-      try {
-        await api.deleteData(`${api.apiUrl}/api/project/remove/${projectId}`,
-          {},
-          false
-        );
-        fetchProjects();
-      } catch (err) {
-        console.error("Error deleting project:", err);
-      } finally {
-        setMenuProjectId(null);
-      }
+    try {
+      await api.deleteData(`${api.apiUrl}/api/project/remove/${projectId}`, {}, false);
+      fetchProjects();
+    } catch (err) {
+      console.error("Error deleting project:", err);
+    } finally {
+      setMenuProjectId(null);
+    }
   };
 
   const getRandomGradient = () => {
@@ -144,6 +133,10 @@ const ProjectsDashboard = () => {
     ];
     return gradients[Math.floor(Math.random() * gradients.length)];
   };
+
+  if (!user) {
+    return <div className="text-center text-red-500 mt-10">Utilisateur non connecté.</div>;
+  }
 
   if (loading) {
     return (
@@ -176,14 +169,13 @@ const ProjectsDashboard = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FiSearch className="text-gray-500" />
               </div>
-             <input
-             type="text"
-             className="block w-[517px] pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 text-gray-500 transition-all duration-200"
-             placeholder="Search..."
-             value={searchTerm}
-             onChange={(e) => setSearchTerm(e.target.value)}
-/>
-
+              <input
+                type="text"
+                className="block w-[517px] pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 text-gray-500 transition-all duration-200"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
             <button
               onClick={() => navigate(`/interface/temp-${Date.now()}`)}
@@ -241,12 +233,11 @@ const ProjectsDashboard = () => {
                   transition={{ duration: 0.3 }}
                   className="relative h-full flex flex-col rounded-xl overflow-hidden border border-gray-700/50 transition-all duration-300 shadow-white/20 shadow-md"
                 >
-                  {/* Card Header */}
                   <div className={`${getRandomGradient()} p-5`}>
                     <div className="flex justify-between items-start">
                       <div className="flex items-center space-x-3">
                         <div className="w-12 h-12 rounded-lg bg-black/20 flex items-center justify-center text-xl font-bold text-white border border-white/10">
-                          {project.name.charAt(0)}
+                          {project.name?.charAt(0) || "P"}
                         </div>
                         <div>
                           <h3 className="font-bold text-white truncate max-w-[140px]">
@@ -254,12 +245,13 @@ const ProjectsDashboard = () => {
                           </h3>
                           <p className="text-xs text-white/80">
                             Modified:{" "}
-                            {new Date(project.updatedAt).toLocaleDateString()}
+                            {project.updatedAt
+                              ? new Date(project.updatedAt).toLocaleDateString()
+                              : "Unknown"}
                           </p>
                         </div>
                       </div>
 
-                      {/* Menu Icon */}
                       <div className="relative">
                         <button
                           onClick={(e) => {
@@ -271,7 +263,6 @@ const ProjectsDashboard = () => {
                           <FiMoreVertical />
                         </button>
 
-                        {/* Dropdown Menu */}
                         {menuProjectId === project.id && (
                           <motion.div
                             ref={menuRef}
@@ -308,7 +299,6 @@ const ProjectsDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Open button below header */}
                   <div className="p-5 flex justify-end">
                     <button
                       onClick={() => handleOpenProject(project.id)}
@@ -318,27 +308,25 @@ const ProjectsDashboard = () => {
                     </button>
                   </div>
 
-                  {/* Card Footer */}
                   <div className="bg-black-800 border-t border-gray-800 p-4 flex items-center space-x-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span className="text-xs text-gray-400">Active</span>
                   </div>
                 </motion.div>
               ))}
-            </AnimatePresence>
 
-            {/* Add New Project Card */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex items-center justify-center p-8 rounded-xl border-2 border-dashed border-gray-500 hover:border-indigo-400/50 cursor-pointer transition-all duration-300 bg-gray-800/50"
-              onClick={() => navigate(`/interface/temp-${Date.now()}`)}
-            >
-              <div className="text-center">
-                <FiPlus className="mx-auto text-3xl text-indigo-400 mb-2" />
-                <p className="text-indigo-400 font-medium">New Project</p>
-              </div>
-            </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center justify-center p-8 rounded-xl border-2 border-dashed border-gray-500 hover:border-indigo-400/50 cursor-pointer transition-all duration-300 bg-gray-800/50"
+                onClick={() => navigate(`/interface/temp-${Date.now()}`)}
+              >
+                <div className="text-center">
+                  <FiPlus className="mx-auto text-3xl text-indigo-400 mb-2" />
+                  <p className="text-indigo-400 font-medium">New Project</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         )}
       </div>

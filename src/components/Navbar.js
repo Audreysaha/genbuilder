@@ -36,11 +36,13 @@ const Navbar = ({
   handleRedoClick,
   mode,
   setMode,
+  setDevice
 }) => {
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [language, setLanguage] = useState("en");
   const [active, setActive] = useState(null);
+  const [viewMode, setViewMode] = useState("web");
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -64,20 +66,24 @@ const Navbar = ({
   const handleCreateProject = async () => {
     const name = prompt("Enter a project name:");
     if (!name || !name.trim()) return;
-    try {
-      await api.postData(
-        `${api.apiUrl}/api/project/save`,
-        {
-          name: name.trim(),
-          userId: user.id,
-        },
-        false
-      );
-      alert("Project saved successfully!"); // Confirmation without navigation
-      // No navigation here - stays on same page
-    } catch (err) {
+    await api.postData(`${api.apiUrl}/api/project/save`,
+      {
+        name: name.trim(),
+        userId: user.id,
+      },
+      false
+    ).then((res) => {
+      api.postData(`${api.apiUrl}/api/project/${res.id}/pages`, {name: "Page1"})
+      .then(() => {
+        alert("Project saved successfully!");
+        navigate(`/interface/${res.id}`)
+      }).catch((err) => {
+        throw new Error(err);
+      })
+    }).catch((err) => {
       console.error("Error when creating Project:", err);
-    }
+      throw new Error(err);
+    })
   };
 
   const authLinks = [
@@ -121,9 +127,7 @@ const Navbar = ({
                 Save
               </button>
 
-              <button
-                className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white"
-              >
+              <button className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white">
                 Save As
               </button>
 
@@ -221,36 +225,62 @@ const Navbar = ({
         </div>
       </div>
 
-      {/* Center: Device Buttons */}
-      <div className="flex justify-center items-center space-x-1">
-        {[
-          { icon: FaMobileAlt, size: 18, type: "mobile" },
-          { icon: FaTabletAlt, size: 18, type: "tablet" },
-          { icon: FaDesktop, size: 20, type: "desktop" },
-        ].map(({ icon: Icon, size, type }) => {
-          const isActive = deviceSize === type;
-          return (
+      {/* Center: Device Toggle + Buttons */}
+      <div className="flex items-center space-x-4">
+        {/* View Mode Toggle */}
+        <div className="flex items-center border rounded-full overflow-hidden text-sm">
+          {["web", "mobile"].map((modeOption) => (
             <button
-              key={type}
-              onClick={() => setDeviceSize(type)}
-              className={`p-1 rounded ${
-                isActive
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              key={modeOption}
+              onClick={() => {
+                setViewMode(modeOption);
+                setDevice(modeOption);
+                setDeviceSize(modeOption === "web" ? "desktop" : "mobile");
+              }}
+              className={`px-3 py-1 transition-colors ${
+                viewMode === modeOption
+                  ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                  : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
               }`}
-              title={type}
             >
-              <Icon
-                size={size}
-                className={`${
-                  isActive
-                    ? "text-blue-800 dark:text-white"
-                    : "text-gray-700 dark:text-white"
-                }`}
-              />
+              {modeOption.charAt(0).toUpperCase() + modeOption.slice(1)}
             </button>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Device Size Buttons */}
+        <div className="flex items-center space-x-2">
+          {(viewMode === "web"
+            ? [
+                { icon: FaTabletAlt, size: 18, type: "tablet" },
+                { icon: FaDesktop, size: 20, type: "desktop" },
+              ]
+            : [{ icon: FaMobileAlt, size: 18, type: "mobile" }]
+          ).map(({ icon: Icon, size, type }) => {
+            const isActive = deviceSize === type;
+            return (
+              <button
+                key={type}
+                onClick={() => setDeviceSize(type)}
+                className={`p-1 rounded ${
+                  isActive
+                    ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+                title={type}
+              >
+                <Icon
+                  size={size}
+                  className={`${
+                    isActive
+                      ? "text-blue-800 dark:text-white"
+                      : "text-gray-700 dark:text-white"
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Right Controls */}
@@ -266,7 +296,7 @@ const Navbar = ({
           <FiCode size={20} />
         </button>
 
-        {/* 🌙 Dark Mode Toggle */}
+        {/*Dark Mode Toggle */}
         <button
           onClick={() => setDarkMode((prev) => !prev)}
           className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"

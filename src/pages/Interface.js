@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FaHeading,FaCreditCard,FaEllipsisV,FaEllipsisH, FaFont } from "react-icons/fa";
-import { HiH1,HiH2,HiH3, HiLink, HiMiniBars3, HiWindow } from "react-icons/hi2";
+import { useEffect, useRef, useState } from "react";
+import { FaCreditCard, FaEllipsisV, FaEllipsisH } from "react-icons/fa";
+import { HiH1, HiH2, HiH3, HiLink, HiWindow } from "react-icons/hi2";
 import {
   FiColumns,
   FiCheckSquare,
@@ -15,10 +15,7 @@ import {
   FiImage,
   FiList,
   FiSquare,
-  FiUnderline,
   FiStar,
-  
-  
 } from "react-icons/fi";
 import Canvas from "../components/Canvas";
 import SidebarBuilder from "../components/SidebarBuilder";
@@ -34,13 +31,17 @@ const FlutterFlowClone = () => {
   const [darkMode] = useState(true);
   const [activeTab, setActiveTab] = useState("widgets");
   const [selectedWidget, setSelectedWidget] = useState(null);
-  const [deviceSize, setDeviceSize] = useState("mobile");
+  const [deviceSize, setDeviceSize] = useState("desktop");
   const [showCode, setShowCode] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [mode, setMode] = useState("Edit");
+  const [device, setDevice] = useState("web");
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activePageId, setActivePageId] = useState("");
+  const [projectPages, setProjectPages] = useState([]);
+
   const api = new API();
   const { projectId } = useParams();
 
@@ -80,18 +81,17 @@ const FlutterFlowClone = () => {
     { type: "dropdown", label: "Dropdown", icon: FiChevronDown },
     { type: "search", label: "Search", icon: FiSearch },
     { type: "list", label: "List", icon: FiList },
-    
   ];
 
   const layoutElements = [
-    { type: "container", label: "Container", icon: FiSquare},
-    { type: "grid", label: "Grid", icon: FiGrid},
+    { type: "container", label: "Container", icon: FiSquare },
+    { type: "grid", label: "Grid", icon: FiGrid },
     { type: "div", label: "Div", icon: FiColumns },
-    { type: "H flex", label: "H flex", icon: FaEllipsisH},
-    { type: "V flex", label: "V flex", icon: FaEllipsisV},
+    { type: "H flex", label: "H flex", icon: FaEllipsisH },
+    { type: "V flex", label: "V flex", icon: FaEllipsisV },
     { type: "sidebar", label: "SideBar", icon: FiSidebar },
     { type: "card", label: "Cards", icon: FaCreditCard },
-    { type: "NavBar", label: "NavBar", icon:HiWindow },
+    { type: "NavBar", label: "NavBar", icon: HiWindow },
   ];
 
   const topographyElements = [
@@ -99,23 +99,21 @@ const FlutterFlowClone = () => {
     { type: "H2", label: "H2", icon: HiH2 },
     { type: "H3", label: "H3", icon: HiH3 },
     { type: "Link", label: "Links", icon: HiLink },
-    { type: "H1", label: "",  },
-    
-    
+    { type: "H1", label: "" },
   ];
 
   const mediaElements = [
-  { type: "image", label: "Images", icon: FiImage },
-  { type: "video", label: "Videos", icon: FiVideo },
-  ]
+    { type: "image", label: "Images", icon: FiImage },
+    { type: "video", label: "Videos", icon: FiVideo },
+  ];
 
   // Sections extensibles
   const [expandedSections, setExpandedSections] = useState({
-  topographyElements: true,
-  inputControls: true, 
-  layoutElements: true,
-  mediaElements: true,
-});
+    topographyElements: true,
+    inputControls: true,
+    layoutElements: true,
+    mediaElements: true,
+  });
 
   const toggleSection = (id) => {
     setExpandedSections((prev) => ({
@@ -218,7 +216,7 @@ const FlutterFlowClone = () => {
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
 
   const [topTab, setTopTab] = useState("widgets");
-  
+
   const { width, height } = getDeviceDimensions();
 
   const updateItem = (id, updatedAttributes) => {
@@ -258,8 +256,30 @@ const FlutterFlowClone = () => {
           throw new Error("Projet not FOUND.");
         }
         setProject(res);
-        if (res?.canvasItems?.length) {
-          setCanvasItems(res.canvasItems);
+        if (res.pages?.length) {
+          if (device === "mobile") {
+            setCanvasItems(res.pages[0].canvasMobile);
+            setActivePageId(res.pages[0].id);
+            setProjectPages(
+              res.pages?.map((page) => {
+                return {
+                  id: page.id,
+                  name: page.name,
+                };
+              })
+            );
+          } else if (device === "web") {
+            setCanvasItems(res.pages[0].canvasWeb);
+            setActivePageId(res.pages[0].id);
+            setProjectPages(
+              res.pages?.map((page) => {
+                return {
+                  id: page.id,
+                  name: page.name,
+                };
+              })
+            );
+          }
         }
       } catch (err) {
         console.error(err);
@@ -270,7 +290,7 @@ const FlutterFlowClone = () => {
     };
 
     fetchProject();
-  }, [projectId]);
+  }, [projectId, device]);
 
   return (
     <div className="flex flex-col h-screen bg-white text-gray-900">
@@ -286,6 +306,7 @@ const FlutterFlowClone = () => {
         handleRedoClick={handleRedoClick}
         mode={mode}
         setMode={setMode}
+        setDevice={setDevice}
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
@@ -301,7 +322,10 @@ const FlutterFlowClone = () => {
           mediaElements={mediaElements}
           layoutElements={layoutElements}
           topographyElements={topographyElements}
-          addComponentToCanvas={addComponentToCanvas} // si tu veux déclencher l'ajout depuis SidebarBuilder
+          addComponentToCanvas={addComponentToCanvas}
+          projectPages={projectPages} // <- array: [{ id, name }]
+          activePageId={activePageId}
+          onSelectPage={setActivePageId}
         />
 
         <Canvas
@@ -310,20 +334,21 @@ const FlutterFlowClone = () => {
           width={width}
           height={height}
           zoom={zoom}
+          deviceSize={deviceSize}
+          device={device}
+          project={project}
+          activePageId={activePageId}
           canvasItems={canvasItems}
           setCanvasItems={setCanvasItems}
           addComponentToCanvas={addComponentToCanvas}
           onSelectWidget={handleSelectWidget}
         />
 
-
-      {
-        mode == "Edit" ? (
+        {mode === "Edit" ? (
           <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
         ) : (
           <Chat />
-        )
-      }
+        )}
       </div>
 
       <HTMLPreviewModal

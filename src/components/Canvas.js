@@ -20,6 +20,10 @@ const Canvas = forwardRef(
       addComponentToCanvas,
       onSelectWidget,
       projectId,
+      deviceSize,
+      project,
+      activePageId,
+      device
     },
     ref
   ) => {
@@ -43,11 +47,12 @@ const Canvas = forwardRef(
     };
 
     const saveCanvasToDatabase = async () => {
-      console.log(projectId);
+      console.log(project.pages);
+      device === "mobile" ?  project.pages.filter(page => page.id == activePageId)[0].canvasMobile = canvasItems : project.pages.filter(page => page.id == activePageId)[0].canvasWeb = canvasItems;
       try {
         await api.putData(
           api.apiUrl + `/api/project/update/${projectId}`,
-          { canvasItems },
+          {pages: project.pages},
           false
         );
       } catch (error) {
@@ -61,6 +66,8 @@ const Canvas = forwardRef(
     );
 
     useEffect(() => {
+      console.log("lenght...")
+      console.log(canvasItems.length)
       if (canvasItems.length > 0) {
         debouncedSave();
       }

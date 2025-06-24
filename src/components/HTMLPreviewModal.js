@@ -1,9 +1,9 @@
 // components/HTMLPreviewModal.tsx
 import { AnimatePresence, motion } from "framer-motion";
-import { generateHTMLCode } from "../utils/generateHTMLCode";
+import { generateReactCode } from "../utils/generateHTMLCode";
 
 const HTMLPreviewModal = ({ show, onClose, widgets }) => {
-  const htmlCode = generateHTMLCode(widgets);
+  const htmlCode = generateReactCode(widgets);
 
   return (
     <AnimatePresence>
