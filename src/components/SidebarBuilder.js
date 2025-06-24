@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiGrid, FiLayers, FiSearch, FiChevronRight,FiPlus} from "react-icons/fi";
+import { FiLayers, FiSearch, FiChevronRight,FiPlus} from "react-icons/fi";
 
 export default function SidebarBuilder({
   activeTab,
@@ -28,7 +28,6 @@ export default function SidebarBuilder({
         items.filter((item) =>
           item.label.toLowerCase().includes(searchTerm.toLowerCase())
         );
-
       setFilteredVisual(filterItems(visualItems));
       setFilteredMedia(filterItems(mediaElements));
       setFilteredLayout(filterItems(layoutElements));
@@ -50,13 +49,7 @@ export default function SidebarBuilder({
     }
   };
 
-  // Delete page by filtering it out
-  const handleDeletePage = (pageToDelete) => {
-    if (window.confirm(`Are you sure you want to delete the page "${pageToDelete}"?`)) {
-      setPages((prev) => prev.filter((p) => p !== pageToDelete));
-    }
-  };
-  const [setPages] = useState(["Home", "About", "Contact", "Services", "Blog"]);
+  const [setPages] = useState(["Home", "About", "Contact",]);
 
   return (
     <>
@@ -108,7 +101,6 @@ export default function SidebarBuilder({
         >
         <FiPlus size={20} />
         </button>
-          
           <button
             onClick={() => setActiveTab("layers")}
             className={`p-3 rounded-lg transition-colors ${
@@ -129,9 +121,9 @@ export default function SidebarBuilder({
       </div>
           
         <div className="border-b border-gray-300 dark:border-gray-700 mb-3" />
-       <ul className="space-y-2 flex-1 overflow-y-auto">
-  {pages && pages.length > 0 ? (
-    pages.map((page) => (
+        <ul className="space-y-2 flex-1 overflow-y-auto">
+      {pages && pages.length > 0 ? (
+      pages.map((page) => (
       <li
         key={page}
         className="flex h-[50px] justify-between text-[18px] items-center cursor-pointer p-2 bg-gray-200 dark:bg-gray-800 rounded-[15px] hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-800 dark:text-gray-200"
@@ -139,13 +131,12 @@ export default function SidebarBuilder({
       >
         <span className="flex-1 px-2">{page}</span>
       </li>
-    ))
-  ) : (
-    <p className="px-2 text-gray-600 dark:text-gray-400">No pages created yet.</p>
-  )}
-</ul>
-
-        </aside>
+      ))
+      ) : (
+      <p className="px-2 text-gray-600 dark:text-gray-400">No pages created yet.</p>
+      )}
+    </ul>
+    </aside>
       )}
 
         {/* Main sidebar content */}
@@ -174,9 +165,8 @@ export default function SidebarBuilder({
                 </div>
               </div>
             </div>
-
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pb-3">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pb-8">
               {/* Form Elements */}
               {filteredVisual.length > 0 && (
                 <Section

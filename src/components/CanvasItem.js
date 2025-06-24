@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import lowcode from "../assets/images/lowcode.jpeg";
 import { FiSearch} from "react-icons/fi";
 import * as FiIcons from "react-icons/fi"; 
@@ -11,7 +11,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
     content,
     type,
   } = item;
-
+  
   const initialX = item.x ?? Math.floor(Math.random() * 200);
   const initialY = item.y ?? Math.floor(Math.random() * 200);
 
@@ -36,10 +36,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   const commonStyle = {
     backgroundColor: item.backgroundColor || "transparent",
     borderRadius: item.borderRadius ? `${item.borderRadius}px` : "none",
-    // color: item.textColor || "#000000",
     fontSize: item.fontSize ? `${item.fontSize}px` : "Arial",
-    // fontWeight: item.fontWeight || "normal",
-    // boxSizing: "border-box",
     padding: "1px",
     cursor: "cursor",
     userSelect: "none",
@@ -125,8 +122,6 @@ case "text":
   );
 
 
-
-
 case "checkbox":
         return (
           <label
@@ -160,27 +155,27 @@ case "icon":
 case "dropdown":
   return (
     <select
-      className="w-full h-full"
+      className="w-full h-[50px] bg-gray-200 text-sm rounded px-2 cursor-pointer focus:outline-none"
       style={{
         ...inputStyle,
         backgroundColor: item.backgroundColor || "#e5e7eb",
-        height: "50px",
-        cursor: "grab",
-        border: "none",  
-        outline: "none", 
+        appearance: "auto", // ensures native dropdown UI
       }}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(item.id);
       }}
-      value={content || "Select an option"}
+      value={content || ""}
       onChange={(e) => onUpdate(item.id, { content: e.target.value })}
     >
-      <option disabled>Select an option</option>
-      <option>Option 1</option>
-      <option>Option 2</option>
+      <option value="" disabled>
+        Select an option
+      </option>
+      <option value="Option 1">Option 1</option>
+      <option value="Option 2">Option 2</option>
     </select>
   );
+
 
 case "search":
   return (
@@ -238,10 +233,6 @@ case "list":
         ))}
     </ul>
   );
-
-
-
-
 
 case "container":
   return (
@@ -357,6 +348,21 @@ case "grid": {
     </div>
   );
 }
+
+case "wireframe":
+  return (
+    <div
+      className="w-full h-[200px] bg-gray-100 border border-dashed border-gray-400 text-center flex items-center justify-center text-gray-500 cursor-grab"
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(item.id);
+      }}
+    >
+      Wireframe Placeholder
+    </div>
+  );
+
+
 case "navbar":
   return (
     <nav
@@ -380,8 +386,6 @@ case "navbar":
             <div>Logout</div>
           </aside>
         );
-
-
 
       case "image":
         return (
@@ -509,6 +513,12 @@ case "H5":
   onClick={(e) => {
     e.stopPropagation();
     onSelect();
+  }}
+  onContextMenu={(e) => {
+    e.preventDefault();
+    if (typeof window.showCanvasContextMenu === "function") {
+      window.showCanvasContextMenu(e, item.id);
+    }
   }}
   enableResizing={true}
   style={{

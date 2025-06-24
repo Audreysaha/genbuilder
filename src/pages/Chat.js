@@ -57,14 +57,14 @@ function Chat() {
   };
 
   return (
-    <div className="bg-gray-50 h-full">
-      <div className="w-[300px] ml-auto border-b border-gray-200 bg-white shadow-lg flex flex-col justify-between h-full">
+    <div className="bg-gray-50  h-full">
+      <div className="w-[340px] ml-auto border-b border-gray-200 bg-white dark:bg-gray-900 shadow-lg flex flex-col justify-between h-full">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-1">
-          <h2 className="font-semibold text-gray-700">Chat</h2>
+        <div className="flex items-center justify-between border-b border-gray-300 px-4 py-3">
+          <h1 className="font-semibold text-[20px] text-gray-700 font-Sans dark:text-white ">GenBuilder-AI</h1>
           <button
             onClick={handleRefresh}
-            className="text-gray-500 hover:text-red-500 p-1 rounded-md hover:bg-red-100"
+            className="text-gray-500 dark:text-white hover:text-red-500 dark:hover:text-red-500 p-1 rounded-md hover:bg-red-200"
             title="Clear chat"
           >
             <RefreshCw size={18} />
@@ -76,8 +76,7 @@ function Chat() {
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <h3 className="text-black font-semibold mb-2">How can I help you?</h3>
-                <p className="text-gray-600 text-sm">Ask me anything or attach a file...</p>
+                <h3 className="text-black dark:text-white font-semibold mb-2">How can I help you?</h3>
               </div>
             </div>
           ) : (
@@ -114,7 +113,7 @@ function Chat() {
         </div>
 
         {/* Message Input */}
-        <div className="border-t border-gray-200 p-3">
+        <div className="border-t border-gray-200  dark:border-gray-500 p-3">
           <form onSubmit={handleSendMessage}>
             <div className="relative flex items-center">
               {/* Text Area */}
@@ -128,7 +127,7 @@ function Chat() {
     }
   }}
   placeholder="Ask your question..."
-  className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 pt-3 pb-5 text-sm text-black placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+  className="w-full resize-none rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-500  px-3 pt-3 pb-5 text-sm text-black placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
   rows={2}
 />
 

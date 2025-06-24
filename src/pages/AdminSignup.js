@@ -10,7 +10,6 @@ export default function Signup() {
     name: '',
     email: '',
     password: '',
-    role: 'user', // Default role
   });
 
   const [isLoading, setIsLoading] = useState(false);

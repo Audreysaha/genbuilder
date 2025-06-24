@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Adminlogin from './pages/AdminLogin';
+import AdminSignup from './pages/AdminSignup';
 import Register from './pages/Signup';
 import Interface from './pages/Interface';
 import Docs from './pages/Docs';
@@ -14,6 +16,7 @@ import ProjectsDashboard from './components/ProjectsDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import { LocalStorageManager } from './utils/LocalStorageManager';
 import Navbar from './components/Navbar';
+
 
 
 // 🔐 Composant de protection des routes privées   Components for private route protection
@@ -64,6 +67,9 @@ useEffect(() => {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/AdminLogin" element={<Adminlogin />} />
+       
+       {/*<Route path="/AdminSignup" element={<AdminSignup />} />*/} 
 
         {/* Protected Routes */}
         <Route path="/project_dashboard" element={<PrivateRoute element={<ProjectsDashboard />} />} />

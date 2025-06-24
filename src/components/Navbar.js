@@ -4,7 +4,7 @@ import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay, FiSave } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
-import { HiChevronUpDown, HiLanguage, HiMiniArrowLeftEndOnRectangle, HiMiniBars3,} from "react-icons/hi2";
+import { HiChevronUpDown, HiMiniArrowLeftEndOnRectangle, HiMiniBars3,} from "react-icons/hi2";
 import { ArrowRightOnRectangleIcon, UserPlusIcon,} from "@heroicons/react/24/outline";
 import { LocalStorageManager } from "../utils/LocalStorageManager";
 import API from "../utils/API";
@@ -23,21 +23,26 @@ const Navbar = ({
   setMode,
 }) => {
   const [open, setOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
-  const [language, setLanguage] = useState("en");
-  const langRef = useRef(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [active, setActive] = useState(null);
+  const searchRef = useRef(null);
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
+  const [search, setSearch] = useState("");
+  const [pages, setPages] = useState([
+    { id: 1, name: "Home" },
+    { id: 2, name: "About" },
+    { id: 3, name: "Contact" },
+    { id: 4, name: "Dashboard" },
+    { id: 5, name: "Settings" },
+  ]);
 
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  // const navigate = useNavigate();
   const api = new API();
   const user = jwtDecode(LocalStorageManager.getItem("token")); 
-  // const isAuthenticated = !!LocalStorageManager.getItem("token")
 
   useEffect(() => {
     const root = document.documentElement;
@@ -49,6 +54,20 @@ const Navbar = ({
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+  
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   //for menu click outside
   useEffect(() => {
@@ -61,22 +80,9 @@ const Navbar = ({
         setOpen(false);
       }
     };
-     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
- //for language click outside
-  useEffect(() => {
-  const handleClickOutsideLang = (event) => {
-    if (langRef.current && !langRef.current.contains(event.target)) {
-      setLangOpen(false);
-    }
-  };
-  document.addEventListener("mousedown", handleClickOutsideLang);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutsideLang);
-  };
-}, []);
 
   // Modified handleCreateProject to save project but stay on the same interface
   const handleCreateProject = async () => {
@@ -115,6 +121,9 @@ const Navbar = ({
   ];
 
   const isAuthenticated = !!LocalStorageManager.getItem("token");
+  const filteredPages = pages.filter(page =>
+    page.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
       <div className="flex items-center justify-between h-[55px] px-4 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
@@ -173,7 +182,7 @@ const Navbar = ({
         </div>
 
         {/* Search */}
-        <div className="relative w-[170px]">
+        <div className="relative w-[170px]" ref={searchRef} >
           <div className="absolute inset-y-1 left-1 flex items-center pointer-events-none">
             <FaHome className="text-gray-600 dark:text-gray-300" size={17} />
           </div>
@@ -186,36 +195,49 @@ const Navbar = ({
           <input
             type="search"
             placeholder="Home"
-            className="w-full pl-7 pr-8 py-1 rounded border text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Language Selector */}
-        <div className="relative" ref={langRef}>
-          <button
-            onClick={() => setLangOpen(!langOpen)}
-            className="h-7 px-2 border rounded text-sm flex items-center space-x-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white"
-          >
-            <HiLanguage size={16} />
-            <span>{language}</span>
-          </button>
-          {langOpen && (
-            <ul className="absolute mt-1 rounded shadow-lg w-full z-10 text-xs border bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600">
-              {["en", "de", "fr"].map((lang) => (
-                <li
-                  key={lang}
-                  onClick={() => {
-                    setLanguage(lang);
-                    setLangOpen(false);
-                  }}
-                  className="px-3 py-1 hover:bg-indigo-300 dark:hover:bg-indigo-700 hover:text-white cursor-pointer"
-                >
-                  {lang}
-                </li>
-              ))}
-            </ul>
+            value={search}
+           onChange={e => {
+          setSearch(e.target.value);
+          setDropdownOpen(true);
+        }}
+        onFocus={() => setDropdownOpen(true)}
+        className="w-full pl-7 pr-8 py-1 rounded border text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+      />
+          {search && dropdownOpen &&  (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow z-20 max-h-40 overflow-y-auto">
+              {filteredPages.length > 0 ? (
+                filteredPages.map(page => (
+                  <div
+                    key={page.id}
+                    className="px-3 py-1 hover:bg-indigo-100  dark:text-white dark:hover:bg-indigo-700 cursor-pointer text-sm"
+                    onClick={() => {
+                      setSearch(page.name);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {page.name}
+                  </div>
+                ))
+              ) : (
+                <div className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">
+                  No results
+                </div>
+              )}
+            </div>
           )}
         </div>
+
+      {/* save button for pages */}
+      <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-2 py-1 rounded-md text-sm font-medium flex items-center 
+              bg-gray-200 hover:bg-indigo-400 text-gray-900 
+              dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white
+              border border-gray-300 dark:border-blue-600">
+      <FiSave className="mr-1" />
+      Save
+      </motion.button>
 
         {/* Zoom Controls */}
         <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
@@ -276,10 +298,10 @@ const Navbar = ({
           className={`p-3 rounded-lg ${
             showCode
               ? "bg-blue-100 text-white dark:bg-blue-700"
-              : "hover:bg-indigo-200 dark:hover:bg-indigo-700"
+              : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
           }`}
         >
-          <FiCode size={20} />
+          <FiCode size={20}  />
         </button>
 
         {/* 🌙 Dark Mode Toggle */}
@@ -300,8 +322,7 @@ const Navbar = ({
                 ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
                 : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
-            title="Undo"
-          >
+            title="Undo">
             <RotateCcw className="w-5 h-5" />
           </div>
           <div
@@ -311,8 +332,7 @@ const Navbar = ({
                 ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
                 : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
-            title="Redo"
-          >
+            title="Redo">
             <RotateCw className="w-5 h-5" />
           </div>
         </div>
@@ -340,15 +360,6 @@ const Navbar = ({
             Edit
           </button>
         </div>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-indigo-700 hover:bg-blue text-white dark:bg-blue dark:hover:bg-blue"
-        >
-          <FiSave className="mr-1" />
-          Save
-        </motion.button>
 
         <motion.button
           whileHover={{ scale: 1.05 }}

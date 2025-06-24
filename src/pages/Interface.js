@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FaEllipsisV,FaEllipsisH, FaFont } from "react-icons/fa";
+import { RxFrame } from "react-icons/rx";
 import { HiH1,HiH2,HiH3, HiLink,HiWindow } from "react-icons/hi2";
 import { RiH4,RiH5 } from "react-icons/ri";
 import { FiColumns,FiCheckSquare, FiType, FiSearch, FiSend, FiEdit,FiChevronDown,FiSidebar,FiVideo,FiGrid,FiImage,FiList,FiSquare,FiStar} from "react-icons/fi";
@@ -44,13 +44,13 @@ const Interface = () => {
   const getDeviceDimensions = () => {
     switch (deviceSize) {
       case "mobile":
-        return { width: 375, height: 540 };
+        return { width: 375, height: 640 };
       case "tablet":
-        return { width: 555, height: 540 };
+        return { width: 675, height: 670 };
       case "desktop":
-        return { width: 1655, height: 490 };
+        return { width: 1655, height: 620 };
       default:
-        return { width: 375, height: 667 };
+        return { width: 555, height: 767 };
     }
   };
 
@@ -70,9 +70,8 @@ const Interface = () => {
     { type: "container", label: "Container", icon: FiSquare},
     { type: "grid", label: "Grid", icon: FiGrid},
     { type: "div", label: "Div", icon: FiColumns },
-    { type: "H flex", label: "H flex", icon: FaEllipsisH},
-    { type: "V flex", label: "V flex", icon: FaEllipsisV},
     { type: "sidebar", label: "SideBar", icon: FiSidebar },
+    { type: "wireframe",label: "Wireframe", icon: () => <RxFrame size={32} stroke={1} className="text-indigo-800 dark:text-indigo-400" />},
     { type: "navbar", label: "NavBar", icon:HiWindow },
   ];
 
@@ -82,10 +81,7 @@ const Interface = () => {
     { type: "H3", label: "H3", icon: HiH3 },
     { type: "H4", label: "H4", icon: RiH4},
     { type: "H5", label: "H5", icon: RiH5 },
-    { type: "Link", label: "Links", icon: HiLink },
-    { type: "H1", label: "",  },
-    
-    
+    { type: "H1", label: "",  }, 
   ];
 
   const mediaElements = [
@@ -152,7 +148,6 @@ const Interface = () => {
       case "search":
         newItem.props = { placeholder: "Search...", value: "" };
         break;
-
 
       // Layout
       case "grid":
@@ -275,7 +270,7 @@ const Interface = () => {
 
       {
         mode == "Edit" ? (
-          <SidebarProperties item={selectedWidget} onUpdate={updateItem} />
+          <SidebarProperties item={selectedWidget} onUpdate={updateItem} setCanvasItems={setCanvasItems} />
         ) : (
           <Chat />
         )
