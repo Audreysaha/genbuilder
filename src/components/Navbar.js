@@ -2,6 +2,7 @@ import React, { useState, useEffect , useRef} from "react";
 import {FaMobileAlt,FaTabletAlt,FaDesktop,FaHome,FaMoon,FaSun,} from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay, FiSave } from "react-icons/fi";
+import { SlRefresh } from "react-icons/sl"
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { HiChevronUpDown, HiMiniArrowLeftEndOnRectangle, HiMiniBars3,} from "react-icons/hi2";
@@ -21,9 +22,12 @@ const Navbar = ({
   handleRedoClick,
   mode,
   setMode,
+  onRefreshCanvas,
 }) => {
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [canvasItems, setCanvasItems] = useState([]);
+  const [items, setItems] = useState([]); 
   const [active, setActive] = useState(null);
   const searchRef = useRef(null);
   const [darkMode, setDarkMode] = useState(() => {
@@ -40,6 +44,8 @@ const Navbar = ({
 
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+
+  // const handleRefreshCanvas = () => setCanvasItems([]);
 
   const api = new API();
   const user = jwtDecode(LocalStorageManager.getItem("token")); 
@@ -303,6 +309,23 @@ const Navbar = ({
         >
           <FiCode size={20}  />
         </button>
+
+   {/* refresh button */}
+      <div>
+      <button
+        onClick={onRefreshCanvas}
+        className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-800 dark:hover:bg-red-700 dark:text-white"
+        title="Refresh Canvas"
+      >
+        <SlRefresh />
+      </button>
+
+      <div className="canvas">
+        {( 
+          items.map((item) => <div key={item.id}>{item.content}</div>)
+        )}
+      </div>
+    </div>
 
         {/* 🌙 Dark Mode Toggle */}
         <button

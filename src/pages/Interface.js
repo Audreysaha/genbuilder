@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RxFrame } from "react-icons/rx";
-import { HiH1,HiH2,HiH3, HiLink,HiWindow } from "react-icons/hi2";
-import { RiH4,RiH5 } from "react-icons/ri";
+import { HiH1,HiH2,HiH3,HiWindow } from "react-icons/hi2";
+import { MdSafetyDivider } from "react-icons/md";
+import { IoIosRadioButtonOff } from "react-icons/io";
+import { PiToggleLeftFill, PiParagraphLight, PiChartPieSliceThin , PiChartLineUpThin } from "react-icons/pi";
+import { RiRadioButtonLine,RiH4,RiH5 } from "react-icons/ri";
 import { FiColumns,FiCheckSquare, FiType, FiSearch, FiSend, FiEdit,FiChevronDown,FiSidebar,FiVideo,FiGrid,FiImage,FiList,FiSquare,FiStar} from "react-icons/fi";
 import Canvas from "../components/Canvas";
 import SidebarBuilder from "../components/SidebarBuilder";
@@ -44,9 +47,9 @@ const Interface = () => {
   const getDeviceDimensions = () => {
     switch (deviceSize) {
       case "mobile":
-        return { width: 375, height: 640 };
+        return { width: 375, height: 540 };
       case "tablet":
-        return { width: 675, height: 670 };
+        return { width: 675, height: 570 };
       case "desktop":
         return { width: 1655, height: 620 };
       default:
@@ -63,7 +66,9 @@ const Interface = () => {
     { type: "dropdown", label: "Dropdown", icon: FiChevronDown },
     { type: "search", label: "Search", icon: FiSearch },
     { type: "list", label: "List", icon: FiList },
-    
+    { type: "radio-button", label: "Radio-btn", icon: () => <RiRadioButtonLine size={32} stroke={1} className="text-indigo-600 dark:text-indigo-400"/> },
+    { type: "radio-button2", label: "Radio-btn2", icon: IoIosRadioButtonOff },
+    { type: "toggle-button", label: "Toggle-btn", icon: PiToggleLeftFill },
   ];
 
   const layoutElements = [
@@ -73,6 +78,9 @@ const Interface = () => {
     { type: "sidebar", label: "SideBar", icon: FiSidebar },
     { type: "wireframe",label: "Wireframe", icon: () => <RxFrame size={32} stroke={1} className="text-indigo-800 dark:text-indigo-400" />},
     { type: "navbar", label: "NavBar", icon:HiWindow },
+    { type: "footer", label: "Footer", icon:HiWindow },
+    { type: "tabs", label: "Tabs", icon:HiWindow },
+    { type: "divider", label: "Divider", icon:MdSafetyDivider},
   ];
 
   const topographyElements = [
@@ -81,7 +89,9 @@ const Interface = () => {
     { type: "H3", label: "H3", icon: HiH3 },
     { type: "H4", label: "H4", icon: RiH4},
     { type: "H5", label: "H5", icon: RiH5 },
-    { type: "H1", label: "",  }, 
+    { type: "Piechart", label: "Pie Chart", icon: PiChartPieSliceThin },
+    { type: "Linechart", label: "Line Chart", icon: PiChartLineUpThin },
+
   ];
 
   const mediaElements = [
@@ -145,9 +155,17 @@ const Interface = () => {
           selected: "Option 1",
         };
         break;
+
       case "search":
         newItem.props = { placeholder: "Search...", value: "" };
         break;
+
+      case "radio-button":
+      newItem.props = {label: "Radio Option",checked: false,name: `radio-group-${Date.now()}`};
+      break;
+
+      case "radio-button2": newItem.props = { label: "Radio Option", checked: false, name: `radio-group-${Date.now()}` };
+      break;
 
       // Layout
       case "grid":
@@ -159,6 +177,23 @@ const Interface = () => {
       case "sidepanel":
         newItem.props = { content: "Panneau latéral" };
         break;
+      case "toggle-button":
+      newItem.props = { label: "Toggle", checked: false };
+      break;
+      case "footer": newItem.props = { content: "Footer content here",backgroundColor: "#f3f4f6", textColor: "#111827", height: 60};
+      break;
+      case "Piechart":
+      newItem.props = {
+        data: [
+      { label: "A", value: 40, color: "#6366f1" },
+      { label: "B", value: 30, color: "#f59e42" },
+      { label: "C", value: 20, color: "#10b981" },
+      { label: "D", value: 10, color: "#ef4444" }
+    ],
+    width: 180,
+    height: 180
+  };
+  break;
 
       default:
         newItem.props = { content: "Composant" };
@@ -269,7 +304,7 @@ const Interface = () => {
         />
 
       {
-        mode == "Edit" ? (
+        mode === "Edit" ? (
           <SidebarProperties item={selectedWidget} onUpdate={updateItem} setCanvasItems={setCanvasItems} />
         ) : (
           <Chat />

@@ -1,13 +1,12 @@
 import * as FiIcons from "react-icons/fi";
+import { useState } from "react";
 import { HiChevronDown, HiItalic, HiBold, HiUnderline } from "react-icons/hi2";
 
 const SidebarProperties = ({ item, onUpdate }) => {
+const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   if (!item)
     return (
-      <div className="p-20 bg-white border-gray-600 dark:bg-gray-900 text-gray-500 dark:text-white">
-        No element selected
-      </div>
-    );
+      <div className="p-20 bg-white border-gray-600 dark:bg-gray-900 text-gray-500 dark:text-white">No element selected</div>);
 
   const updateProp = (key, value) => {
     onUpdate(item.id, { [key]: value });
@@ -34,32 +33,96 @@ const SidebarProperties = ({ item, onUpdate }) => {
   const gridRows = chunkArray(gridOptions, 2);
 
   return (
-    <div className="p-4 space-y-6 w-[350px] border-l bg-gray-50 dark:bg-gray-900 dark:border-gray-700 h-full overflow-y-auto">
+    <div className="p-4 space-y-3 w-[350px] border-l bg-gray-50 dark:bg-gray-900 dark:border-gray-700 h-full overflow-y-auto">
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Properties</h2>
 
       {/* ICON */}
-      {item.type === "icon" && (
-        <div>
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Choose Icon</h3>
-          <div className="grid grid-cols-5 gap-2">
-            {availableIcons.map((iconName) => {
-              const Icon = FiIcons[iconName];
-              return (
-                <div
-                  key={iconName}
-                  onClick={() => updateProp("iconName", iconName)}
-                  className={`p-2 rounded cursor-pointer flex justify-center items-center transition ${
-                    item.iconName === iconName
-                      ? "bg-indigo-500 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-indigo-900 dark:text-indigo-300"
-                  }`}
-                >
-                  <Icon size={22} strokeWidth={1} />
-                </div>
-              );
-            })}
+    {item.type === "icon" && (
+   <div >
+  <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">Choose Icon</h3>
+
+  {/* Search bar */}
+  <input
+    type="text"
+    placeholder="Search icon..."
+    value={iconSearch}
+    onChange={(e) => setIconSearch(e.target.value.toLowerCase())}
+    className="w-full mb-3 px-3 py-2 border border-gray-300 rounded dark:bg-gray-800 dark:text-white"
+  />
+
+ {/* Icon Color */}
+      <div className="mb-3">
+        <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
+          Icon Color
+        </label>
+        <input
+          type="color"
+          value={item.props?.textColor || "#000000"}
+          onChange={(e) =>
+            onUpdate(item.id, {
+              props: {
+                ...item.props,
+                textColor: e.target.value,
+              },
+            })
+          }
+          className="w-full h-10 rounded cursor-pointer"
+        />
+      </div>
+
+      {/* Icon Size */}
+      <div className="mb-3">
+        <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
+          Icon Size (px)
+        </label>
+        <input
+          type="number"
+          min={8}
+          max={128}
+          value={parseInt(item.props?.fontSize) || 24}
+          onChange={(e) =>
+            onUpdate(item.id, {
+              props: {
+                ...item.props,
+                fontSize: `${e.target.value}`,
+              },
+            })
+          }
+          className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+        />
+      </div>
+  
+  {/* Grid that fills the rest */}
+  <div className="grid grid-cols-5 gap-2 overflow-y-auto flex-1 pr-1">
+    {availableIcons
+      .filter((iconName) => iconName.toLowerCase().includes(iconSearch))
+      .map((iconName) => {
+        const Icon = FiIcons[iconName];
+        return (
+          <div
+            key={iconName}
+            onClick={() =>
+              onUpdate(item.id, {
+                props: {
+                  ...item.props,
+                  iconName,
+                },
+              })
+            }
+            className={`p-2 rounded cursor-pointer flex justify-center items-center transition ${
+              item.props?.iconName === iconName
+                ? "bg-indigo-500 text-white"
+                : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-indigo-900 dark:text-indigo-300"
+            }`}
+            title={iconName}
+          >
+            <Icon size={22} strokeWidth={1} />
           </div>
-        </div>
+        );
+      })}
+  </div>
+</div>
+
       )}
 
       {/* GRID */}
@@ -100,14 +163,16 @@ const SidebarProperties = ({ item, onUpdate }) => {
       {/* TEXT */}
       {item.type === "text" && (
         <div className="space-y-4">
+
           {/* Font Family */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Font Family</label>
             <select
-              value={item.fontFamily || "sans-serif"}
-              onChange={(e) => updateProp("fontFamily", e.target.value)}
-              className="w-full p-2 border dark:text-white rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-            >
+            value={item.props?.fontFamily || "Arial, sans-serif"}
+            onChange={(e) =>  onUpdate(item.id, { props: { ...item.props, fontFamily: e.target.value }, })
+            }
+            className="w-full p-2 border dark:text-white rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+              >
               {[
                 "Arial",
                 "Verdana",
@@ -138,73 +203,150 @@ const SidebarProperties = ({ item, onUpdate }) => {
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Font Size</label>
             <input
-              type="text"
-              value={item.fontSize || ""}
-              onChange={(e) => updateProp("fontSize", e.target.value)}
-              placeholder="e.g. 16px or 1.2rem"
-              className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-            />
+            type="number"
+            min={2}
+            max={100}
+            value={parseInt(item.props?.fontSize) || 16}
+            onChange={(e) =>
+            onUpdate(item.id, {
+            props: { ...item.props, fontSize: `${e.target.value}px` },
+            })
+            }
+            className="w-full p-2 border dark:text-white rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+          />
           </div>
 
           {/* Text Content */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Text Content</label>
             <textarea
-              value={item.content || ""}
-              onChange={(e) => updateProp("content", e.target.value)}
-              rows={2}
-              className="w-full p-2 border rounded dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+            value={item.props?.content || ""}
+            onChange={(e) =>
+            onUpdate(item.id, {
+            props: { ...item.props, content: e.target.value },
+            })
+            } 
+            className="w-full p-2 border rounded dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
             />
           </div>
 
-          {/* Text Color */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-white">Text Color</label>
-            <input
-              type="color"
-              value={item.color || "#000000"}
-              onChange={(e) => updateProp("color", e.target.value)}
-              className="w-full h-10 rounded cursor-pointer"
-            />
-          </div>
+         {/* Text Color */}
+        <div>
+        <label className="text-sm font-medium text-gray-700 dark:text-white">Text Color</label>
+        <input
+        type="color"
+        value={item.props?.textColor || "#000000"}
+        onChange={(e) =>
+        onUpdate(item.id, {
+        props: {
+          ...item.props,
+          textColor: e.target.value,
+        },
+      })
+      }
+      className="w-full h-10 rounded cursor-pointer"
+      />
+    </div>
 
-      <div className="flex items-center space-x-2 p-4">
-      <button
-        type="button"
-        title="Bold"
-        aria-pressed={item.bold ? "true" : "false"}
-        onClick={() => updateProp("bold", !item.bold)}
-        className={`p-2 rounded border ${
-          item.bold ? "bg-indigo-600 text-white" : "text-gray-800 dark:text-white"
-        }`}
-      >
-        <HiBold size={24} />
-      </button>
-      <button
-        type="button"
-        title="Italic"
-        aria-pressed={item.italic ? "true" : "false"}
-        onClick={() => updateProp("italic", !item.italic)}
-        className={`p-2 rounded border ${
-          item.italic ? "bg-indigo-600 text-white" : "text-gray-800 dark:text-white"
-        }`}
-      >
-        <HiItalic size={24} />
-      </button>
-      <button
-        type="button"
-        title="Underline"
-        aria-pressed={item.underline ? "true" : "false"}
-        onClick={() => updateProp("underline", !item.underline)}
-        className={`p-2 rounded border ${
-          item.underline ? "bg-indigo-600 text-white" : "text-gray-800 dark:text-white"
-        }`}
-      >
-        <HiUnderline size={24} />
-      </button>
-      </div>
-         </div>
+    {/* Bold, Italic, Underline Buttons */}
+    <div className="flex items-center space-x-2 p-4">
+    <button
+    type="button"
+    onClick={() =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          bold: !item.props?.bold,
+        },
+      })
+    }
+    className={`p-2 rounded border ${
+      item.props?.bold ? "bg-indigo-600 text-white" : "text-gray-800 dark:text-white"
+    }`}
+  >
+    <HiBold size={24} />
+  </button>
+
+  <button
+    type="button"
+    onClick={() =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          italic: !item.props?.italic,
+        },
+      })
+    }
+    className={`p-2 rounded border ${
+      item.props?.italic ? "bg-indigo-600 text-white" : "text-gray-800 dark:text-white"
+    }`}
+  >
+    <HiItalic size={24} />
+  </button>
+
+  <button
+    type="button"
+    onClick={() =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          underline: !item.props?.underline,
+        },
+      })
+    }
+    className={`p-2 rounded border ${
+      item.props?.underline ? "bg-indigo-600 text-white" : "text-gray-800 dark:text-white"
+    }`}
+  >
+    <HiUnderline size={24} />
+  </button>
+</div>
+</div>
       )}
+
+  {/* radio-button */}
+{item.type === "radio-button" || item.type === "radio-button2" ? (
+  <div className="space-y-4">
+   
+    <div>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Content</label>
+      <input
+        type="text"
+        value={item.props?.label || ""}
+        onChange={e => onUpdate(item.id, { props: { ...item.props, label: e.target.value } })}
+        placeholder=""
+        className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white"
+      />
+    </div>
+
+  </div>
+) : null}
+
+{item.type === "toggle-button" && (
+  <div className="space-y-4">
+    {/* Toggle Label */}
+    <div>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Label</label>
+      <input
+        type="text"
+        value={item.props?.label || ""}
+        onChange={e => onUpdate(item.id, { props: { ...item.props, label: e.target.value } })}
+        placeholder="Enter label"
+        className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white"
+      />
+    </div>
+    {/* Toggle State */}
+    <div>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Checked</label>
+      <input
+        type="checkbox"
+        checked={item.props?.checked || false}
+        onChange={e => onUpdate(item.id, { props: { ...item.props, checked: e.target.checked } })}
+        className="ml-2"
+      />
+    </div>
+  </div>
+)}
 
       {/* IMAGE */}
       {item.type === "image" && (
@@ -260,23 +402,155 @@ const SidebarProperties = ({ item, onUpdate }) => {
         </div>
       )}
 
-      {/* DEFAULT PROPERTIES (ALL OTHER TYPES) */}
-      {["icon", "grid", "text", "image"].indexOf(item.type) === -1 && (
-        <div className="space-y-4">
-          {[
-            ["Background Color", "backgroundColor", "#ffffff"],
-            ["Text Color", "textColor", "#000000"],
-          ].map(([label, key, def]) => (
-            <div key={key}>
-              <label className="text-sm font-medium text-gray-700 dark:text-white">{label}</label>
-              <input
-                type="color"
-                value={item[key] || def}
-                onChange={(e) => updateProp(key, e.target.value)}
-                className="w-full h-10 rounded cursor-pointer"
-              />
-            </div>
-          ))}
+      {item.type === "Piechart" && (
+  <div className="space-y-4">
+    <h3 className="font-semibold text-gray-800 dark:text-gray-100">Pie Chart Data</h3>
+    {(item.props?.data || []).map((slice, idx) => (
+      <div key={idx} className="flex items-center gap-2 mb-2">
+        <input
+          type="color"
+          value={slice.color}
+          onChange={e => {
+            const newData = [...item.props.data];
+            newData[idx].color = e.target.value;
+            onUpdate(item.id, { props: { ...item.props, data: newData } });
+          }}
+          className="w-8 h-8 rounded border-none"
+        />
+        <input
+          type="text"
+          value={slice.label}
+          onChange={e => {
+            const newData = [...item.props.data];
+            newData[idx].label = e.target.value;
+            onUpdate(item.id, { props: { ...item.props, data: newData } });
+          }}
+          placeholder="Label"
+          className="w-16 border rounded px-1 text-xs"
+        />
+        <input
+          type="number"
+          value={slice.value}
+          min={0}
+          onChange={e => {
+            const newData = [...item.props.data];
+            newData[idx].value = Number(e.target.value);
+            onUpdate(item.id, { props: { ...item.props, data: newData } });
+          }}
+          className="w-14 border rounded px-1 text-xs"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const newData = item.props.data.filter((_, i) => i !== idx);
+            onUpdate(item.id, { props: { ...item.props, data: newData } });
+          }}
+          className="text-red-500 hover:text-red-700 text-lg px-1"
+          title="Remove slice"
+        >
+          ×
+        </button>
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() => {
+        const newData = [
+          ...item.props.data,
+          { label: "New", value: 10, color: "#8884d8" }
+        ];
+        onUpdate(item.id, { props: { ...item.props, data: newData } });
+      }}
+      className="px-3 py-1 bg-indigo-600 text-white rounded text-xs"
+    >
+      Add Slice
+    </button>
+    <div className="flex gap-4 mt-4">
+      <div>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Width</label>
+        <input
+          type="number"
+          value={item.props?.width || 180}
+          onChange={e => onUpdate(item.id, { props: { ...item.props, width: Number(e.target.value) } })}
+          className="w-16 border rounded px-1 ml-2"
+        />
+      </div>
+      <div>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Height</label>
+        <input
+          type="number"
+          value={item.props?.height || 180}
+          onChange={e => onUpdate(item.id, { props: { ...item.props, height: Number(e.target.value) } })}
+          className="w-16 border rounded px-1 ml-2"
+        />
+      </div>
+    </div>
+  </div>
+)}
+
+{/*Other properties */}
+{["icon", "grid", "text", "image"].indexOf(item.type) === -1 && (
+<div className="space-y-4">
+{item.type !== "radio-button" && item.type !== "radio-button2" && item.type !== "toggle-button" &&  (
+  <div>
+    <label className="text-sm font-medium text-gray-700 dark:text-white">Content</label>
+    <textarea
+      value={item.props?.content || ""}
+      onChange={(e) =>
+        onUpdate(item.id, {
+          props: {
+            ...item.props,
+            content: e.target.value,
+          },
+        })
+      }
+      rows={2}
+      className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      placeholder="Enter text here"
+    />
+  </div>
+)}
+
+
+{/* Background Color Picker */}
+<div>
+  <label className="text-sm font-medium text-gray-700 dark:text-white">
+    Background Color
+  </label>
+  <input
+    type="color"
+    value={item.props?.backgroundColor || "#ffffff"}
+    onChange={(e) =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          backgroundColor: e.target.value,
+        },
+      })
+    }
+    className="w-full h-10 rounded cursor-pointer"
+  />
+</div>
+
+{/* Text Color Picker */}
+<div>
+  <label className="text-sm font-medium text-gray-700 dark:text-white">
+    Text Color
+  </label>
+  <input
+    type="color"
+    value={item.props?.textColor || "#000000"}
+    onChange={(e) =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          textColor: e.target.value,
+        },
+      })
+    }
+    className="w-full h-10 rounded cursor-pointer"
+  />
+</div>
 
           {[
             ["Font Size (px)", "fontSize", 14],

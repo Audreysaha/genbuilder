@@ -21,26 +21,13 @@ import Navbar from './components/Navbar';
 
 // 🔐 Composant de protection des routes privées   Components for private route protection
 const PrivateRoute = ({ element }) => {
-  const token = LocalStorageManager.getItem('token');
+  const token = localStorage.getItem('token');
 
   if (!token) {
     return <Navigate to="/" replace />;
   }
 
-  try {
-    const decoded = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-
-    if (decoded.exp < currentTime) {
-      localStorage.removeItem('token');
-      return <Navigate to="/" replace />;
-    }
-
-    return element;
-  } catch (error) {
-    localStorage.removeItem('token');
-    return <Navigate to="/" replace />;
-  }
+  return element;
 };
 
 function App() {

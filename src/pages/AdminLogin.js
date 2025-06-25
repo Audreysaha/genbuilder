@@ -43,6 +43,12 @@ function Login() {
       );
 
       if (response.success) {
+        localStorage.setItem('token', response.user.token);
+
+        localStorage.setItem('user', JSON.stringify(response.user));
+
+        let token = localStorage.getItem('token');
+        console.log(token)
         navigate('/Admin_dashboard');
       } else {
         setErrors({ general: response.error || 'Login failed' });

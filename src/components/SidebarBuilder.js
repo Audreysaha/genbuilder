@@ -166,7 +166,7 @@ export default function SidebarBuilder({
               </div>
             </div>
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pb-8">
+            <div className="flex-1 overflow-y-auto custom-scrollbar h-full pb-32">
               {/* Form Elements */}
               {filteredVisual.length > 0 && (
                 <Section
