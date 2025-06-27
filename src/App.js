@@ -14,6 +14,7 @@ import ProjectsDashboard from './components/ProjectsDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import { LocalStorageManager } from './utils/LocalStorageManager';
 import Navbar from './components/Navbar';
+import LivePreviewCanvas from './components/LivePreviewConvas';
 
 
 // 🔐 Composant de protection des routes privées   Components for private route protection
@@ -69,6 +70,7 @@ useEffect(() => {
         <Route path="/project_dashboard" element={<PrivateRoute element={<ProjectsDashboard />} />} />
         <Route path="/Admin_dashboard" element={<PrivateRoute element={<AdminDashboard />}/>} />
         <Route path="/interface/:projectId" element={<PrivateRoute element={<Interface />} />} />
+        <Route path="/preview/:projectId" element={<PrivateRoute element={<LivePreviewCanvas />} />} />
         <Route path="/docs" element={<PrivateRoute element={<Docs />} />} />
         <Route path="/chat" element={<PrivateRoute element={<Chat />} />} />
       </Routes>

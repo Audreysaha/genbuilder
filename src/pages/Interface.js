@@ -307,6 +307,8 @@ const FlutterFlowClone = () => {
         mode={mode}
         setMode={setMode}
         setDevice={setDevice}
+        canvasItems={canvasItems}
+        activePageId={activePageId}
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}

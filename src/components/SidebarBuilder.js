@@ -223,9 +223,9 @@ function Section({ label, expanded, onToggle, items }) {
 
       {expanded && (
         <div className="w-full px-1 pb-3 grid grid-cols-3 gap-4 pt-1">
-          {items.map(({ type, label, icon: Icon }) => (
+          {items.map(({ type, label, icon: Icon }, _i) => (
             <div
-              key={type}
+              key={_i}
               draggable
               onDragStart={(e) => e.dataTransfer.setData("componentType", type)}
               className="flex flex-col items-center justify-center p-3 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-grab"

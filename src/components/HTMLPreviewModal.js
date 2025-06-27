@@ -1,4 +1,3 @@
-// components/HTMLPreviewModal.tsx
 import { AnimatePresence, motion } from "framer-motion";
 import { generateReactCode } from "../utils/generateHTMLCode";
 

@@ -66,8 +66,6 @@ const Canvas = forwardRef(
     );
 
     useEffect(() => {
-      console.log("lenght...")
-      console.log(canvasItems.length)
       if (canvasItems.length > 0) {
         debouncedSave();
       }
