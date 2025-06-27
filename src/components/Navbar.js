@@ -30,6 +30,16 @@ const Navbar = ({
   const [items, setItems] = useState([]); 
   const [active, setActive] = useState(null);
   const searchRef = useRef(null);
+  const [viewMode, setViewMode] = useState("web");
+
+  
+ 
+  // // Rafraîchir le contenu du canvas : tout vider
+  // const onRefreshCanvas = () => {
+  //   setCanvasItems([]); // Vide tous les éléments du canvas
+  //   setItems([]); // (optionnel) Vide aussi les items si nécessaire
+  // };
+
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -41,11 +51,9 @@ const Navbar = ({
     { id: 4, name: "Dashboard" },
     { id: 5, name: "Settings" },
   ]);
-
+  const navigate = useNavigate();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
-
-  // const handleRefreshCanvas = () => setCanvasItems([]);
 
   const api = new API();
   const user = jwtDecode(LocalStorageManager.getItem("token")); 
@@ -94,20 +102,24 @@ const Navbar = ({
   const handleCreateProject = async () => {
     const name = prompt("Enter a project name:");
     if (!name || !name.trim()) return;
-    try {
-      await api.postData(
-        `${api.apiUrl}/api/project/save`,
-        {
-          name: name.trim(),
-          userId: user.id,
-        },
-        false
-      );
-      alert("Project saved successfully!"); // Confirmation without navigation
-      // No navigation here - stays on same page
-    } catch (err) {
+    await api.postData(`${api.apiUrl}/api/project/save`,
+      {
+        name: name.trim(),
+        userId: user.id,
+      },
+      false
+    ).then((res) => {
+      api.postData(`${api.apiUrl}/api/project/${res.id}/pages`, {name: "Page1"})
+      .then(() => {
+        alert("Project saved successfully!");
+        navigate(`/interface/${res.id}`)
+      }).catch((err) => {
+        throw new Error(err);
+      })
+    }).catch((err) => {
       console.error("Error when creating Project:", err);
-    }
+      throw new Error(err);
+    })
   };
 
   const authLinks = [
@@ -265,36 +277,62 @@ const Navbar = ({
         </div>
       </div>
 
-      {/* Center: Device Buttons */}
-      <div className="flex justify-center items-center space-x-1">
-        {[
-          { icon: FaMobileAlt, size: 18, type: "mobile" },
-          { icon: FaTabletAlt, size: 18, type: "tablet" },
-          { icon: FaDesktop, size: 20, type: "desktop" },
-        ].map(({ icon: Icon, size, type }) => {
-          const isActive = deviceSize === type;
-          return (
+      {/* Center: Device Toggle + Buttons */}
+      <div className="flex items-center space-x-4">
+        {/* View Mode Toggle */}
+        <div className="flex items-center border rounded-full overflow-hidden text-sm">
+          {["web", "mobile"].map((modeOption) => (
             <button
-              key={type}
-              onClick={() => setDeviceSize(type)}
-              className={`p-1 rounded ${
-                isActive
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              key={modeOption}
+              onClick={() => {
+                setViewMode(modeOption);
+                // setDevice(modeOption);
+                setDeviceSize(modeOption === "web" ? "desktop" : "mobile");
+              }}
+              className={`px-3 py-1 transition-colors ${
+                viewMode === modeOption
+                  ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                  : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
               }`}
-              title={type}
             >
-              <Icon
-                size={size}
-                className={`${
-                  isActive
-                    ? "text-blue-800 dark:text-white"
-                    : "text-gray-700 dark:text-white"
-                }`}
-              />
+              {modeOption.charAt(0).toUpperCase() + modeOption.slice(1)}
             </button>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Device Size Buttons */}
+        <div className="flex items-center space-x-2">
+          {(viewMode === "web"
+            ? [
+                { icon: FaTabletAlt, size: 18, type: "tablet" },
+                { icon: FaDesktop, size: 20, type: "desktop" },
+              ]
+            : [{ icon: FaMobileAlt, size: 18, type: "mobile" }]
+          ).map(({ icon: Icon, size, type }) => {
+            const isActive = deviceSize === type;
+            return (
+              <button
+                key={type}
+                onClick={() => setDeviceSize(type)}
+                className={`p-1 rounded ${
+                  isActive
+                    ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+                title={type}
+              >
+                <Icon
+                  size={size}
+                  className={`${
+                    isActive
+                      ? "text-blue-800 dark:text-white"
+                      : "text-gray-700 dark:text-white"
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Right Controls */}
@@ -310,21 +348,14 @@ const Navbar = ({
           <FiCode size={20}  />
         </button>
 
-   {/* refresh button */}
-      <div>
-      <button
-        onClick={onRefreshCanvas}
-        className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-800 dark:hover:bg-red-700 dark:text-white"
-        title="Refresh Canvas"
+    <div>
+    <button
+      onClick={onRefreshCanvas}
+      className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-800 dark:hover:bg-red-700 dark:text-white"
+      title="Refresh Canvas"
       >
         <SlRefresh />
       </button>
-
-      <div className="canvas">
-        {( 
-          items.map((item) => <div key={item.id}>{item.content}</div>)
-        )}
-      </div>
     </div>
 
         {/* 🌙 Dark Mode Toggle */}

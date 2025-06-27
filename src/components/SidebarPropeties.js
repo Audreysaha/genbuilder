@@ -2,11 +2,16 @@ import * as FiIcons from "react-icons/fi";
 import { useState } from "react";
 import { HiChevronDown, HiItalic, HiBold, HiUnderline } from "react-icons/hi2";
 
-const SidebarProperties = ({ item, onUpdate }) => {
+const SidebarProperties = ({ item, onUpdate,}) => {
+  const handleAddItem = (newItem) => {
+  setCanvasItems((prev) => [...prev, newItem]);
+};
+const [canvasItems, setCanvasItems] = useState([]);
 const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   if (!item)
     return (
       <div className="p-20 bg-white border-gray-600 dark:bg-gray-900 text-gray-500 dark:text-white">No element selected</div>);
+
 
   const updateProp = (key, value) => {
     onUpdate(item.id, { [key]: value });
@@ -19,7 +24,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     { id: "3-cols", label: "3 Columns", columns: 3 },
     { id: "4-cols", label: "4 Columns", columns: 4 },
     { id: "5-cols", label: "5 Columns", columns: 5 },
-    { id: "6-cols", label: "6 Columns", columns: 6 },
+    { id: "6-cols", label: "6 Columns", columns: 6 }, 
   ];
 
   const chunkArray = (arr, size) => {
@@ -125,43 +130,141 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 
       )}
 
-      {/* GRID */}
-      {item.type === "grid" && (
-        <div className="space-y-4">
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100">Select Grid Layout</h3>
-          {gridRows.map((row, i) => (
-            <div key={i} className="flex space-x-4">
-              {row.map(({ id, label, columns }) => (
-                <button
-                  key={id}
-                  onClick={() => updateProp("gridType", id)}
-                  className={`flex-1 flex flex-col items-center p-4 rounded border cursor-pointer ${
-                    item.gridType === id
-                      ? "bg-indigo-200 dark:bg-indigo-600 text-indigo-900 dark:text-white"
-                      : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"
-                  }`}
+    {/* GRID */}
+    {item.type === "grid" && (
+      <div className="space-y-4">
+        <h2 className="font-semibold text-gray-800 dark:text-gray-100">Grid Layout</h2>
+        {gridRows.map((row, i) => (
+          <div key={i} className="flex space-x-4">
+            {row.map(({ id, label, columns }) => (
+              <button
+                key={id}
+                onClick={() => updateProp("gridType", id)}
+                className={`flex-1 flex flex-col items-center p-4 rounded border cursor-pointer ${
+                  item.gridType === id
+                    ? "bg-indigo-200 dark:bg-indigo-600 text-indigo-900 dark:text-white"
+                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"
+                }`}
+              >
+                <div
+                  className="grid gap-1 w-full"
+                  style={{
+                    gridTemplateColumns: `repeat(${columns}, 2fr)`,
+                  }}
                 >
-                  <div
-                    className="grid gap-1 w-full"
-                    style={{
-                      gridTemplateColumns: `repeat(${columns}, 1fr)`,
-                      height: 40,
-                    }}
-                  >
-                    {[...Array(columns)].map((_, i) => (
-                      <div key={i} className="bg-indigo-400 rounded h-full" />
-                    ))}
-                  </div>
-                  <span className="text-xs mt-1">{label}</span>
-                </button>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
+                  {[...Array(columns)].map((_, i) => (
+                    <div key={i} className="bg-indigo-400 rounded h-full" />
+                  ))}
+                </div>
+                <span className="text-xs mt-1">{label}</span>
+              </button>
+            ))}
+          </div>
+        ))}
 
-      {/* TEXT */}
-      {item.type === "text" && (
+        {/* Flex Direction */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">Flex Direction</label>
+          <select
+            value={item.props?.flexDirection || "row"}
+            onChange={e => updateProp("props", { ...item.props, flexDirection: e.target.value })}
+            className="w-full border rounded px-2 py-1 bg-white dark:bg-gray-800 dark:text-white"
+          >
+            <option value="row">Row (flex-row)</option>
+            <option value="column">Column (flex-col)</option>
+            <option value="row-reverse">Row Reverse</option>
+            <option value="column-reverse">Column Reverse</option>
+          </select>
+        </div>
+
+        {/* Display Type */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">Display</label>
+          <select
+            value={item.props?.display || "grid"}
+            onChange={e => updateProp("props", { ...item.props, display: e.target.value })}
+            className="w-full border rounded px-2 py-1 bg-white dark:bg-gray-800 dark:text-white"
+          >
+            <option value="grid">Grid</option>
+            <option value="flex">Flex</option>
+            <option value="block">Block</option>
+            <option value="inline-block">Inline Block</option>
+          </select>
+        </div>
+
+        {/* Responsive Columns */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-1">Responsive Columns</label>
+          <div className="flex space-x-2">
+            <input
+              type="number"
+              min={1}
+              max={12}
+              value={item.props?.cols_sm || ""}
+              onChange={e => updateProp("props", { ...item.props, cols_sm: parseInt(e.target.value) || 1 })}
+              placeholder="sm"
+              className="w-1/4 border rounded px-2 py-1"
+            />
+            <input
+              type="number"
+              min={1}
+              max={12}
+              value={item.props?.cols_md || ""}
+              onChange={e => updateProp("props", { ...item.props, cols_md: parseInt(e.target.value) || 1 })}
+              placeholder="md"
+              className="w-1/4 border rounded px-2 py-1"
+            />
+            <input
+              type="number"
+              min={1}
+              max={12}
+              value={item.props?.cols_lg || ""}
+              onChange={e => updateProp("props", { ...item.props, cols_lg: parseInt(e.target.value) || 1 })}
+              placeholder="lg"
+              className="w-1/4 border rounded px-2 py-1"
+            />
+            <input
+              type="number"
+              min={1}
+              max={12}
+              value={item.props?.cols_xl || ""}
+              onChange={e => updateProp("props", { ...item.props, cols_xl: parseInt(e.target.value) || 1 })}
+              placeholder="xl"
+              className="w-1/4 border rounded px-2 py-1"
+            />
+          </div>
+          <div className="text-xs text-gray-500 mt-1">Set columns for sm, md, lg, xl breakpoints</div>
+        </div>
+
+        {/* Height & Width */}
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">Height (px)</label>
+          <input
+            type="number"
+            min={50}
+            value={item.props?.height || ""}
+            onChange={(e) => {
+              const value = e.target.value ? parseInt(e.target.value) : undefined;
+              updateProp("props", { ...item.props, height: value });
+            }}
+            className="w-full border rounded px-2 py-1"
+          />
+
+          <label className="block text-sm font-medium text-gray-700">Width (px)</label>
+          <input
+            type="number"
+            min={50}
+            value={item.props?.width || ""}
+            onChange={(e) => {
+              const value = e.target.value ? parseInt(e.target.value) : undefined;
+              updateProp("props", { ...item.props, width: value });
+            }}
+            className="w-full border rounded px-2 py-1"
+          />
+        </div>
+      </div>
+    )}
+{item.type === "text" && (
         <div className="space-y-4">
 
           {/* Font Family */}
@@ -302,7 +405,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   </button>
 </div>
 </div>
-      )}
+)}
 
   {/* radio-button */}
 {item.type === "radio-button" || item.type === "radio-button2" ? (
@@ -348,150 +451,135 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   </div>
 )}
 
-      {/* IMAGE */}
-      {item.type === "image" && (
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Upload Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    updateProp("src", reader.result);
-                    updateProp("width", 300);
-                    updateProp("height", 200);
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-            />
-          </div>
-
-          {item.src && (
-            <img
-              src={item.src}
-              alt={item.alt || "Preview"}
-              className="rounded max-h-40 object-contain border border-gray-300 dark:border-gray-600"
-            />
-          )}
-
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Width (px)</label>
-            <input
-              type="number"
-              value={item.width || 300}
-              onChange={(e) => updateProp("width", parseInt(e.target.value))}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Height (px)</label>
-            <input
-              type="number"
-              value={item.height || 200}
-              onChange={(e) => updateProp("height", parseInt(e.target.value))}
-              className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-            />
-          </div>
-        </div>
-      )}
-
-      {item.type === "Piechart" && (
+{/* IMAGE */}
+{item.type === "image" && (
   <div className="space-y-4">
-    <h3 className="font-semibold text-gray-800 dark:text-gray-100">Pie Chart Data</h3>
-    {(item.props?.data || []).map((slice, idx) => (
-      <div key={idx} className="flex items-center gap-2 mb-2">
-        <input
-          type="color"
-          value={slice.color}
-          onChange={e => {
-            const newData = [...item.props.data];
-            newData[idx].color = e.target.value;
-            onUpdate(item.id, { props: { ...item.props, data: newData } });
-          }}
-          className="w-8 h-8 rounded border-none"
+    {/* Upload multiple images */}
+    <div>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Upload Images</label>
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={(e) => {
+          const files = Array.from(e.target.files);
+          const readers = files.map(file => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve({
+                  src: reader.result,
+                  width: 300,
+                  height: 200,
+                  alt: ''
+                });
+              };
+              reader.readAsDataURL(file);
+            });
+          });
+
+          Promise.all(readers).then((images) => {
+            const newImages = [...(item.images || []), ...images];
+            updateProp("images", newImages);
+
+            if (typeof item.selectedImageIndex !== "number") {
+              updateProp("selectedImageIndex", 0); // Default to first image
+            }
+          });
+        }}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      />
+    </div>
+
+    {/* Image previews */}
+  {item.type === "image" && (
+  <div className="space-y-4">
+    <div>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Upload Images</label>
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={(e) => {
+          const files = Array.from(e.target.files);
+          const readers = files.map(file => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve({
+                  src: reader.result,
+                  width: 300,
+                  height: 200,
+                  alt: ''
+                });
+              };
+              reader.readAsDataURL(file);
+            });
+          });
+
+          Promise.all(readers).then((images) => {
+            const newImages = [...(item.images || []), ...images];
+            updateProp("images", newImages);
+          });
+        }}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      />
+    </div>
+
+    {/* Loop through uploaded images */}
+    {(item.images || []).map((img, index) => (
+      <div
+        key={index}
+        className="space-y-2 border p-2 rounded-md bg-gray-50 dark:bg-gray-900"
+      >
+        <img
+          src={img.src}
+          alt={img.alt || "Preview"}
+          className="rounded max-h-40 object-contain border border-gray-300 dark:border-gray-600"
         />
-        <input
-          type="text"
-          value={slice.label}
-          onChange={e => {
-            const newData = [...item.props.data];
-            newData[idx].label = e.target.value;
-            onUpdate(item.id, { props: { ...item.props, data: newData } });
-          }}
-          placeholder="Label"
-          className="w-16 border rounded px-1 text-xs"
-        />
-        <input
-          type="number"
-          value={slice.value}
-          min={0}
-          onChange={e => {
-            const newData = [...item.props.data];
-            newData[idx].value = Number(e.target.value);
-            onUpdate(item.id, { props: { ...item.props, data: newData } });
-          }}
-          className="w-14 border rounded px-1 text-xs"
-        />
-        <button
-          type="button"
+
+        <div className="flex flex-col space-y-2">
+          <button
           onClick={() => {
-            const newData = item.props.data.filter((_, i) => i !== idx);
-            onUpdate(item.id, { props: { ...item.props, data: newData } });
-          }}
-          className="text-red-500 hover:text-red-700 text-lg px-1"
-          title="Remove slice"
-        >
-          ×
-        </button>
+     handleAddItem({
+      id: `image-${Date.now()}`,
+      type: "image",
+      src: img.src,
+      width: img.width,
+      height: img.height,
+      alt: img.alt || "Image",
+      x: 100,
+      y: 100,
+    });
+  }}
+  className="text-sm px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+>
+  Add to Canvas
+</button>
+
+
+          <button
+            onClick={() => {
+              const filtered = item.images.filter((_, i) => i !== index);
+              updateProp("images", filtered);
+            }}
+            className="text-red-600 text-sm hover:underline"
+          >
+            Remove
+          </button>
+        </div>
       </div>
     ))}
-    <button
-      type="button"
-      onClick={() => {
-        const newData = [
-          ...item.props.data,
-          { label: "New", value: 10, color: "#8884d8" }
-        ];
-        onUpdate(item.id, { props: { ...item.props, data: newData } });
-      }}
-      className="px-3 py-1 bg-indigo-600 text-white rounded text-xs"
-    >
-      Add Slice
-    </button>
-    <div className="flex gap-4 mt-4">
-      <div>
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Width</label>
-        <input
-          type="number"
-          value={item.props?.width || 180}
-          onChange={e => onUpdate(item.id, { props: { ...item.props, width: Number(e.target.value) } })}
-          className="w-16 border rounded px-1 ml-2"
-        />
-      </div>
-      <div>
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Height</label>
-        <input
-          type="number"
-          value={item.props?.height || 180}
-          onChange={e => onUpdate(item.id, { props: { ...item.props, height: Number(e.target.value) } })}
-          className="w-16 border rounded px-1 ml-2"
-        />
-      </div>
-    </div>
   </div>
 )}
+</div>
+)}
 
-{/*Other properties */}
+{/*exclude text property properties */}
 {["icon", "grid", "text", "image"].indexOf(item.type) === -1 && (
 <div className="space-y-4">
-{item.type !== "radio-button" && item.type !== "radio-button2" && item.type !== "toggle-button" &&  (
+{item.type !== "radio-button" && item.type !== "radio-button2" && item.type !== "toggle-button" && item.type !== "H1" &&item.type !== "H2" &&item.type !== "H3" &&item.type !== "H4" &&item.type !== "H5" &&
+  item.type !== "sidebar" && item.type !== "navbar" && item.type !== "tabs" && item.type !== "container" && item.type !== "dropdown" && item.type !== "search" && item.type !== "list" &&(
   <div>
     <label className="text-sm font-medium text-gray-700 dark:text-white">Content</label>
     <textarea
@@ -511,9 +599,10 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   </div>
 )}
 
-
 {/* Background Color Picker */}
-<div>
+<div className="space-y-4">
+{ item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4" && item.type !== "H5" && item.type !== "toggle-button" && (
+<div className="mt-4">
   <label className="text-sm font-medium text-gray-700 dark:text-white">
     Background Color
   </label>
@@ -531,6 +620,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     className="w-full h-10 rounded cursor-pointer"
   />
 </div>
+)}
 
 {/* Text Color Picker */}
 <div>
@@ -552,25 +642,85 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   />
 </div>
 
-          {[
-            ["Font Size (px)", "fontSize", 14],
-            ["Border Radius", "borderRadius", 0],
-            ["Width (px)", "width", 100],
-            ["Height (px)", "height", 50],
-            ["Position X", "x", 0],
-            ["Position Y", "y", 0],
-          ].map(([label, key, def]) => (
-            <div key={key}>
-              <label className="text-sm font-medium text-gray-700 dark:text-white">{label}</label>
-              <input
-                type="number"
-                value={item[key] || def}
-                onChange={(e) => updateProp(key, parseInt(e.target.value))}
-                className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-              />
-            </div>
-          ))}
-        </div>
+{/* Font Size Input */}
+<div className="space-y-4">
+{ item.type !== "container" && item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4" && item.type !== "H5" && (
+<div className="mt-4">
+  <label className="text-sm font-medium text-gray-700 dark:text-white">
+    Font Size (px)
+  </label>
+  <input
+    type="number"
+    min={1}
+    value={item.props?.fontSize || 14}
+    onChange={(e) =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          fontSize: parseInt(e.target.value) || 14,
+        },
+      })
+    }
+    className="w-full mt-1 px-2 py-1 border rounded text-sm bg-white dark:bg-gray-800 dark:text-white"
+  />
+</div>
+)}
+</div>
+
+
+{/*Border Radius*/}
+<div className="space-y-4">
+{ item.type !== "tabs" && item.type !== "navbar" && item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4"
+&& item.type !== "H5" && item.type !== "toggle-button" && item.type !== "textfield" && item.type !== "checkbox" && item.type !== "dropdown" &&
+item.type !== "list" &&  item.type !== "radio-button" && item.type !== "radio-button2" &&(
+<div className="mt-4">
+  <label className="text-sm font-medium text-gray-700 dark:text-white">
+    Border Radius (px)
+  </label>
+  <input
+    type="number"
+    min={0}
+    value={item.props?.borderRadius || 0}
+    onChange={(e) =>
+      onUpdate(item.id, {
+        props: {
+          ...item.props,
+          borderRadius: parseInt(e.target.value) || 0,
+        },
+      })
+    }
+    className="w-full mt-1 px-2 py-1 border rounded text-sm bg-white dark:bg-gray-800 dark:text-white"
+  />
+</div>
+)}
+
+
+  {[
+  ["Width (px)", "width", 100],
+  ["Height (px)", "height", 50],
+  ["Position X", "x", 0],
+  ["Position Y", "y", 0],
+]
+  // 🔽 Filter out unwanted props for headers
+  .filter(([label, key]) => {
+    const isHeading = ["H1", "H2", "H3", "H4", "H5"].includes(item.type);
+    const excludedKeys = ["fontSize", "borderRadius", "width", "height"];
+    return !(isHeading && excludedKeys.includes(key));
+  })
+  .map(([label, key, def]) => (
+    <div key={key}>
+      <label className="text-sm font-medium text-gray-700 dark:text-white">{label}</label>
+      <input
+        type="number"
+        value={item[key] || def}
+        onChange={(e) => updateProp(key, parseInt(e.target.value))}
+        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      />
+    </div>
+))}
+    </div>
+    </div>
+    </div>
       )}
     </div>
   );

@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { RxFrame } from "react-icons/rx";
 import { HiH1,HiH2,HiH3,HiWindow } from "react-icons/hi2";
-import { MdSafetyDivider } from "react-icons/md";
 import { IoIosRadioButtonOff } from "react-icons/io";
-import { PiToggleLeftFill, PiParagraphLight, PiChartPieSliceThin , PiChartLineUpThin } from "react-icons/pi";
+import { PiToggleLeftFill} from "react-icons/pi";
+import { TbLayoutNavbarExpand } from "react-icons/tb";
 import { RiRadioButtonLine,RiH4,RiH5 } from "react-icons/ri";
-import { FiColumns,FiCheckSquare, FiType, FiSearch, FiSend, FiEdit,FiChevronDown,FiSidebar,FiVideo,FiGrid,FiImage,FiList,FiSquare,FiStar} from "react-icons/fi";
+import { TiTabsOutline } from "react-icons/ti";
+import { FiCheckSquare, FiType, FiSearch, FiSend, FiEdit,FiChevronDown,FiSidebar,FiVideo,FiGrid,FiImage,FiList,FiSquare,FiStar} from "react-icons/fi";
 import Canvas from "../components/Canvas";
 import SidebarBuilder from "../components/SidebarBuilder";
 import SidebarProperties from "../components/SidebarPropeties";
@@ -20,13 +20,17 @@ const Interface = () => {
   const [darkMode] = useState(true);
   const [activeTab, setActiveTab] = useState("widgets");
   const [selectedWidget, setSelectedWidget] = useState(null);
-  const [deviceSize, setDeviceSize] = useState("mobile");
+  const [deviceSize, setDeviceSize] = useState("desktop");
   const [showCode, setShowCode] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [mode, setMode] = useState("Edit");
+  const [device, setDevice] = useState("web");
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activePageId, setActivePageId] = useState("");
+  const [projectPages, setProjectPages] = useState([]);
+
   const api = new API();
   const { projectId } = useParams();
 
@@ -56,6 +60,7 @@ const Interface = () => {
         return { width: 555, height: 767 };
     }
   };
+const handleRefreshCanvas = () => setCanvasItems([]);
 
   const visualItems = [
     { type: "submit-button", label: "Submit", icon: FiSend },
@@ -72,15 +77,12 @@ const Interface = () => {
   ];
 
   const layoutElements = [
-    { type: "container", label: "Container", icon: FiSquare},
-    { type: "grid", label: "Grid", icon: FiGrid},
-    { type: "div", label: "Div", icon: FiColumns },
+    { type: "container", label: "Container", icon: FiSquare },
+    { type: "grid", label: "Grid", icon: FiGrid },
     { type: "sidebar", label: "SideBar", icon: FiSidebar },
-    { type: "wireframe",label: "Wireframe", icon: () => <RxFrame size={32} stroke={1} className="text-indigo-800 dark:text-indigo-400" />},
+    { type: "footer", label: "Footer", icon:TbLayoutNavbarExpand}, 
     { type: "navbar", label: "NavBar", icon:HiWindow },
-    { type: "footer", label: "Footer", icon:HiWindow },
-    { type: "tabs", label: "Tabs", icon:HiWindow },
-    { type: "divider", label: "Divider", icon:MdSafetyDivider},
+    { type: "tabs", label: "Tabs", icon: () => <TiTabsOutline  size={32} stroke={1} className="text-indigo-600 dark:text-indigo-400"/>},
   ];
 
   const topographyElements = [
@@ -89,23 +91,21 @@ const Interface = () => {
     { type: "H3", label: "H3", icon: HiH3 },
     { type: "H4", label: "H4", icon: RiH4},
     { type: "H5", label: "H5", icon: RiH5 },
-    { type: "Piechart", label: "Pie Chart", icon: PiChartPieSliceThin },
-    { type: "Linechart", label: "Line Chart", icon: PiChartLineUpThin },
 
   ];
 
   const mediaElements = [
-  { type: "image", label: "Images", icon: FiImage },
-  { type: "video", label: "Videos", icon: FiVideo },
-  ]
+    { type: "image", label: "Images", icon: FiImage },
+    { type: "video", label: "Videos", icon: FiVideo },
+  ];
 
   // Sections extensibles
   const [expandedSections, setExpandedSections] = useState({
-  topographyElements: true,
-  inputControls: true, 
-  layoutElements: true,
-  mediaElements: true,
-});
+    topographyElements: true,
+    inputControls: true,
+    layoutElements: true,
+    mediaElements: true,
+  });
 
   const toggleSection = (id) => {
     setExpandedSections((prev) => ({
@@ -131,12 +131,12 @@ const Interface = () => {
       // Media
       case "image":
         newItem.props = {
-          src: "https://via.placeholder.com/150",
-          alt: "Image",
+          src: componentType.props?.src || "https://via.placeholder.com/150",
+          alt: componentType.props?.alt || "Image",
         };
         break;
       case "video":
-        newItem.props = { src: "https://www.youtube.com/embed/dQw4w9WgXcQ" };
+        newItem.props = {  src: componentType.props?.src || "https://www.youtube.com/embed/dQw4w9WgXcQ" };
         break;
 
       // Form Elements
@@ -205,7 +205,7 @@ const Interface = () => {
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
 
   const [topTab, setTopTab] = useState("widgets");
-  
+
   const { width, height } = getDeviceDimensions();
 
   const updateItem = (id, updatedAttributes) => {
@@ -245,8 +245,30 @@ const Interface = () => {
           throw new Error("Projet not FOUND.");
         }
         setProject(res);
-        if (res?.canvasItems?.length) {
-          setCanvasItems(res.canvasItems);
+        if (res.pages?.length) {
+          if (device === "mobile") {
+            setCanvasItems(res.pages[0].canvasMobile);
+            setActivePageId(res.pages[0].id);
+            setProjectPages(
+              res.pages?.map((page) => {
+                return {
+                  id: page.id,
+                  name: page.name,
+                };
+              })
+            );
+          } else if (device === "web") {
+            setCanvasItems(res.pages[0].canvasWeb);
+            setActivePageId(res.pages[0].id);
+            setProjectPages(
+              res.pages?.map((page) => {
+                return {
+                  id: page.id,
+                  name: page.name,
+                };
+              })
+            );
+          }
         }
       } catch (err) {
         console.error(err);
@@ -257,7 +279,7 @@ const Interface = () => {
     };
 
     fetchProject();
-  }, [projectId]);
+  }, [projectId, device]);
 
   return (
     <div className="flex flex-col h-screen bg-white text-gray-900">
@@ -273,6 +295,10 @@ const Interface = () => {
         handleRedoClick={handleRedoClick}
         mode={mode}
         setMode={setMode}
+        setDevice={setDevice}
+        handleRefreshCanvas={handleRefreshCanvas}
+                onRefreshCanvas={handleRefreshCanvas}
+
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
@@ -288,7 +314,10 @@ const Interface = () => {
           mediaElements={mediaElements}
           layoutElements={layoutElements}
           topographyElements={topographyElements}
-          addComponentToCanvas={addComponentToCanvas} // si tu veux déclencher l'ajout depuis SidebarBuilder
+          addComponentToCanvas={addComponentToCanvas}
+          projectPages={projectPages} // <- array: [{ id, name }]
+          activePageId={activePageId}
+          onSelectPage={setActivePageId}
         />
 
         <Canvas
@@ -297,6 +326,10 @@ const Interface = () => {
           width={width}
           height={height}
           zoom={zoom}
+          deviceSize={deviceSize}
+          device={device}
+          project={project}
+          activePageId={activePageId}
           canvasItems={canvasItems}
           setCanvasItems={setCanvasItems}
           addComponentToCanvas={addComponentToCanvas}
@@ -308,8 +341,7 @@ const Interface = () => {
           <SidebarProperties item={selectedWidget} onUpdate={updateItem} setCanvasItems={setCanvasItems} />
         ) : (
           <Chat />
-        )
-      }
+        )}
       </div>
 
       <HTMLPreviewModal

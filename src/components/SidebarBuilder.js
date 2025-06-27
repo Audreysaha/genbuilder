@@ -10,6 +10,9 @@ export default function SidebarBuilder({
   mediaElements,
   layoutElements,
   topographyElements,
+  projectPages = [],
+  activePageId = null,
+  onSelectPage = () => {},
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredVisual, setFilteredVisual] = useState(visualItems);
@@ -53,7 +56,6 @@ export default function SidebarBuilder({
 
   return (
     <>
-      {/* Scrollbar styles for light & dark mode */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
@@ -80,7 +82,6 @@ export default function SidebarBuilder({
         html.dark .custom-scrollbar {
           scrollbar-color: #6366f1 #1f2937;
         }
-        /* Reduce icon stroke width */
         .icon-wrapper svg {
           stroke-width: 1 !important;
         }
@@ -165,6 +166,31 @@ export default function SidebarBuilder({
                 </div>
               </div>
             </div>
+
+            {/* Pages Section */}
+            {projectPages.length > 0 && (
+              <div className="px-3 pt-4">
+                <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                  Pages
+                </h2>
+                <div className="space-y-1">
+                  {projectPages.map((page) => (
+                    <button
+                      key={page.id}
+                      onClick={() => onSelectPage(page.id)}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
+                        activePageId === page.id
+                          ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
+                      }`}
+                    >
+                      {page.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar h-full pb-32">
               {/* Form Elements */}
@@ -177,7 +203,6 @@ export default function SidebarBuilder({
                 />
               )}
 
-              {/* Layout Elements */}
               {filteredLayout.length > 0 && (
                 <Section
                   label="Layout Elements"
@@ -187,7 +212,6 @@ export default function SidebarBuilder({
                 />
               )}
 
-              {/* Media Elements */}
               {filteredMedia.length > 0 && (
                 <Section
                   label="Media Elements"
@@ -197,7 +221,6 @@ export default function SidebarBuilder({
                 />
               )}
 
-              {/* Topography Elements */}
               {filteredTopography.length > 0 && (
                 <Section
                   label="Topography Elements"
@@ -214,7 +237,7 @@ export default function SidebarBuilder({
   );
 }
 
-// Section component with dark mode & reduced icon stroke
+// Section component
 function Section({ label, expanded, onToggle, items }) {
   return (
     <div className="mt-3">
