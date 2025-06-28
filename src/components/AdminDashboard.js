@@ -1,32 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import { FiHome, FiUsers, FiSettings, FiMenu, FiMoon, FiSun } from 'react-icons/fi';
+import React, { useState, useEffect } from "react";
+import {
+  FiHome,
+  FiUsers,
+  FiSettings,
+  FiMoon,
+  FiSun,
+  FiTrash2,
+} from "react-icons/fi";
+import API from "../utils/API";
+
+const api = new API();
 
 export default function AdminDashboard() {
-  // Dark mode state with persistence
   const [darkMode, setDarkMode] = useState(() => {
-    const stored = localStorage.getItem('darkMode');
-    if (stored !== null) return stored === 'true';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const stored = localStorage.getItem("darkMode");
+    return stored !== null
+      ? stored === "true"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    if (darkMode) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('darkMode', darkMode);
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
-  // Track which page is active
-  const [activePage, setActivePage] = useState('dashboard');
-  // Control dropdown visibility for Settings
+  const [activePage, setActivePage] = useState("dashboard");
   const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [errorUsers, setErrorUsers] = useState(null);
 
-  // Handle clicking Settings
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    setErrorUsers(null);
+    try {
+      // GET /api/users retourne les users avec projectCount
+      const data = await api.getData(api.apiUrl + "/api/users");
+      setUsers(data);
+    } catch (error) {
+      setErrorUsers("Failed to load users");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  useEffect(() => {
+      fetchUsers();
+  }, [activePage]);
+
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        await api.deleteData(api.apiUrl + `/api/users/${userId}`);
+        // rafraîchir la liste
+        fetchUsers();
+      } catch (error) {
+        alert("Failed to delete user");
+      }
+    }
+  };
+
   const handleSettingsClick = () => {
-    setActivePage('settings');
+    setActivePage("settings");
     setSettingsDropdownOpen(!settingsDropdownOpen);
   };
 
@@ -41,56 +76,51 @@ export default function AdminDashboard() {
           <ul className="space-y-2">
             <li
               onClick={() => {
-                setActivePage('dashboard');
+                setActivePage("dashboard");
                 setSettingsDropdownOpen(false);
               }}
-              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded
-                ${
-                  activePage === 'dashboard'
-                    ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                    : 'hover:bg-gray-200 dark:hover:bg-gray-700'
-                }`}
+              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded transition ${
+                activePage === "dashboard"
+                  ? "bg-indigo-600 text-white dark:bg-indigo-500"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
             >
               <FiHome /> Dashboard
             </li>
             <li
               onClick={() => {
-                setActivePage('users');
+                setActivePage("users");
                 setSettingsDropdownOpen(false);
               }}
-              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded
-                ${
-                  activePage === 'users'
-                    ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                    : 'hover:bg-gray-200 dark:hover:bg-gray-700'
-                }`}
+              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded transition ${
+                activePage === "users"
+                  ? "bg-indigo-600 text-white dark:bg-indigo-500"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
             >
               <FiUsers /> Users
             </li>
-            {/* Settings with dropdown */}
             <li
               onClick={handleSettingsClick}
-              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded justify-between
-                ${
-                  activePage === 'settings'
-                    ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                    : 'hover:bg-gray-200 dark:hover:bg-gray-700'
-                }`}
+              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded justify-between transition ${
+                activePage === "settings"
+                  ? "bg-indigo-600 text-white dark:bg-indigo-500"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
             >
               <div className="flex items-center gap-2">
                 <FiSettings /> Settings
               </div>
-              <span className="select-none">{settingsDropdownOpen ? '▲' : '▼'}</span>
+              <span>{settingsDropdownOpen ? "▲" : "▼"}</span>
             </li>
 
-            {/* Dropdown menu */}
             {settingsDropdownOpen && (
-              <ul className="bg-white dark:bg-gray-700 rounded-b-md shadow-md ml-6">
+              <ul className="bg-white dark:bg-gray-700 rounded-b-md ml-6 shadow-md">
                 <li
-                  className="px-4 py-2 cursor-pointer hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 rounded-b-md"
-                  onClick={() => alert('Login clicked!')}
+                  className="px-4 py-2 cursor-pointer hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 rounded-b-md transition"
+                  onClick={() => alert("Login clicked!")}
                 >
-                  Login
+                  Logout
                 </li>
               </ul>
             )}
@@ -105,7 +135,7 @@ export default function AdminDashboard() {
           <h1 className="text-xl font-semibold capitalize">{activePage}</h1>
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="text-xl p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="text-xl p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
             aria-label="Toggle Dark Mode"
           >
             {darkMode ? <FiSun /> : <FiMoon />}
@@ -114,44 +144,74 @@ export default function AdminDashboard() {
 
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto">
-          {activePage === 'dashboard' && (
+          {activePage === "dashboard" && (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+              <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-lg transition">
                 <h2 className="text-lg font-semibold mb-2">Users</h2>
-                <p>1,234 active users</p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {/* Nombre total utilisateurs */}
+                  {users.length} users registered
+                </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+              {/* Autres stats possibles */}
+              <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-lg transition">
                 <h2 className="text-lg font-semibold mb-2">Revenue</h2>
-                <p>$12,345 this month</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <h2 className="text-lg font-semibold mb-2">System Status</h2>
-                <p>All systems operational</p>
+                <p className="text-gray-600 dark:text-gray-300">$12,345 this month</p>
               </div>
             </div>
           )}
 
-          {activePage === 'users' && (
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          {activePage === "users" && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">Users List</h2>
-              <ul className="space-y-2">
-                <li className="border-b border-gray-300 dark:border-gray-700 pb-2">
-                  <strong>John Doe</strong> - john@example.com
-                </li>
-                <li className="border-b border-gray-300 dark:border-gray-700 pb-2">
-                  <strong>Jane Smith</strong> - jane@example.com
-                </li>
-                <li className="border-b border-gray-300 dark:border-gray-700 pb-2">
-                  <strong>Bob Johnson</strong> - bob@example.com
-                </li>
-              </ul>
+
+              {loadingUsers && <p>Loading users...</p>}
+              {errorUsers && <p className="text-red-500">{errorUsers}</p>}
+
+              {!loadingUsers && !errorUsers && users.length === 0 && (
+                <p className="text-gray-500">No users available.</p>
+              )}
+
+              {!loadingUsers && !errorUsers && users.length > 0 && (
+                <table className="w-full text-left text-sm">
+                  <thead className="border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">
+                    <tr>
+                      <th className="py-2">Name</th>
+                      <th>Email</th>
+                      <th>Projects</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map(({ id, name, email, projectCount }) => (
+                      <tr
+                        key={id}
+                        className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                      >
+                        <td className="py-2">{name}</td>
+                        <td>{email}</td>
+                        <td>{projectCount ?? 0}</td>
+                        <td>
+                          <button
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleDeleteUser(id)}
+                            title="Delete User"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
 
-          {activePage === 'settings' && (
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          {activePage === "settings" && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">Settings</h2>
-              <p>Use the dropdown menu on the sidebar to select Login.</p>
+              <p>Use the dropdown menu on the sidebar to select Logout.</p>
             </div>
           )}
         </main>
