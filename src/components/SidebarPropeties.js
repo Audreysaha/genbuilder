@@ -41,8 +41,8 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     <div className="p-4 space-y-3 w-[350px] border-l bg-gray-50 dark:bg-gray-900 dark:border-gray-700 h-full overflow-y-auto">
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Properties</h2>
 
-      {/* ICON */}
-    {item.type === "icon" && (
+  {/* ICON */}
+  {item.type === "icon" && (
    <div >
   <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">Choose Icon</h3>
 
@@ -74,7 +74,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
           className="w-full h-10 rounded cursor-pointer"
         />
       </div>
-
       {/* Icon Size */}
       <div className="mb-3">
         <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
@@ -96,7 +95,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
           className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
         />
       </div>
-  
   {/* Grid that fills the rest */}
   <div className="grid grid-cols-5 gap-2 overflow-y-auto flex-1 pr-1">
     {availableIcons
@@ -264,9 +262,10 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
         </div>
       </div>
     )}
-{item.type === "text" && (
-        <div className="space-y-4">
 
+    {/* TEXT */}
+    {item.type === "text" && (
+      <div className="space-y-4">
           {/* Font Family */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Font Family</label>
@@ -301,7 +300,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
               ))}
             </select>
           </div>
-
           {/* Font Size */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Font Size</label>
@@ -318,7 +316,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
             className="w-full p-2 border dark:text-white rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
           />
           </div>
-
           {/* Text Content */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Text Content</label>
@@ -332,7 +329,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
             className="w-full p-2 border rounded dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
             />
           </div>
-
          {/* Text Color */}
         <div>
         <label className="text-sm font-medium text-gray-700 dark:text-white">Text Color</label>
@@ -350,7 +346,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
       className="w-full h-10 rounded cursor-pointer"
       />
     </div>
-
     {/* Bold, Italic, Underline Buttons */}
     <div className="flex items-center space-x-2 p-4">
     <button
@@ -369,7 +364,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   >
     <HiBold size={24} />
   </button>
-
   <button
     type="button"
     onClick={() =>
@@ -421,7 +415,6 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
         className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white"
       />
     </div>
-
   </div>
 ) : null}
 
@@ -560,7 +553,8 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 
           <button
             onClick={() => {
-              const filtered = item.images.filter((_, i) => i !== index);
+              // const filtered = item.images.filter((_, i) => i !== index);
+              const filtered = (item.images || []).filter((_, i) => i !== index);
               updateProp("images", filtered);
             }}
             className="text-red-600 text-sm hover:underline"

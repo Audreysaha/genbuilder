@@ -76,18 +76,30 @@ const Canvas = forwardRef(
   }
 };
     const saveCanvasToDatabase = async () => {
-      console.log(project.pages);
-      device === "mobile" ?  project.pages.filter(page => page.id == activePageId)[0].canvasMobile = canvasItems : project.pages.filter(page => page.id == activePageId)[0].canvasWeb = canvasItems;
-      try {
-        await api.putData(
-          api.apiUrl + `/api/project/update/${projectId}`,
-          {pages: project.pages},
-          false
-        );
-      } catch (error) {
-        console.error("Error in Saving :", error);
-      }
-    };
+  if (!Array.isArray(project?.pages)) {
+    console.error("project.pages is undefined or not an array");
+    return;
+  }
+  const page = project.pages.find(page => page.id == activePageId);
+  if (!page) {
+    console.error("No page found with id", activePageId);
+    return;
+  }
+  if (device === "mobile") {
+    page.canvasMobile = canvasItems;
+  } else {
+    page.canvasWeb = canvasItems;
+  }
+  try {
+    await api.putData(
+      api.apiUrl + `/api/project/update/${projectId}`,
+      { pages: project.pages },
+      false
+    );
+  } catch (error) {
+    console.error("Error in Saving :", error);
+  }
+};
 
     const debouncedSave = useMemo(
       () => debounce(saveCanvasToDatabase, 3000),
