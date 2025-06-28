@@ -5,7 +5,7 @@ import { IoIosRadioButtonOff } from "react-icons/io";
 import * as FiIcons from "react-icons/fi"; 
 import { Rnd } from "react-rnd";
 
-const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
+const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode }) => {
   const {
     borderRadius,
     src,
@@ -61,7 +61,7 @@ const handleDelete = (idToDelete) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || typeof onUpdate !== "function") return;
     const url = URL.createObjectURL(file);
     onUpdate(item.id, { src: url });
   };
@@ -97,14 +97,19 @@ const handleDelete = (idToDelete) => {
   };
 
   useEffect(() => {
-    if ((item.width == null || item.height == null) && contentRef.current) {
+    if (
+      !isPreviewMode &&
+      (item.width == null || item.height == null) &&
+      contentRef.current &&
+      typeof onUpdate === "function"
+    ) {
       const rect = contentRef.current.getBoundingClientRect();
       onUpdate(item.id, {
         width: Math.ceil(rect.width),
         height: Math.ceil(rect.height),
       });
     }
-  }, [item.width, item.height, item.content, item.src]); 
+  }, [item.width, item.height, item.content, item.src]);
 
   const renderContent = () => {
     switch (type) {

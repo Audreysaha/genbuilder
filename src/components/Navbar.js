@@ -4,12 +4,13 @@ import { RotateCcw, RotateCw } from "lucide-react";
 import { FiCode, FiPlay, FiSave } from "react-icons/fi";
 import { SlRefresh } from "react-icons/sl"
 import { motion } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import { HiChevronUpDown, HiMiniArrowLeftEndOnRectangle, HiMiniBars3,} from "react-icons/hi2";
 import { ArrowRightOnRectangleIcon, UserPlusIcon,} from "@heroicons/react/24/outline";
 import { LocalStorageManager } from "../utils/LocalStorageManager";
 import API from "../utils/API";
 import { jwtDecode } from "jwt-decode";
+import LivePreviewCanvas from "./LivePreviewConvas";
 
 const Navbar = ({
   zoom,
@@ -109,17 +110,17 @@ const Navbar = ({
       },
       false
     ).then((res) => {
-      api.postData(`${api.apiUrl}/api/project/${res.id}/pages`, {name: "Page1"})
-      .then(() => {
-        alert("Project saved successfully!");
-        navigate(`/interface/${res.id}`)
-      }).catch((err) => {
-        throw new Error(err);
-      })
+      api.postData(`${api.apiUrl}/api/project/${res.id}/pages`, { name: "Page1" })
+        .then(() => {
+          alert("Project saved successfully!");
+          navigate(`/interface/${res.id}`);
+        }).catch((err) => {
+          throw new Error(err);
+        })
     }).catch((err) => {
       console.error("Error when creating Project:", err);
       throw new Error(err);
-    })
+    });
   };
 
   const authLinks = [
@@ -133,10 +134,17 @@ const Navbar = ({
       name: "Register",
       href: "/register",
       icon: <UserPlusIcon className="h-5 w-5" />,
-      className:
-        "bg-indigo-600 text-white hover:bg-indigo-900 rounded-lg shadow-lg shadow-indigo-900",
+      className: "bg-indigo-600 text-white hover:bg-indigo-900 rounded-lg shadow-lg shadow-indigo-900",
     },
   ];
+  const [deviceSelectedMod, setDeviceSelectedMod] = useState("web")
+
+  const activePageId = 1; // à remplacer par la vraie valeur ou passer en prop
+  const { projectId } = useParams();
+  function hadlePreviewClick(){
+    window.open(`/preview/${projectId}?device=${deviceSelectedMod}&page=${activePageId}`, "_blank");
+    // window.open(`/preview/${projectId}?device=${deviceSelectedMod}&page=${activePageId}`, "_blank");
+  }
 
   const isAuthenticated = !!LocalStorageManager.getItem("token");
   const filteredPages = pages.filter(page =>
@@ -257,25 +265,25 @@ const Navbar = ({
       Save
       </motion.button>
 
-        {/* Zoom Controls */}
-        <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
-          <span
-            className="cursor-pointer w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
-            onClick={() => setZoom(Math.max(50, zoom - 10))}
-            title="Zoom Out"
-          >
-            -
-          </span>
-          <span>{zoom}%</span>
-          <span
-            className="cursor-pointer w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
-            onClick={() => setZoom(Math.min(150, zoom + 10))}
-            title="Zoom In"
-          >
-            +
-          </span>
+          {/* Zoom */}
+          <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
+            <span
+              className="cursor-pointer w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
+              onClick={() => setZoom(Math.max(50, zoom - 10))}
+              title="Zoom Out"
+            >
+              -
+            </span>
+            <span>{zoom}%</span>
+            <span
+              className="cursor-pointer w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
+              onClick={() => setZoom(Math.min(150, zoom + 10))}
+              title="Zoom In"
+            >
+              +
+            </span>
+          </div>
         </div>
-      </div>
 
       {/* Center: Device Toggle + Buttons */}
       <div className="flex items-center space-x-4">
@@ -293,54 +301,51 @@ const Navbar = ({
                 viewMode === modeOption
                   ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
                   : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-              }`}
-            >
-              {modeOption.charAt(0).toUpperCase() + modeOption.slice(1)}
-            </button>
-          ))}
-        </div>
+                  }`}
+              >
+                {modeOption.charAt(0).toUpperCase() + modeOption.slice(1)}
+              </button>
+            ))}
+          </div>
 
-        {/* Device Size Buttons */}
-        <div className="flex items-center space-x-2">
-          {(viewMode === "web"
-            ? [
+          {/* Device sizes */}
+          <div className="flex items-center space-x-2">
+            {(viewMode === "web"
+              ? [
                 { icon: FaTabletAlt, size: 18, type: "tablet" },
                 { icon: FaDesktop, size: 20, type: "desktop" },
               ]
-            : [{ icon: FaMobileAlt, size: 18, type: "mobile" }]
-          ).map(({ icon: Icon, size, type }) => {
-            const isActive = deviceSize === type;
-            return (
-              <button
-                key={type}
-                onClick={() => setDeviceSize(type)}
-                className={`p-1 rounded ${
-                  isActive
+              : [{ icon: FaMobileAlt, size: 18, type: "mobile" }]
+            ).map(({ icon: Icon, size, type }) => {
+              const isActive = deviceSize === type;
+              return (
+                <button
+                  key={type}
+                  onClick={() => setDeviceSize(type)}
+                  className={`p-1 rounded ${isActive
                     ? "bg-blue-100 text-blue-800 dark:bg-blue-700"
                     : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-                title={type}
-              >
-                <Icon
-                  size={size}
-                  className={`${
-                    isActive
+                    }`}
+                  title={type}
+                >
+                  <Icon
+                    size={size}
+                    className={`${isActive
                       ? "text-blue-800 dark:text-white"
                       : "text-gray-700 dark:text-white"
-                  }`}
-                />
-              </button>
-            );
-          })}
+                      }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Right Controls */}
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={() => setShowCode(!showCode)}
-          className={`p-3 rounded-lg ${
-            showCode
+        {/* Right Controls */}
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowCode(!showCode)}
+            className={`p-3 rounded-lg ${showCode
               ? "bg-blue-100 text-white dark:bg-blue-700"
               : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
           }`}
@@ -367,12 +372,11 @@ const Navbar = ({
           {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
         </button>
 
-        {/* Undo/Redo */}
-        <div className="bg-white dark:bg-gray-900 rounded flex">
-          <div
-            onClick={handleUndoClick}
-            className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
-              active === "undo"
+          {/* Undo/Redo */}
+          <div className="bg-white dark:bg-gray-900 rounded flex">
+            <div
+              onClick={handleUndoClick}
+              className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${active === "undo"
                 ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
                 : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
@@ -409,30 +413,32 @@ const Navbar = ({
               mode === "Edit"
                 ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-400 dark:text-white"
                 : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-            }`}
+                }`}
+            >
+              Edit
+            </button>
+          </div>
+
+          {/* Preview */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => hadlePreviewClick()}
+            className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-green-500 hover:bg-green-600 text-white dark:bg-green-600 dark:hover:bg-green-700"
           >
-            Edit
-          </button>
+            <FiPlay className="mr-1" />
+            Preview
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-600 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
+          >
+            Deploy
+          </motion.button>
         </div>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-green-500 hover:bg-green-600 text-white dark:bg-green-600 dark:hover:bg-green-700"
-        >
-          <FiPlay className="mr-1" />
-          Preview
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-4 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-600 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
-        >
-          Deploy
-        </motion.button>
       </div>
-    </div>
   );
 };
 

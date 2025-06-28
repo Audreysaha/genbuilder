@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiLayers, FiSearch, FiChevronRight,FiPlus} from "react-icons/fi";
+import API from "../utils/API";
+
 
 export default function SidebarBuilder({
   activeTab,
@@ -13,12 +15,37 @@ export default function SidebarBuilder({
   projectPages = [],
   activePageId = null,
   onSelectPage = () => {},
+  handleAddProjectPages,
+  fetchProject
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredVisual, setFilteredVisual] = useState(visualItems);
   const [filteredMedia, setFilteredMedia] = useState(mediaElements);
   const [filteredLayout, setFilteredLayout] = useState(layoutElements);
-  const [filteredTopography, setFilteredTopography] = useState(topographyElements);
+  const [filteredTopography, setFilteredTopography] =
+    useState(topographyElements);
+  const [projectPagesName, setProjectPagesName] = useState("");
+  const [showAddPageInput, setShowAddPageInput] = useState(false);
+  const [renamingPageId, setRenamingPageId] = useState(null);
+  const [newPageName, setNewPageName] = useState("");
+  const api = new API()
+
+  function handleRenameProjectPage(pageId, pageName) {
+    api
+      .putData(
+        api.apiUrl + `/api/project/pages/${pageId}/rename`,
+        {
+          name: pageName,
+        },
+        false
+      )
+      .then((res) => {
+        fetchProject();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }
 
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -170,23 +197,110 @@ export default function SidebarBuilder({
             {/* Pages Section */}
             {projectPages.length > 0 && (
               <div className="px-3 pt-4">
-                <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                  Pages
-                </h2>
-                <div className="space-y-1">
-                  {projectPages.map((page) => (
+                <div className="flex justify-between items-center pb-2">
+                  <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                    Pages
+                  </h2>
+                  <div
+                    onClick={() => setShowAddPageInput(true)}
+                    className="bg-indigo-800 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
+                  >
+                    +
+                  </div>
+                </div>
+
+                {/* Champ d'ajout de page */}
+                {showAddPageInput && (
+                  <div className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={projectPagesName}
+                      onChange={(e) => setProjectPagesName(e.target.value)}
+                      placeholder="Page name"
+                      className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
+                    />
                     <button
-                      key={page.id}
-                      onClick={() => onSelectPage(page.id)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
-                        activePageId === page.id
-                          ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
-                      }`}
+                      onClick={() => {
+                        if (projectPagesName.trim()) {
+                          handleAddProjectPages(projectPagesName.trim());
+                          setProjectPagesName("");
+                          setShowAddPageInput(false);
+                        }
+                      }}
+                      className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
                     >
-                      {page.name}
+                      Add
                     </button>
-                  ))}
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  {projectPages
+                    .slice()
+                    .sort((a, b) => a.id - b.id)
+                    .map((page) => (
+                      <div key={page.id} className="flex items-center gap-2">
+                        {renamingPageId === page.id ? (
+                          <>
+                            <input
+                              type="text"
+                              value={newPageName}
+                              onChange={(e) => setNewPageName(e.target.value)}
+                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white"
+                            />
+                            <button
+                              onClick={() => {
+                                if (newPageName.trim()) {
+                                  handleRenameProjectPage(
+                                    page.id,
+                                    newPageName.trim()
+                                  );
+                                  setRenamingPageId(null);
+                                  setNewPageName("");
+                                }
+                              }}
+                              className="text-green-600 hover:text-green-800"
+                              title="Save"
+                            >
+                              save
+                            </button>
+                            <button
+                              onClick={() => {
+                                setRenamingPageId(null);
+                                setNewPageName("");
+                              }}
+                              className="text-red-600 hover:text-red-800"
+                              title="Cancel"
+                            >
+                              cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => onSelectPage(page.id)}
+                              className={`flex-1 text-left px-3 py-2 rounded-lg text-sm transition ${
+                                activePageId === page.id
+                                  ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
+                              }`}
+                            >
+                              {page.name}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setRenamingPageId(page.id);
+                                setNewPageName(page.name);
+                              }}
+                              className="text-gray-500 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-white"
+                              title="Rename"
+                            >
+                              rename
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    ))}
                 </div>
               </div>
             )}
@@ -265,9 +379,9 @@ function Section({ label, expanded, onToggle, items }) {
 
       {expanded && (
         <div className="w-full px-1 pb-3 grid grid-cols-3 gap-4 pt-1">
-          {items.map(({ type, label, icon: Icon }) => (
+          {items.map(({ type, label, icon: Icon }, _i) => (
             <div
-              key={type}
+              key={_i}
               draggable
               onDragStart={(e) => e.dataTransfer.setData("componentType", type)}
               className="flex flex-col items-center justify-center p-3 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-grab"
