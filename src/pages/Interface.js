@@ -240,57 +240,104 @@ const FlutterFlowClone = () => {
     }
   }, [canvasItems]);
 
+  const fetchProject = async () => {
+    try {
+      const res = await api.getData(
+        api.apiUrl + `/api/project/load/${projectId}`
+      );
+      if (!res) {
+        throw new Error("Projet not FOUND.");
+      }
+      setProject(res);
+      if (res.pages?.length) {
+        if (device === "mobile") {
+          setCanvasItems(res.pages[0].canvasMobile);
+          setActivePageId(res.pages[0].id);
+          setProjectPages(
+            res.pages?.map((page) => {
+              return {
+                id: page.id,
+                name: page.name,
+              };
+            })
+          );
+        } else if (device === "web") {
+          setCanvasItems(res.pages[0].canvasWeb);
+          setActivePageId(res.pages[0].id);
+          setProjectPages(
+            res.pages?.map((page) => {
+              return {
+                id: page.id,
+                name: page.name,
+              };
+            })
+          );
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setError("ERROR when loading projet.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  function handleAddProjectPages(projectpageName) {
+    api
+      .postData(
+        api.apiUrl + `/api/project/${projectId}/pages`,
+        {
+          name: projectpageName,
+        },
+        false
+      )
+      .then((res) => {
+        fetchProject();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }
+
   useEffect(() => {
     if (!projectId) {
       setError("No ID provided.");
       setLoading(false);
       return;
     }
-
-    const fetchProject = async () => {
-      try {
-        const res = await api.getData(
-          api.apiUrl + `/api/project/load/${projectId}`
-        );
-        if (!res) {
-          throw new Error("Projet not FOUND.");
-        }
-        setProject(res);
-        if (res.pages?.length) {
-          if (device === "mobile") {
-            setCanvasItems(res.pages[0].canvasMobile);
-            setActivePageId(res.pages[0].id);
-            setProjectPages(
-              res.pages?.map((page) => {
-                return {
-                  id: page.id,
-                  name: page.name,
-                };
-              })
-            );
-          } else if (device === "web") {
-            setCanvasItems(res.pages[0].canvasWeb);
-            setActivePageId(res.pages[0].id);
-            setProjectPages(
-              res.pages?.map((page) => {
-                return {
-                  id: page.id,
-                  name: page.name,
-                };
-              })
-            );
-          }
-        }
-      } catch (err) {
-        console.error(err);
-        setError("ERROR when loading projet.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProject();
-  }, [projectId, device]);
+  }, [projectId]);
+
+  useEffect(() => {
+    if(project){
+      setActivePageId(
+        project?.pages.filter((pag) => pag.id == activePageId)[0].id
+      );
+      if (device === "mobile") {
+        setCanvasItems(project?.pages.filter((pag) => pag.id == activePageId)[0].canvasMobile);
+        setActivePageId(project?.pages.filter((pag) => pag.id == activePageId)[0].id);
+        setProjectPages(
+          project?.pages?.map((page) => {
+            return {
+              id: page.id,
+              name: page.name,
+            };
+          })
+        );
+      } else if (device === "web") {
+        setCanvasItems(project?.pages.filter((pag) => pag.id == activePageId)[0].canvasWeb);
+        setActivePageId(project?.pages.filter((pag) => pag.id == activePageId)[0].id);
+        setProjectPages(
+          project?.pages.map((page) => {
+            return {
+              id: page.id,
+              name: page.name,
+            };
+          })
+        );
+      }
+    }
+  }, [activePageId, device]);
 
   return (
     <div className="flex flex-col h-screen bg-white text-gray-900">
@@ -325,9 +372,11 @@ const FlutterFlowClone = () => {
           layoutElements={layoutElements}
           topographyElements={topographyElements}
           addComponentToCanvas={addComponentToCanvas}
-          projectPages={projectPages} // <- array: [{ id, name }]
+          projectPages={projectPages}
           activePageId={activePageId}
           onSelectPage={setActivePageId}
+          handleAddProjectPages={handleAddProjectPages}
+          fetchProject={fetchProject}
         />
 
         <Canvas

@@ -41,14 +41,14 @@ const LivePreviewCanvas = () => {
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-gray-700 rounded-full"></div>
           <div className="w-full h-full overflow-auto relative">
             {canvasItems.map((item) => (
-              <CanvasItem key={item.id} item={item} isPreviewMode />
+              <CanvasItem key={item.id} item={item} isPreviewMode={true} />
             ))}
           </div>
         </div>
       ) : (
         <div className="w-full h-full relative">
           {canvasItems.map((item) => (
-            <CanvasItem key={item.id} item={item} isPreviewMode />
+            <CanvasItem key={item.id} item={item} isPreviewMode={true} />
           ))}
         </div>
       )}

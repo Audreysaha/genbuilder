@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import lowcode from "../assets/images/lowcode.jpeg";
-import { FiSearch} from "react-icons/fi";
-import * as FiIcons from "react-icons/fi"; // Import icon pack
+import { FiSearch } from "react-icons/fi";
+import * as FiIcons from "react-icons/fi";
 import { Rnd } from "react-rnd";
 
-const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
+const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode }) => {
   const {
     backgroundColor,
     borderColor,
@@ -18,13 +18,12 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
     type,
   } = item;
 
-  // Set default position if not provided
   const initialX = item.x ?? Math.floor(Math.random() * 200);
   const initialY = item.y ?? Math.floor(Math.random() * 200);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || typeof onUpdate !== "function") return;
     const url = URL.createObjectURL(file);
     onUpdate(item.id, { src: url });
   };
@@ -63,158 +62,174 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect }) => {
   };
 
   useEffect(() => {
-    if ((item.width == null || item.height == null) && contentRef.current) {
+    if (
+      !isPreviewMode &&
+      (item.width == null || item.height == null) &&
+      contentRef.current &&
+      typeof onUpdate === "function"
+    ) {
       const rect = contentRef.current.getBoundingClientRect();
       onUpdate(item.id, {
         width: Math.ceil(rect.width),
         height: Math.ceil(rect.height),
       });
     }
-  }, [item.width, item.height, item.content, item.src]); 
+  }, [item.width, item.height, item.content, item.src]);
 
   const renderContent = () => {
     switch (type) {
+      case "submit-button":
+        return (
+          <button
+            className="w-full h-full"
+            style={{
+              ...commonStyle,
+              border: isSelected ? "2px solid gray" : "1px solid #6b7280",
+              backgroundColor: item.backgroundColor || "#4f46e5",
+              cursor: "grab",
+            }}
+            onClick={(e) => e.stopPropagation()}
+            contentEditable={true}
+            suppressContentEditableWarning={true}
+            onInput={(e) =>
+              !isPreviewMode &&
+              typeof onUpdate === "function" &&
+              onUpdate(item.id, { content: e.currentTarget.textContent })
+            }
+          >
+            {content || "button"}
+          </button>
+        );
 
-  case "submit-button":
-  return (
-    <button
-      className="w-full h-full"
-      style={{
-        ...commonStyle,
-        border: isSelected ? "2px solid gray" : "1px solid #6b7280",
-        backgroundColor: item.backgroundColor || "#4f46e5", 
-        cursor: "grab",
-      }}
-      onClick={(e) => e.stopPropagation()}
-      contentEditable={true}
-      suppressContentEditableWarning={true}
-      onInput={(e) => onUpdate(item.id, { content: e.currentTarget.textContent })}
-    >
-      {content || "button"}
-    </button>
-  );
-
-  case "textfield":
+      case "textfield":
         return (
           <input
             className="w-full h-full border-10px"
-            style={{inputStyle,
+            style={{
+              inputStyle,
               backgroundColor: item.backgroundColor || "white",
-              // height: "40px", 
               border: isSelected ? "2px solid gray" : "1px solid #6b7280",
               borderRadius: "10px",
             }}
             value={content || ""}
-            onChange={(e) => onUpdate(item.id, { content: e.target.value })}
+            onChange={(e) =>
+              !isPreviewMode &&
+              typeof onUpdate === "function" &&
+              onUpdate(item.id, { content: e.target.value })
+            }
           />
         );
 
-  case "text":
-  return (
-    <textarea
-      className="w-full h-full focus:outline-none"
-      placeholder="Enter text..." 
-      style={{
-        ...inputStyle,
-        // height: "35px", // reduced height
-        color: item.textColor || "black",                   
-        backgroundColor: item.backgroundColor || "white",   
-      }}
-      value={item.content || ""} // Ensure content is from item
-      onChange={(e) => onUpdate(item.id, { content: e.target.value })} // Allow typing
-    />
-  );
-
-  case "checkbox":
+      case "text":
         return (
-          <label
-            className="flex items-center space-x-2"
-            style={{ ...commonStyle, padding: "0.25rem",
+          <textarea
+            className="w-full h-full focus:outline-none"
+            placeholder="Enter text..."
+            style={{
+              ...inputStyle,
+              color: item.textColor || "black",
+              backgroundColor: item.backgroundColor || "white",
             }}
-          >
+            value={item.content || ""}
+            onChange={(e) =>
+              !isPreviewMode &&
+              typeof onUpdate === "function" &&
+              onUpdate(item.id, { content: e.target.value })
+            }
+          />
+        );
+
+      case "checkbox":
+        return (
+          <label className="flex items-center space-x-2" style={commonStyle}>
             <input type="checkbox" />
             <span>{content || "Check me"}</span>
           </label>
         );
 
-        case "dropdown":
+      case "dropdown":
         return (
-          <select className="w-full" 
-          style={{...inputStyle,
-          backgroundColor: item.backgroundColor || "#e5e7eb",
-          height: "50px",
-          }}>
+          <select
+            className="w-full"
+            style={{
+              ...inputStyle,
+              backgroundColor: item.backgroundColor || "#e5e7eb",
+              height: "50px",
+            }}
+          >
             <option>{content || "Select an option"}</option>
             <option>Option 1</option>
             <option>Option 2</option>
           </select>
         );
 
-case "icon":
-  const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
-  return (
-    <div style={commonStyle}>
-      <SelectedIcon size={item.fontSize || 24} color={item.textColor || "#000"} />
-    </div>
-  );
+      case "icon":
+        const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
+        return (
+          <div style={commonStyle}>
+            <SelectedIcon
+              size={item.fontSize || 24}
+              color={item.textColor || "#000"}
+            />
+          </div>
+        );
 
-case "search":
-  return (
-    <div style={{ position: "relative", width: "100%" }}>
-      <FiSearch
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "12px",
-          transform: "translateY(-50%)",
-          color: "#6b7280", // Tailwind gray-500
-          pointerEvents: "none",
-          fontSize: "1rem",
-        }}
-      />
-      <input
-        type="search"
-        className="w-full"
-        placeholder="Search..."
-        style={{
-          ...inputStyle,
-          paddingLeft: "2rem", // Creates space between icon and text
-          backgroundColor: item.backgroundColor || "#e5e7eb", // gray-200
-          border: isSelected ? "2px solid blue" : "1px solid #6b7280", // gray-500
-          borderRadius: "10px",
-          height: "40px",
-          color: item.textColor || "black",
-        }}
-        value={content || ""}
-        onChange={(e) => onUpdate(item.id, { content: e.target.value })}
-      />
-    </div>
-  );
+      case "search":
+        return (
+          <div style={{ position: "relative", width: "100%" }}>
+            <FiSearch
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "12px",
+                transform: "translateY(-50%)",
+                color: "#6b7280",
+                pointerEvents: "none",
+                fontSize: "1rem",
+              }}
+            />
+            <input
+              type="search"
+              className="w-full"
+              placeholder="Search..."
+              style={{
+                ...inputStyle,
+                paddingLeft: "2rem",
+                backgroundColor: item.backgroundColor || "#e5e7eb",
+                border: isSelected ? "2px solid blue" : "1px solid #6b7280",
+                borderRadius: "10px",
+                height: "40px",
+                color: item.textColor || "black",
+              }}
+              value={content || ""}
+              onChange={(e) =>
+                !isPreviewMode &&
+                typeof onUpdate === "function" &&
+                onUpdate(item.id, { content: e.target.value })
+              }
+            />
+          </div>
+        );
 
-  case "list":
-  return (
-    <ul
-      className="list-disc pl-5 space-x-8 w-full h-full"
-      style={commonStyle}
-    >
-      {(item.content || "Item 1,Item 2,Item 3")
-        .split(",")
-        .map((li, i) => (
-          <li key={i}>{li.trim()}</li>
-        ))}
-    </ul>
-  );
-
-
-
-
-
+      case "list":
+        return (
+          <ul
+            className="list-disc pl-5 space-x-8 w-full h-full"
+            style={commonStyle}
+          >
+            {(item.content || "Item 1,Item 2,Item 3")
+              .split(",")
+              .map((li, i) => (
+                <li key={i}>{li.trim()}</li>
+              ))}
+          </ul>
+        );
 
       case "image":
         return (
           <div
             className="cursor-grab w-full h-full"
-            onDoubleClick={triggerFileInput}
+            onDoubleClick={!isPreviewMode ? triggerFileInput : undefined}
             style={commonStyle}
           >
             <img
@@ -230,7 +245,7 @@ case "search":
         return (
           <div
             className="cursor-grab w-full h-full"
-            onDoubleClick={triggerFileInput}
+            onDoubleClick={!isPreviewMode ? triggerFileInput : undefined}
             style={commonStyle}
           >
             <video className="w-full h-full" controls style={{ borderRadius }}>
@@ -261,13 +276,12 @@ case "search":
           </aside>
         );
 
-      
-
-     
-
       case "grid":
         return (
-          <div className="grid grid-cols-2 gap-1 w-full h-full" style={commonStyle}>
+          <div
+            className="grid grid-cols-2 gap-1 w-full h-full"
+            style={commonStyle}
+          >
             <div className="bg-gray-100 p-1">Col 1</div>
             <div className="bg-gray-200 p-1">Col 2</div>
           </div>
@@ -287,8 +301,6 @@ case "search":
           </footer>
         );
 
-      
-
       case "card":
         return (
           <div className="shadow p-2 w-full h-full" style={commonStyle}>
@@ -302,7 +314,6 @@ case "search":
       default:
         return (
           <div ref={contentRef} style={commonStyle}>
-            {/* Your content */}
             {item.content || "Unknown Component"}
           </div>
         );
@@ -310,37 +321,50 @@ case "search":
   };
 
   return (
-  <Rnd
-  size={{
-    width: item.width || "auto",
-    height: item.height || "auto",
-  }}
-  position={{ x: item.x ?? initialX, y: item.y ?? initialY }}
-  bounds="parent"
-  onDragStop={(e, d) => onUpdate(item.id, { x: d.x, y: d.y })}
-  onResizeStop={(e, direction, ref, delta, position) => {
-    onUpdate(item.id, {
-      width: parseInt(ref.style.width),
-      height: parseInt(ref.style.height),
-      x: position.x,
-      y: position.y,
-    });
-  }}
-  onClick={(e) => {
-    e.stopPropagation();
-    onSelect();
-  }}
-  enableResizing={true}
-  style={{
-    border: isSelected ? "2px solid blue" : "none",
-    boxSizing: "border-box",
-  }}
->
-  <div style={{ width: "100%", height: "100%" }}>
-    {renderContent()}
-  </div>
-</Rnd>
-
+    <Rnd
+      size={{
+        width: item.width || "auto",
+        height: item.height || "auto",
+      }}
+      position={{ x: item.x ?? initialX, y: item.y ?? initialY }}
+      bounds="parent"
+      disableDragging={isPreviewMode}
+      enableResizing={!isPreviewMode}
+      onDragStop={(e, d) => {
+        if (!isPreviewMode && typeof onUpdate === "function") {
+          onUpdate(item.id, { x: d.x, y: d.y });
+        }
+      }}
+      onResizeStop={(e, direction, ref, delta, position) => {
+        if (!isPreviewMode && typeof onUpdate === "function") {
+          onUpdate(item.id, {
+            width: parseInt(ref.style.width),
+            height: parseInt(ref.style.height),
+            x: position.x,
+            y: position.y,
+          });
+        }
+      }}
+      onClick={(e) => {
+        if (!isPreviewMode) {
+          e.stopPropagation();
+          typeof onSelect === "function" && onSelect();
+        }
+      }}
+      enableUserSelectHack={false}
+      dragAxis={isPreviewMode ? "none" : "both"}
+      resizeHandleComponent={isPreviewMode ? {} : undefined}
+      resizeHandleStyles={isPreviewMode ? {} : undefined}
+      className={isPreviewMode ? "pointer-events-none" : ""}
+      style={{
+        border: isSelected && !isPreviewMode ? "2px solid blue" : "none",
+        boxSizing: "border-box",
+      }}
+    >
+      <div style={{ width: "100%", height: "100%", pointerEvents: "auto" }}>
+        {renderContent()}
+      </div>
+    </Rnd>
   );
 };
 
