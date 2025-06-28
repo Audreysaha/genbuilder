@@ -14,47 +14,6 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode }) => 
     setItems,
     type,
   } = item;
-  
-// const handleDelete = (idToDelete) => {
-//   setItems(prevItems =>
-//     prevItems.filter(item => {
-//       // Filter out the container and also its children (if any)
-//       if (item.id === idToDelete) return false;
-
-//       // ❌ Remove items that belong to a deleted container
-//       if (item.parentId === idToDelete) return false;
-
-//       return true; // ✅ keep everything else
-//     })
-//   );};
-
-
-const handleDelete = (idToDelete) => {
-  setItems((prevItems) => {
-    // Find the item to delete
-    const target = prevItems.find((item) => item.id === idToDelete);
-
-    // If it's a container with children
-    if (target?.children && target.children.length > 0) {
-      const childIds = target.children.map((c) => c.id);
-      return prevItems.filter((item) => item.id !== idToDelete && !childIds.includes(item.id));
-    }
-
-    // For normal items
-    return prevItems.filter((item) => item.id !== idToDelete);
-  });
-};
-
-
-  const defaultPropsByType = {
-  divider: {
-    color: "#4f46e5", // indigo-600
-    thickness: 4,
-    width: "100%",
-    margin: 32
-  },
-  // other types...
-};
 
   const initialX = item.x ?? Math.floor(Math.random() * 200);
   const initialY = item.y ?? Math.floor(Math.random() * 200);
@@ -151,72 +110,43 @@ case "submit-button":
     </button>
   );
 
-case "textfield":
-  
-  return (
-    <input
-      className="w-full h-full"
-      style={{
-        ...inputStyle,
-        fontSize: item.props?.fontSize || "16px",
-        border: isSelected ? "2px solid gray" : "1px solid #6b7280",
-        borderRadius: "10px",
-        cursor: "grab",
-        backgroundColor: item.props?.backgroundColor || "#ffffff", // background color from props
-        color: item.props?.textColor || "#000000", // text color from props
-      }}
-      value={item.props?.content || ""}
-      onChange={(e) =>
-        onUpdate(item.id, {
-          props: {
-            ...item.props,
-            content: e.target.value,
-          },
-        })
-      }
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(item.id);
-      }}
-    />
-  );
+      case "textfield":
+        return (
+          <input
+            className="w-full h-full border-10px"
+            style={{
+              inputStyle,
+              backgroundColor: item.backgroundColor || "white",
+              border: isSelected ? "2px solid gray" : "1px solid #6b7280",
+              borderRadius: "10px",
+            }}
+            value={content || ""}
+            onChange={(e) =>
+              !isPreviewMode &&
+              typeof onUpdate === "function" &&
+              onUpdate(item.id, { content: e.target.value })
+            }
+          />
+        );
 
-case "text":
-  const style = {
-    color: item.props?.textColor || "black",
-    backgroundColor: item.props?.backgroundColor || "transparent",
-    fontSize: item.props?.fontSize || "16px",
-    fontFamily: item.props?.fontFamily || "Arial, sans-serif",
-    fontWeight: item.props?.bold ? "bold" : "normal",
-    fontStyle: item.props?.italic ? "italic" : "normal",
-    textDecoration: item.props?.underline ? "underline" : "none",
-    padding: "4px",
-    outline: isSelected ? "1px solid blue" : "none", // optional focus style
-    cursor: "text",
-    whiteSpace: "pre-wrap", // to preserve line breaks
-  };
-  return (
-   <div
-    contentEditable
-    suppressContentEditableWarning={true}
-    spellCheck={false}
-    style={style}
-    onClick={(e) => {
-      e.stopPropagation();
-      onSelect(item.id);
-    }}
-    onInput={(e) => {
-      onUpdate(item.id, {
-        props: {
-          ...item.props,
-          content: e.currentTarget.textContent,
-        },
-      });
-    }}
-  >
-    {item.props?.content || "Enter a text"}
-  </div>
-);
+      case "text":
+        return (
+          <textarea
+            className="w-full h-full focus:outline-none"
+            placeholder="Enter text..."
+            style={{
+              ...inputStyle,
+              color: item.textColor || "black",
+              backgroundColor: item.backgroundColor || "white",
+            }}
+            value={item.content || ""}
+            onChange={(e) =>
+              !isPreviewMode &&
+              typeof onUpdate === "function" &&
+              onUpdate(item.id, { content: e.target.value })
+            }
+          />
+        );
 
 case "checkbox":
   const checkboxProps = item.props || {};
@@ -260,36 +190,32 @@ case "checkbox":
     </label>
   );
 
-case "icon":
-  const SelectedIcon =
-    FiIcons[item.props?.iconName] && typeof FiIcons[item.props?.iconName] === "function"
-      ? FiIcons[item.props.iconName]
-      : FiIcons.FiBox;
+      case "dropdown":
+        return (
+          <select
+            className="w-full"
+            style={{
+              ...inputStyle,
+              backgroundColor: item.backgroundColor || "#e5e7eb",
+              height: "50px",
+            }}
+          >
+            <option>{content || "Select an option"}</option>
+            <option>Option 1</option>
+            <option>Option 2</option>
+          </select>
+        );
 
-  return (
-    <div
-      style={{
-        ...commonStyle,
-        backgroundColor: item.props?.backgroundColor || "transparent",
-        padding: "0.5rem",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(item.id);
-      }}
-    >
-      <SelectedIcon
-        size={parseInt(item.props?.fontSize) || 24}
-        color={item.props?.textColor || "#000"}
-        style={{
-          strokeWidth: 1.0,
-        }}
-      />
-    </div>
-  );
+      case "icon":
+        const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
+        return (
+          <div style={commonStyle}>
+            <SelectedIcon
+              size={item.fontSize || 24}
+              color={item.textColor || "#000"}
+            />
+          </div>
+        );
 
 case "dropdown":
   const dropdownProps = item.props || {};

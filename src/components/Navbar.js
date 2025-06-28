@@ -23,6 +23,9 @@ const Navbar = ({
   handleRedoClick,
   mode,
   setMode,
+  // canvasItems,
+  // activePageId,
+  setDevice,
   onRefreshCanvas,
 }) => {
   const [open, setOpen] = useState(false);
@@ -99,7 +102,6 @@ const Navbar = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Modified handleCreateProject to save project but stay on the same interface
   const handleCreateProject = async () => {
     const name = prompt("Enter a project name:");
     if (!name || !name.trim()) return;
@@ -419,6 +421,16 @@ const Navbar = ({
             </button>
           </div>
 
+          {/* Preview */}
+          {/* <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => hadlePreviewClick()}
+            className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-green-500 hover:bg-green-600 text-white dark:bg-green-600 dark:hover:bg-green-700"
+          >
+            <FiPlay className="mr-1" />
+            Preview
+          </motion.button> */}
           {/* Preview */}
           <motion.button
             whileHover={{ scale: 1.05 }}

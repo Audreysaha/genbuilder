@@ -346,6 +346,8 @@ const handleRefreshCanvas = () => setCanvasItems([]);
         handleRefreshCanvas={handleRefreshCanvas}
                 onRefreshCanvas={handleRefreshCanvas}
 
+        canvasItems={canvasItems}
+        activePageId={activePageId}
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
