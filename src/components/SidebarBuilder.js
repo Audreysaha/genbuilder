@@ -139,7 +139,7 @@ export default function SidebarBuilder({
       </div>
       </div>
         {/* Separator Line */}
-  <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
+      <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
       
         <div className="flex-1 overflow-auto">
         {showAddPageInput && (
@@ -159,10 +159,7 @@ export default function SidebarBuilder({
                   setShowAddPageInput(false);
                 }
               }}
-              className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
-            >
-              Add
-            </button>
+              className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"> Add</button>
           </div>
         )}
 

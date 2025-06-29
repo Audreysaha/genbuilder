@@ -214,7 +214,7 @@ const ProjectsDashboard = () => {
             </p>
             <button
               onClick={() => navigate(`/interface/temp-${Date.now()}`)}
-              className="flex items-center justify-center px-6 py-3 bg-indigo-700 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:shadow-emerald-500/20"
+              className="flex items-center justify-center px-6 py-3 bg-indigo-700 to-cyan-500 hover:indigo-500 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:shadow-emerald-500/20"
             >
               <FiPlus className="mr-2" />
               Create Project

@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  FiHome,
-  FiUsers,
-  FiSettings,
-  FiMoon,
-  FiSun,
-  FiTrash2,
-} from "react-icons/fi";
+import { FiHome, FiUsers,FiMoon, FiSun, FiTrash2,} from "react-icons/fi";
+import { GoProjectSymlink } from "react-icons/go";
 import API from "../utils/API";
 
 const api = new API();
@@ -66,14 +60,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-gray-500">Total Users</h3>
-          <p className="text-3xl font-bold">{ users.length }</p>
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-md hidden md:block">
+        <div className="p-4 text-xl font-bold border-b border-gray-200 dark:border-gray-700">
+          Admin Panel
         </div>
         <nav className="mt-4">
           <ul className="space-y-2">
@@ -112,24 +103,14 @@ export default function AdminDashboard() {
               }`}
             >
               <div className="flex items-center gap-2">
-                <FiSettings /> Settings
+                <GoProjectSymlink /> Projects
               </div>
-              <span>{settingsDropdownOpen ? "▲" : "▼"}</span>
+              
             </li>
 
-            {settingsDropdownOpen && (
-              <ul className="bg-white dark:bg-gray-700 rounded-b-md ml-6 shadow-md">
-                <li
-                  className="px-4 py-2 cursor-pointer hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500 rounded-b-md transition"
-                  onClick={() => alert("Login clicked!")}
-                >
-                  Logout
-                </li>
-              </ul>
-            )}
           </ul>
         </nav>
-      </div>
+      </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -158,8 +139,8 @@ export default function AdminDashboard() {
               </div>
               {/* Autres stats possibles */}
               <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-lg transition">
-                <h2 className="text-lg font-semibold mb-2">Revenue</h2>
-                <p className="text-gray-600 dark:text-gray-300">$12,345 this month</p>
+                <h2 className="text-lg font-semibold mb-2">Projects</h2>
+                <p className="text-gray-600 dark:text-gray-300">Automate it</p>
               </div>
             </div>
           )}
@@ -213,8 +194,7 @@ export default function AdminDashboard() {
 
           {activePage === "settings" && (
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Settings</h2>
-              <p>Use the dropdown menu on the sidebar to select Logout.</p>
+              <h2 className="text-xl font-semibold mb-4">Projects</h2>
             </div>
           )}
         </main>
