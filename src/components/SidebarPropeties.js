@@ -263,8 +263,8 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
       </div>
     )}
 
-    {/* TEXT */}
-    {item.type === "text" && (
+{/* TEXT */}
+{item.type === "text" && (
       <div className="space-y-4">
           {/* Font Family */}
           <div>
@@ -456,15 +456,15 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
         multiple
         onChange={(e) => {
           const files = Array.from(e.target.files);
-          const readers = files.map(file => {
+          const readers = files.map((file) => {
             return new Promise((resolve) => {
               const reader = new FileReader();
               reader.onloadend = () => {
                 resolve({
                   src: reader.result,
-                  width: 300,
+                  width: 200,
                   height: 200,
-                  alt: ''
+                  alt: file.name || '',
                 });
               };
               reader.readAsDataURL(file);
@@ -476,43 +476,8 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
             updateProp("images", newImages);
 
             if (typeof item.selectedImageIndex !== "number") {
-              updateProp("selectedImageIndex", 0); // Default to first image
+              updateProp("selectedImageIndex", 0);
             }
-          });
-        }}
-        className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-      />
-    </div>
-
-    {/* Image previews */}
-  {item.type === "image" && (
-  <div className="space-y-4">
-    <div>
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Upload Images</label>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={(e) => {
-          const files = Array.from(e.target.files);
-          const readers = files.map(file => {
-            return new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                resolve({
-                  src: reader.result,
-                  width: 300,
-                  height: 200,
-                  alt: ''
-                });
-              };
-              reader.readAsDataURL(file);
-            });
-          });
-
-          Promise.all(readers).then((images) => {
-            const newImages = [...(item.images || []), ...images];
-            updateProp("images", newImages);
           });
         }}
         className="w-full border px-2 py-1 rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
@@ -533,29 +498,35 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 
         <div className="flex flex-col space-y-2">
           <button
-          onClick={() => {
-     handleAddItem({
-      id: `image-${Date.now()}`,
-      type: "image",
-      src: img.src,
-      width: img.width,
-      height: img.height,
-      alt: img.alt || "Image",
-      x: 100,
-      y: 100,
-    });
-  }}
-  className="text-sm px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
->
-  Add to Canvas
-</button>
-
+            onClick={() => {
+              handleAddItem({
+                id: `image-${Date.now()}`,
+                type: "image",
+                images: [img],
+                selectedImageIndex: 0,
+                props: {
+                  width: img.width,
+                  height: img.height,
+                  alt: img.alt || "Image",
+                  backgroundColor: "transparent",
+                  borderRadius: 0,
+                },
+                x: 100,
+                y: 100,
+              });
+            }}
+            className="text-sm px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Add to Canvas
+          </button>
 
           <button
             onClick={() => {
-              // const filtered = item.images.filter((_, i) => i !== index);
               const filtered = (item.images || []).filter((_, i) => i !== index);
               updateProp("images", filtered);
+              if (item.selectedImageIndex === index) {
+                updateProp("selectedImageIndex", 0);
+              }
             }}
             className="text-red-600 text-sm hover:underline"
           >
@@ -566,14 +537,12 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     ))}
   </div>
 )}
-</div>
-)}
 
 {/*exclude text property properties */}
 {["icon", "grid", "text", "image"].indexOf(item.type) === -1 && (
 <div className="space-y-4">
 {item.type !== "radio-button" && item.type !== "radio-button2" && item.type !== "toggle-button" && item.type !== "H1" &&item.type !== "H2" &&item.type !== "H3" &&item.type !== "H4" &&item.type !== "H5" &&
-  item.type !== "sidebar" && item.type !== "navbar" && item.type !== "tabs" && item.type !== "container" && item.type !== "dropdown" && item.type !== "search" && item.type !== "list" &&(
+  item.type !== "sidebar" && item.type !== "navbar" && item.type !== "tabs" && item.type !== "container" && item.type !== "dropdown" && item.type !== "search" && item.type !== "list" && item.type !== "video" &&(
   <div>
     <label className="text-sm font-medium text-gray-700 dark:text-white">Content</label>
     <textarea
@@ -617,7 +586,9 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 )}
 
 {/* Text Color Picker */}
-<div>
+<div className="space-y-4">
+{ item.type !== "video" && (
+<div className="mt-4">
   <label className="text-sm font-medium text-gray-700 dark:text-white">
     Text Color
   </label>
@@ -635,10 +606,11 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     className="w-full h-10 rounded cursor-pointer"
   />
 </div>
+)}
 
 {/* Font Size Input */}
 <div className="space-y-4">
-{ item.type !== "container" && item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4" && item.type !== "H5" && (
+{ item.type !== "container" && item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4" && item.type !== "H5" && item.type !== "video" &&(
 <div className="mt-4">
   <label className="text-sm font-medium text-gray-700 dark:text-white">
     Font Size (px)
@@ -661,12 +633,11 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 )}
 </div>
 
-
 {/*Border Radius*/}
 <div className="space-y-4">
 { item.type !== "tabs" && item.type !== "navbar" && item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4"
 && item.type !== "H5" && item.type !== "toggle-button" && item.type !== "textfield" && item.type !== "checkbox" && item.type !== "dropdown" &&
-item.type !== "list" &&  item.type !== "radio-button" && item.type !== "radio-button2" &&(
+item.type !== "list" &&  item.type !== "radio-button" && item.type !== "radio-button2" && item.type !== "sidebar" &&(
 <div className="mt-4">
   <label className="text-sm font-medium text-gray-700 dark:text-white">
     Border Radius (px)
@@ -712,6 +683,7 @@ item.type !== "list" &&  item.type !== "radio-button" && item.type !== "radio-bu
       />
     </div>
 ))}
+    </div>
     </div>
     </div>
     </div>

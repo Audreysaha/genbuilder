@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import API from '../utils/AAPI';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeftIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import API from '../utils/API';
+import { LocalStorageManager } from '../utils/LocalStorageManager';
 
 function Login() {
   const navigate = useNavigate();
@@ -23,103 +24,117 @@ function Login() {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email.includes('@')) newErrors.email = 'Valid email is required';
-    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    setIsLoading(true);
+  const handleSubmit = (e) => {
     const api = new API();
+    e.preventDefault();
+    if (validateForm()) {
+      setIsLoading(true);
 
-    try {
-      const response = await api.postData(
-        `${api.apiUrl}/api/auth/login`,
-        formData
-      );
-
-      if (response.success) {
-        navigate('/Admin_dashboard');
-      } else {
-        setErrors({ general: response.error || 'Login failed' });
-      }
-    } catch (error) {
-      setErrors({ general: error.message || 'Login failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
+      api.postData(api.apiUrl + "/api/auth/login", formData, false)
+        .then((res) => {
+          if (res.token) {
+            LocalStorageManager.setItem("token", res.token)
+            navigate('/Admin_dashboard', { state: { formData } });
+          } else {
+            setErrors({ general: "Invalid credentials" });
+            setIsLoading(false);
+          }
+        }).catch((err) => {
+          setIsLoading(false);
+          const message = err?.response?.data?.message || "Login failed. Please try again.";
+          setErrors({ general: message });
+        })
     }
   };
 
   return (
-    <div className="h-screen bg-black flex flex-col justify-center py-12 sm:px-8 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="h-screen bg-indigo-200 flex flex-col justify-center py-12 sm:px-8 lg:px-8">
+      
+
+      <div className="mt-4 sm:mx-auto w-[3100px] h-[500px] max-w-4xl flex justify-center">
+        <div className="bg-white py-1 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)]  sm:px-8 border border-white">
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-indigo-600">
           Login as Admin
         </h2>
+        <p className="mt-2 text-center text-sm text-gray-400">
+        </p>
       </div>
-
-      <div className="mt-4 sm:mx-auto w-full max-w-2xl flex justify-center">
-        <div className="bg-gray-1000 py-10 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-m font-medium text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-m font-medium text-gray-600 mb-4">
                 Email
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none hover:Outline-indigo-700">
+                  <EnvelopeIcon className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
                   value={formData.email}
                   onChange={handleChange}
-                  className={`bg-black block w-[105%] pl-10 pr-3 py-1 border ${errors.email ? 'border-red-500' : 'border-gray-600'} rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                  placeholder="admin@example.com"
+                  className={`bg-white block w-[105%] pl-10 pr-3 py-1 border ${errors.email ? 'border-red-500' : 'border-gray-600'} rounded-md text-black placeholder-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                  placeholder="Email"
                 />
               </div>
               {errors.email && <p className="mt-2 text-m text-red-400">{errors.email}</p>}
             </div>
 
-            {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-m font-medium text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-m font-medium text-gray-600 mb-2">
                 Password
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
+              <div className="mt-1 relative rounded-md shadow-sm hover:indigo-700">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LockClosedIcon className="h-5 w-5 text-gray-400" />
+                  <LockClosedIcon className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
-                  minLength="6"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`bg-black block w-[105%] pl-10 pr-3 py-1 border ${errors.password ? 'border-red-500' : 'border-gray-600'} rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                  placeholder="securePassword123"
+                  className={`bg-white block w-[105%] pl-10 pr-3 py-1 border ${errors.password ? 'border-red-500' : 'border-gray-600'} rounded-md text-black placeholder-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                  placeholder="Password"
                 />
               </div>
               {errors.password && <p className="mt-2 text-sm text-red-400">{errors.password}</p>}
             </div>
 
-            {/* Submit Button */}
-            <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+              <div className="flex items-center mb-8">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 rounded bg-gray-700"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600">
+                  Remember me
+                </label>
+              </div>
+
+              <div className="text-sm mb-8">
+                <Link to="/forgot-password" className="font-medium text-indigo-400 hover:text-indigo-700 ">
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+
+            <div className= "mb-8">
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-[105%] flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                className={`w-[105%] flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium text-white bg-indigo-600 hover:bg-indigo-700 indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
               >
                 {isLoading ? (
                   <>
@@ -132,13 +147,19 @@ function Login() {
                 ) : 'Login'}
               </button>
               {errors.general && (
-                <p className="mt-2 text-sm text-red-400 text-center">{errors.general}</p>
+                <p className="text-red-400 text-sm text-center">{errors.general}</p>
               )}
             </div>
+           
           </form>
+
+
+            
+
+             
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
   );
 }
 

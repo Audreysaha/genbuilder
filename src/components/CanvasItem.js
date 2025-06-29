@@ -110,43 +110,68 @@ case "submit-button":
     </button>
   );
 
-      case "textfield":
-        return (
-          <input
-            className="w-full h-full border-10px"
-            style={{
-              inputStyle,
-              backgroundColor: item.backgroundColor || "white",
-              border: isSelected ? "2px solid gray" : "1px solid #6b7280",
-              borderRadius: "10px",
-            }}
-            value={content || ""}
-            onChange={(e) =>
-              !isPreviewMode &&
-              typeof onUpdate === "function" &&
-              onUpdate(item.id, { content: e.target.value })
-            }
-          />
-        );
+case "textfield":
+  return (
+    <input
+      className="w-full h-full focus:outline-none"
+      placeholder={item.props?.placeholder || "Enter text..."}
+      style={{
+        ...inputStyle,
+        backgroundColor: item.props?.backgroundColor || "white",
+        color: item.props?.textColor || "black",
+        fontSize: item.props?.fontSize || "16px",
+        textAlign: item.props?.textAlign || "left",
+        lineHeight: item.props?.lineHeight || "normal",
+        padding: item.props?.padding || "8px",
+        border: isSelected ? "2px solid gray" : "1px solid #6b7280",
+        borderRadius: item.props?.borderRadius || "10px",
+       
+      }}
+      value={item.props?.content || ""}
+      onChange={(e) => {
+        if (!isPreviewMode && typeof onUpdate === "function") {
+          onUpdate(item.id, {
+            props: {
+              ...item.props,
+              content: e.target.value,
+            },
+          });
+        }
+      }}
+    />
+  );
 
-      case "text":
-        return (
-          <textarea
-            className="w-full h-full focus:outline-none"
-            placeholder="Enter text..."
-            style={{
-              ...inputStyle,
-              color: item.textColor || "black",
-              backgroundColor: item.backgroundColor || "white",
-            }}
-            value={item.content || ""}
-            onChange={(e) =>
-              !isPreviewMode &&
-              typeof onUpdate === "function" &&
-              onUpdate(item.id, { content: e.target.value })
-            }
-          />
-        );
+ case "text":
+  return (
+    <textarea
+      className="w-full h-full focus:outline-none resize-none"
+      placeholder="Enter text..."
+      style={{
+        ...inputStyle,
+        color: item.props?.textColor || "black",
+        backgroundColor: item.props?.backgroundColor || "white",
+        fontSize: item.props?.fontSize || "16px",
+        fontWeight: item.props?.bold ? "bold" : "normal",
+        fontStyle: item.props?.italic ? "italic" : "normal",
+        textDecoration: item.props?.underline ? "underline" : "none",
+        textAlign: item.props?.textAlign || "left",
+        lineHeight: item.props?.lineHeight || "normal",
+        padding: item.props?.padding || "8px",
+        fontFamily: item.props?.fontFamily || "Arial, sans-serif",
+      }}
+      value={item.props?.content || ""}
+      onChange={(e) => {
+        if (!isPreviewMode && typeof onUpdate === "function") {
+          onUpdate(item.id, {
+            props: {
+              ...item.props,
+              content: e.target.value,
+            },
+          });
+        }
+      }}
+    />
+  );
 
 case "checkbox":
   const checkboxProps = item.props || {};
@@ -190,32 +215,16 @@ case "checkbox":
     </label>
   );
 
-      case "dropdown":
-        return (
-          <select
-            className="w-full"
-            style={{
-              ...inputStyle,
-              backgroundColor: item.backgroundColor || "#e5e7eb",
-              height: "50px",
-            }}
-          >
-            <option>{content || "Select an option"}</option>
-            <option>Option 1</option>
-            <option>Option 2</option>
-          </select>
-        );
-
-      case "icon":
-        const SelectedIcon = FiIcons[item.iconName] || FiIcons.FiBox;
-        return (
-          <div style={commonStyle}>
-            <SelectedIcon
-              size={item.fontSize || 24}
-              color={item.textColor || "#000"}
-            />
-          </div>
-        );
+case "icon":
+  const SelectedIcon = FiIcons[item.props?.iconName] || FiIcons.FiBox;
+  return (
+    <div style={{ ...commonStyle }}>
+      <SelectedIcon
+        size={parseInt(item.props?.fontSize) || 24}
+        color={item.props?.textColor || "#000"}
+      />
+    </div>
+  );
 
 case "dropdown":
   const dropdownProps = item.props || {};
@@ -360,7 +369,6 @@ case "radio-button":
       style={{
         backgroundColor: radioProps.backgroundColor || "transparent",
         padding: "0.25rem 0.5rem",
-        borderRadius: "6px",
       }}
     >
       <input
@@ -418,7 +426,6 @@ case "radio-button2":
       style={{
         backgroundColor: radio2Props.backgroundColor || "transparent",
         padding: "0.25rem 0.5rem",
-        borderRadius: "6px",
       }}
     >
     <IoIosRadioButtonOff size={20} className="text-black dark:text-black" />
@@ -439,9 +446,6 @@ case "radio-button2":
         style={{
           color: radio2Props.textColor || "#000000",
           fontSize: radio2Props.fontSize || "14px",
-          fontWeight: radio2Props.bold ? "bold" : "normal",
-          fontStyle: radio2Props.italic ? "italic" : "normal",
-          textDecoration: radio2Props.underline ? "underline" : "none",
           lineHeight: radio2Props.lineHeight || "normal",
           fontFamily: radio2Props.fontFamily || "inherit",
           minWidth: 40,
@@ -956,7 +960,14 @@ case "image": {
   const borderRadius = imageProps.borderRadius
     ? `${imageProps.borderRadius}px`
     : "0px";
-const img = (item.images && item.images[item.selectedImageIndex]) || item.images?.[0] || {};
+
+  const width = imageProps.width ? `${imageProps.width}px` : "200px";
+  const height = imageProps.height ? `${imageProps.height}px` : "200px";
+
+  const img =
+    (item.images && item.images[item.selectedImageIndex]) ||
+    item.images?.[0] || {};
+
   const triggerFileInput = (e) => {
     e.stopPropagation();
     const fileInput = document.createElement("input");
@@ -967,8 +978,13 @@ const img = (item.images && item.images[item.selectedImageIndex]) || item.images
       if (file) {
         const reader = new FileReader();
         reader.onload = (loadEvent) => {
+          const newImage = {
+            src: loadEvent.target.result,
+            alt: file.name,
+          };
+
           onUpdate(item.id, {
-            images: [...(item.images || []), { src: loadEvent.target.result, alt: file.name }],
+            images: [...(item.images || []), newImage],
             selectedImageIndex: (item.images || []).length,
           });
         };
@@ -977,35 +993,35 @@ const img = (item.images && item.images[item.selectedImageIndex]) || item.images
     };
     fileInput.click();
   };
+
   return (
     <div
       className="cursor-pointer w-fit h-fit"
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(item.id); // Show properties
+        onSelect(item.id);
       }}
       onDoubleClick={triggerFileInput}
       style={{
         ...commonStyle,
-        width: imageProps.width ? `${imageProps.width}px` : "100%",
-        height: imageProps.height ? `${imageProps.height}px` : "100%",
+        width,
+        height,
         borderRadius,
         overflow: "hidden",
+        background: imageProps.backgroundColor || "transparent",
       }}
     >
-      
       <img
-      src={img.src || lowcode} 
-      alt={img.alt || "Image"}
-      style={{
-        width: imageProps.width ? `${imageProps.width}px` : "100%",
-        height: imageProps.height ? `${imageProps.height}px` : "100%",
-        objectFit: "contain",
-        borderRadius: item.props?.borderRadius ? `${item.props.borderRadius}px` : "0px",
-        background: item.props?.backgroundColor || "transparent",
-      }}
-      draggable={true}
-    />
+        src={img.src || lowcode}
+        alt={img.alt || "Image"}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: imageProps.objectFit || "contain",
+          borderRadius,
+        }}
+        draggable={true}
+      />
     </div>
   );
 }
@@ -1102,7 +1118,6 @@ case "video": {
     </div>
   );
 }
-
 
 //Topography Element
 case "H1":

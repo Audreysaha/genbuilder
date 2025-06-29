@@ -22,8 +22,7 @@ export default function SidebarBuilder({
   const [filteredVisual, setFilteredVisual] = useState(visualItems);
   const [filteredMedia, setFilteredMedia] = useState(mediaElements);
   const [filteredLayout, setFilteredLayout] = useState(layoutElements);
-  const [filteredTopography, setFilteredTopography] =
-    useState(topographyElements);
+  const [filteredTopography, setFilteredTopography] =useState(topographyElements);
   const [projectPagesName, setProjectPagesName] = useState("");
   const [showAddPageInput, setShowAddPageInput] = useState(false);
   const [renamingPageId, setRenamingPageId] = useState(null);
@@ -65,22 +64,6 @@ export default function SidebarBuilder({
     }
   }, [searchTerm, visualItems, mediaElements, layoutElements, topographyElements]);
 
-  const pages = ["Home", "About"]; // Your pages list
-
-  // Add a new page with a prompt to enter the name
-  const handleAddPage = () => {
-    const newPage = prompt("Enter new page name:");
-    if (newPage && newPage.trim() !== "") {
-      if (pages.includes(newPage.trim())) {
-        alert("Page already exists!");
-        return;
-      }
-      setPages((prev) => [...prev, newPage.trim()]);
-    }
-  };
-
-  const [setPages] = useState(["Home", "About", "Contact",]);
-
   return (
     <>
       <style>{`
@@ -114,7 +97,7 @@ export default function SidebarBuilder({
         }
       `}</style>
 
-       <div className="flex h-screen">
+      <div className="flex h-screen">
       {/* Left tab panel */}
       <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
         <button
@@ -142,31 +125,119 @@ export default function SidebarBuilder({
           </button>
         </div>
         
-      {activeTab === "layers" && (
-        <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 overflow-y-auto">
-      <div className="flex items-center justify-between px-2 mb-3">
-      <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[25px] font-sans">Pages</div>
-      </div>
-          
-        <div className="border-b border-gray-300 dark:border-gray-700 mb-3" />
-        <ul className="space-y-2 flex-1 overflow-y-auto">
-      {pages && pages.length > 0 ? (
-      pages.map((page) => (
-      <li
-        key={page}
-        className="flex h-[50px] justify-between text-[18px] items-center cursor-pointer p-2 bg-gray-200 dark:bg-gray-800 rounded-[15px] hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-800 dark:text-gray-200"
-        onClick={() => alert(`You selected page: ${page}`)} // Replace with your own logic
+    {activeTab === "layers" && (
+  <aside className="w-[284px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 overflow-y-auto">
+    {projectPages.length > 0 && (
+      <div>
+        <div className="flex justify-between items-center pb-1">
+        <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[30px] font-sans ">Pages</div>
+      <div
+        onClick={() => setShowAddPageInput(true)}
+        className="bg-indigo-600 rounded-md p-2 w-9 h-9 flex items-center justify-center text-white cursor-pointer"
       >
-        <span className="flex-1 px-2">{page}</span>
-      </li>
-      ))
-      ) : (
-      <p className="px-2 text-gray-600 dark:text-gray-400">No pages created yet.</p>
-      )}
-    </ul>
-    </aside>
-      )}
+       <FiPlus size={40} />
+      </div>
+      </div>
+        {/* Separator Line */}
+  <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
+      
+        <div className="flex-1 overflow-auto">
+        {showAddPageInput && (
+          <div className="flex items-center space-x-2 mb-2">
+            <input
+              type="text"
+              value={projectPagesName}
+              onChange={(e) => setProjectPagesName(e.target.value)}
+              placeholder="Page name"
+              className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
+            />
+            <button
+              onClick={() => {
+                if (projectPagesName.trim()) {
+                  handleAddProjectPages(projectPagesName.trim());
+                  setProjectPagesName("");
+                  setShowAddPageInput(false);
+                }
+              }}
+              className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+            >
+              Add
+            </button>
+          </div>
+        )}
 
+        {/* Page List */}
+        <div className="space-y-1">
+          {projectPages
+            .slice()
+            .sort((a, b) => a.id - b.id)
+            .map((page) => (
+              <div key={page.id} className="flex items-center gap-2">
+                {renamingPageId === page.id ? (
+                  <>
+                    <input
+                      type="text"
+                      value={newPageName}
+                      onChange={(e) => setNewPageName(e.target.value)}
+                      className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white"
+                    />
+                    <button
+                      onClick={() => {
+                        if (newPageName.trim()) {
+                          handleRenameProjectPage(page.id, newPageName.trim());
+                          setRenamingPageId(null);
+                          setNewPageName("");
+                        }
+                      }}
+                      className="text-green-600 hover:text-green-800"
+                      title="Save"
+                    >
+                      save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setRenamingPageId(null);
+                        setNewPageName("");
+                      }}
+                      className="text-red-600 hover:text-red-800"
+                      title="Cancel"
+                    >
+                      cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onSelectPage(page.id)}
+                      className={`flex-1 text-left px-3 py-2 rounded-lg text-sm transition ${
+                        activePageId === page.id
+                          ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
+                      }`}
+                    >
+                      {page.name}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setRenamingPageId(page.id);
+                        setNewPageName(page.name);
+                      }}
+                      className="text-gray-500 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-white"
+                      title="Rename"
+                    >
+                      rename
+                    </button>
+                  </>
+                )}
+              </div>
+            ))}
+        </div>
+      </div>
+      </div>
+    )}
+  </aside>
+)}
+    
         {/* Main sidebar content */}
         {activeTab === "widgets" && (
           <div className="w-80 h-screen flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -194,116 +265,7 @@ export default function SidebarBuilder({
               </div>
             </div>
 
-            {/* Pages Section */}
-            {projectPages.length > 0 && (
-              <div className="px-3 pt-4">
-                <div className="flex justify-between items-center pb-2">
-                  <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                    Pages
-                  </h2>
-                  <div
-                    onClick={() => setShowAddPageInput(true)}
-                    className="bg-indigo-800 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
-                  >
-                    +
-                  </div>
-                </div>
-
-                {/* Champ d'ajout de page */}
-                {showAddPageInput && (
-                  <div className="flex items-center space-x-2 mb-2">
-                    <input
-                      type="text"
-                      value={projectPagesName}
-                      onChange={(e) => setProjectPagesName(e.target.value)}
-                      placeholder="Page name"
-                      className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
-                    />
-                    <button
-                      onClick={() => {
-                        if (projectPagesName.trim()) {
-                          handleAddProjectPages(projectPagesName.trim());
-                          setProjectPagesName("");
-                          setShowAddPageInput(false);
-                        }
-                      }}
-                      className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
-                    >
-                      Add
-                    </button>
-                  </div>
-                )}
-
-                <div className="space-y-1">
-                  {projectPages
-                    .slice()
-                    .sort((a, b) => a.id - b.id)
-                    .map((page) => (
-                      <div key={page.id} className="flex items-center gap-2">
-                        {renamingPageId === page.id ? (
-                          <>
-                            <input
-                              type="text"
-                              value={newPageName}
-                              onChange={(e) => setNewPageName(e.target.value)}
-                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white"
-                            />
-                            <button
-                              onClick={() => {
-                                if (newPageName.trim()) {
-                                  handleRenameProjectPage(
-                                    page.id,
-                                    newPageName.trim()
-                                  );
-                                  setRenamingPageId(null);
-                                  setNewPageName("");
-                                }
-                              }}
-                              className="text-green-600 hover:text-green-800"
-                              title="Save"
-                            >
-                              save
-                            </button>
-                            <button
-                              onClick={() => {
-                                setRenamingPageId(null);
-                                setNewPageName("");
-                              }}
-                              className="text-red-600 hover:text-red-800"
-                              title="Cancel"
-                            >
-                              cancel
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => onSelectPage(page.id)}
-                              className={`flex-1 text-left px-3 py-2 rounded-lg text-sm transition ${
-                                activePageId === page.id
-                                  ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-                                  : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
-                              }`}
-                            >
-                              {page.name}
-                            </button>
-                            <button
-                              onClick={() => {
-                                setRenamingPageId(page.id);
-                                setNewPageName(page.name);
-                              }}
-                              className="text-gray-500 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-white"
-                              title="Rename"
-                            >
-                              rename
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
+          
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar h-full pb-32">

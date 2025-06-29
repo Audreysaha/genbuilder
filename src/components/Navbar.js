@@ -210,7 +210,7 @@ const Navbar = ({
         </div>
 
         {/* Search */}
-        <div className="relative w-[170px]" ref={searchRef} >
+        <div className="relative w-[200px]" ref={searchRef} >
           <div className="absolute inset-y-1 left-1 flex items-center pointer-events-none">
             <FaHome className="text-gray-600 dark:text-gray-300" size={17} />
           </div>
@@ -254,18 +254,6 @@ const Navbar = ({
             </div>
           )}
         </div>
-
-      {/* save button for pages */}
-      <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-2 py-1 rounded-md text-sm font-medium flex items-center 
-              bg-gray-200 hover:bg-indigo-400 text-gray-900 
-              dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white
-              border border-gray-300 dark:border-blue-600">
-      <FiSave className="mr-1" />
-      Save
-      </motion.button>
 
           {/* Zoom */}
           <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
@@ -421,16 +409,7 @@ const Navbar = ({
             </button>
           </div>
 
-          {/* Preview */}
-          {/* <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => hadlePreviewClick()}
-            className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center bg-green-500 hover:bg-green-600 text-white dark:bg-green-600 dark:hover:bg-green-700"
-          >
-            <FiPlay className="mr-1" />
-            Preview
-          </motion.button> */}
+      
           {/* Preview */}
           <motion.button
             whileHover={{ scale: 1.05 }}
