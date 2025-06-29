@@ -16,6 +16,8 @@ import AdminDashboard from './components/AdminDashboard';
 import { LocalStorageManager } from './utils/LocalStorageManager';
 import Navbar from './components/Navbar';
 import LivePreviewCanvas from './components/LivePreviewConvas';
+import ForgotPassword from './pages/FogotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 
 
@@ -80,9 +82,11 @@ useEffect(() => {
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/AdminLogin" element={<Adminlogin />} />
-       
+        <Route path="/reset-password" element={<ResetPassword />} />
+
        {/* <Route path="/AdminSignup" element={<AdminSignup />} />  */}
 
         <Route path="/project_dashboard" element={<PrivateRoute element={<ProjectsDashboard />} />} />
