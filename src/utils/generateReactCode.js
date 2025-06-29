@@ -1,130 +1,172 @@
 export const generateReactCode = (items) => {
-  let jsx = "";
-  let css = "";
+  let jsxWeb = "";
+  let cssWeb = "";
+
+  let jsxNative = "";
+  let stylesNative = {};
 
   items.forEach((item, index) => {
-    const { type, x = 0, y = 0, content = "", props = {} } = item;
+    const {
+      type,
+      x = 0,
+      y = 0,
+      content = "",
+      props = {}
+    } = item;
+
     const className = `comp-${index}`;
-    const style = `position: absolute; left: ${x}px; top: ${y}px;`;
+    const styleWeb = `position: absolute; left: ${x}px; top: ${y}px;`;
+    cssWeb += `.${className} {\n  ${styleWeb}\n`;
 
-    css += `.${className} {\n  ${style}\n`;
+    const styleNative = {
+      position: "absolute",
+      left: x,
+      top: y,
+    };
 
-    let element = "";
+    let elementWeb = "";
+    let elementNative = "";
 
     switch (type) {
       case "heading":
-        css += "  font-size: 24px;\n  font-weight: bold;\n";
-        element = `<h1 className="${className}">${content || "Heading"}</h1>`;
+        cssWeb += "  font-size: 24px;\n  font-weight: bold;\n";
+        styleNative.fontSize = 24;
+        styleNative.fontWeight = "bold";
+        elementWeb = `<h1 className="${className}">${content || "Heading"}</h1>`;
+        elementNative = `<Text style={styles.${className}}>${content || "Heading"}</Text>`;
         break;
 
       case "paragraph":
-        css += "  font-size: 16px;\n  color: #4a4a4a;\n";
-        element = `<p className="${className}">${content || "Lorem ipsum dolor sit amet..."}</p>`;
+        cssWeb += "  font-size: 16px;\n  color: #4a4a4a;\n";
+        styleNative.fontSize = 16;
+        styleNative.color = "#4a4a4a";
+        elementWeb = `<p className="${className}">${content || "Lorem ipsum dolor sit amet..."}</p>`;
+        elementNative = `<Text style={styles.${className}}>${content || "Lorem ipsum dolor sit amet..."}</Text>`;
         break;
 
       case "image":
-        css += "  width: 100px;\n  height: 100px;\n  object-fit: cover;\n";
-        element = `<img src="${props.src || "https://via.placeholder.com/150"}" alt="Canvas" className="${className}" />`;
-        break;
-
-      case "video":
-        css += "  width: 200px;\n  height: 150px;\n";
-        element = `<video controls className="${className}">\n  <source src="${props.src || "https://www.w3schools.com/html/mov_bbb.mp4"}" type="video/mp4" />\n</video>`;
+        cssWeb += "  width: 100px;\n  height: 100px;\n  object-fit: cover;\n";
+        styleNative.width = 100;
+        styleNative.height = 100;
+        styleNative.resizeMode = "cover";
+        elementWeb = `<img src="${props.src || "https://via.placeholder.com/150"}" alt="Canvas" className="${className}" />`;
+        elementNative = `<Image source={{ uri: "${props.src || "https://via.placeholder.com/150"}" }} style={styles.${className}} />`;
         break;
 
       case "textfield":
-        css += "  border: 1px solid #ccc;\n  padding: 4px;\n";
-        element = `<input type="text" defaultValue="${content}" placeholder="Enter text..." className="${className}" />`;
+        cssWeb += "  border: 1px solid #ccc;\n  padding: 4px;\n";
+        styleNative.borderWidth = 1;
+        styleNative.borderColor = "#ccc";
+        styleNative.padding = 4;
+        elementWeb = `<input type="text" defaultValue="${content}" className="${className}" />`;
+        elementNative = `<TextInput style={styles.${className}} value="${content}" />`;
         break;
 
       case "submit-button":
-        css += "  background-color: #3b82f6;\n  color: white;\n  padding: 8px 16px;\n  border-radius: 4px;\n  border: none;\n";
-        element = `<button className="${className}">${content || "Submit"}</button>`;
+        cssWeb += "  background-color: #3b82f6;\n  color: white;\n  padding: 8px 16px;\n  border-radius: 4px;\n  border: none;\n";
+        Object.assign(styleNative, {
+          backgroundColor: "#3b82f6",
+          padding: 8,
+          borderRadius: 4,
+        });
+        elementWeb = `<button className="${className}">${content || "Submit"}</button>`;
+        elementNative = `<TouchableOpacity style={styles.${className}}><Text style={{ color: 'white' }}>${content || "Submit"}</Text></TouchableOpacity>`;
         break;
 
       case "checkbox":
-        css += "  display: flex;\n  gap: 8px;\n  align-items: center;\n";
-        element = `<label className="${className}">\n  <input type="checkbox" />\n  <span>${content || "Check me"}</span>\n</label>`;
+        cssWeb += "  display: flex;\n  gap: 8px;\n  align-items: center;\n";
+        Object.assign(styleNative, {
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+        });
+        elementWeb = `<label className="${className}"><input type="checkbox" /><span>${content || "Check me"}</span></label>`;
+        elementNative = `<View style={styles.${className}}><Text>⬜</Text><Text>${content || "Check me"}</Text></View>`;
         break;
 
       case "dropdown":
-        css += "  padding: 4px;\n  border: 1px solid #ccc;\n";
-        element = `<select className="${className}">\n  <option>${content || "Select an option"}</option>\n  <option>Option 1</option>\n  <option>Option 2</option>\n</select>`;
+        cssWeb += "  padding: 4px;\n  border: 1px solid #ccc;\n";
+        styleNative.padding = 4;
+        styleNative.borderWidth = 1;
+        styleNative.borderColor = "#ccc";
+        elementWeb = `<select className="${className}"><option>${content || "Select an option"}</option><option>Option 1</option><option>Option 2</option></select>`;
+        elementNative = `<Text style={styles.${className}}>${content || "Select an option"} ▼</Text>`;
         break;
 
       case "search":
-        css += "  padding: 4px;\n  border: 1px solid #ccc;\n";
-        element = `<input type="search" placeholder="${content || "Search..."}" className="${className}" />`;
+        cssWeb += "  padding: 4px;\n  border: 1px solid #ccc;\n";
+        styleNative.padding = 4;
+        styleNative.borderWidth = 1;
+        styleNative.borderColor = "#ccc";
+        elementWeb = `<input type="search" placeholder="${content || "Search..."}" className="${className}" />`;
+        elementNative = `<TextInput placeholder="${content || "Search..."}" style={styles.${className}} />`;
         break;
 
       case "navbar":
-        css += "  display: flex;\n  gap: 16px;\n  background-color: #1f2937;\n  color: white;\n  padding: 8px;\n";
-        element = `<nav className="${className}">\n  <span>Home</span>\n  <span>About</span>\n  <span>Contact</span>\n</nav>`;
-        break;
-
-      case "sidebar":
-        css += "  background-color: #e5e7eb;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n";
-        element = `<aside className="${className}">\n  <div>Dashboard</div>\n  <div>Settings</div>\n  <div>Logout</div>\n</aside>`;
-        break;
-
-      case "tabs":
-        css += "  display: flex;\n  border-bottom: 2px solid #ccc;\n";
-        element = `<div className="${className}">\n  <button style={{ borderBottom: '2px solid blue' }}>Tab 1</button>\n  <button>Tab 2</button>\n</div>`;
-        break;
-
-      case "breadcrumbs":
-        css += "  color: #6b7280;\n  font-size: 14px;\n";
-        element = `<div className="${className}">Home &gt; Category &gt; Page</div>`;
-        break;
-
-      case "grid":
-        css += "  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 8px;\n";
-        element = `<div className="${className}">\n  <div style={{ backgroundColor: "#f3f4f6", padding: "8px" }}>Col 1</div>\n  <div style={{ backgroundColor: "#e5e7eb", padding: "8px" }}>Col 2</div>\n</div>`;
-        break;
-
-      case "headers":
-        css += "  background-color: #bfdbfe;\n  text-align: center;\n  padding: 16px;\n  font-weight: bold;\n";
-        element = `<header className="${className}">Header</header>`;
-        break;
-
-      case "footer":
-        css += "  background-color: #d1d5db;\n  text-align: center;\n  padding: 16px;\n";
-        element = `<footer className="${className}">Footer Content</footer>`;
-        break;
-
-      case "sidepanel":
-        css += "  background-color: #f3f4f6;\n  padding: 8px;\n";
-        element = `<div className="${className}">Side Panel Content</div>`;
+        cssWeb += "  display: flex;\n  gap: 16px;\n  background-color: #1f2937;\n  color: white;\n  padding: 8px;\n";
+        Object.assign(styleNative, {
+          flexDirection: "row",
+          backgroundColor: "#1f2937",
+          padding: 8,
+        });
+        elementWeb = `<nav className="${className}"><span>Home</span><span>About</span><span>Contact</span></nav>`;
+        elementNative = `<View style={styles.${className}}><Text style={{ color: 'white' }}>Home</Text><Text style={{ color: 'white' }}>About</Text><Text style={{ color: 'white' }}>Contact</Text></View>`;
         break;
 
       case "card":
-        css += "  background-color: white;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n  padding: 16px;\n  border-radius: 8px;\n";
-        element = `<div className="${className}">\n  <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>Card Title</h2>\n  <p>Card content goes here.</p>\n</div>`;
+        cssWeb += "  background-color: white;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n  padding: 16px;\n  border-radius: 8px;\n";
+        Object.assign(styleNative, {
+          backgroundColor: "white",
+          padding: 16,
+          borderRadius: 8,
+        });
+        elementWeb = `<div className="${className}"><h2>Card Title</h2><p>Card content goes here.</p></div>`;
+        elementNative = `<View style={styles.${className}}><Text style={{ fontWeight: "bold", fontSize: 18 }}>Card Title</Text><Text>Card content goes here.</Text></View>`;
         break;
 
       default:
-        element = `<div className="${className}">{/* Unknown component type: ${type} */}</div>`;
+        elementWeb = `<div className="${className}">{/* Unknown component type: ${type} */}</div>`;
+        elementNative = `<View style={styles.${className}}><Text>Unknown: ${type}</Text></View>`;
     }
 
-    css += `}\n\n`;
-    jsx += element + "\n";
+    cssWeb += `}\n\n`;
+    jsxWeb += elementWeb + "\n";
+    stylesNative[className] = styleNative;
+    jsxNative += elementNative + "\n";
   });
 
-  const fullReactCode = `
+  const fullReactWebCode = `
 import React from "react";
 import "./styles.css";
 
 export default function Canvas() {
   return (
     <div className="canvas">
-${jsx.trim().split("\n").map(line => "    " + line).join("\n")}
+${jsxWeb.trim().split("\n").map(line => "    " + line).join("\n")}
     </div>
   );
 }
 `.trim();
 
+  const fullReactNativeCode = `
+import React from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+
+export default function Canvas() {
+  return (
+    <View style={{ flex: 1 }}>
+${jsxNative.trim().split("\n").map(line => "    " + line).join("\n")}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create(${JSON.stringify(stylesNative, null, 2)});
+`.trim();
+
   return {
-    jsx: fullReactCode,
-    css: css.trim(),
+    jsxWeb: fullReactWebCode,
+    cssWeb: cssWeb.trim(),
+    jsxNative: fullReactNativeCode,
+    stylesNative: stylesNative
   };
 };

@@ -5,7 +5,7 @@ import { IoIosRadioButtonOff } from "react-icons/io";
 import * as FiIcons from "react-icons/fi"; 
 import { Rnd } from "react-rnd";
 
-const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode }) => {
+const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode ,id}) => {
   const {
     borderRadius,
     src,
@@ -35,6 +35,18 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode }) => 
   };
 
   const contentRef = useRef(null);
+
+    const handleDragStop = (e, d) => {
+    if (typeof onUpdate === "function") {
+      onUpdate(id, { x: d.x, y: d.y });
+    }
+  };
+
+  const handleClick = () => {
+    if (typeof onSelect === "function") {
+      onSelect(id);
+    }
+  }
 
   const commonStyle = {
     backgroundColor: item.backgroundColor || "transparent",

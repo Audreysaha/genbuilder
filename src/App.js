@@ -1,5 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 
 import Landing from './pages/Landing';
@@ -20,8 +25,6 @@ import ForgotPassword from './pages/FogotPassword';
 import ResetPassword from './pages/ResetPassword';
 
 
-
-// 🔐 Composant de protection des routes privées   Components for private route protection
 const PrivateRoute = ({ element }) => {
   const token = localStorage.getItem('token');
 
@@ -50,31 +53,39 @@ const PrivateAdminRoute = ({ element }) => {
 
     if (decoded.role !== "admin") {
       localStorage.removeItem("token");
+      localStorage.removeItem("token");
+      return <Navigate to="/" replace />;
+    }
+
+    if (decoded.role !== "admin") {
+      localStorage.removeItem("token");
       return <Navigate to="/" replace />;
     }
 
     return element;
   } catch (error) {
     localStorage.removeItem("token");
+    localStorage.removeItem("token");
     return <Navigate to="/" replace />;
   }
 };
 
+
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-  // Check localStorage on initial load
-  return localStorage.getItem("theme") === "dark";
-});
-useEffect(() => {
-  const root = document.documentElement;
-  if (darkMode) {
-    root.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    root.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  }
-}, [darkMode]);
+    // Check localStorage on initial load
+    return localStorage.getItem("theme") === "dark";
+  });
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   return (
     <Router>
@@ -99,6 +110,5 @@ useEffect(() => {
     </Router>
   );
 }
-
 
 export default App;

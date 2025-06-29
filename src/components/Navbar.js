@@ -17,7 +17,6 @@ const Navbar = ({
   setZoom,
   deviceSize,
   setDeviceSize,
-  PageSearchInput,
   showCode,
   setShowCode,
   handleUndoClick,
@@ -155,15 +154,7 @@ const Navbar = ({
 
   const isAuthenticated = !!LocalStorageManager.getItem("token");
 
-  <PageSearchInput
-  activeTab={activeTab}
-  pages={pages} // this comes from the SidebarBuilder logic
-  onSelectPage={(page) => {
-    // Optional: switch to selected page
-    console.log("Selected page from layers tab:", page);
-  }}
-/>
-
+  
 
   return (
       <div className="flex items-center justify-between h-[55px] px-4 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
