@@ -20,9 +20,9 @@ export default function Signup() {
     const api = new API();
 
     try {
-      const res = await api.postData(api.apiUrl + "/api/auth/register", formData, false);
+      const res = await api.postData(api.apiUrl + "/api/admin/auth/register", formData, false);
       alert(res.message);
-      navigate('/login');
+      navigate('/AdminLogin');
     } catch (err) {
       console.error(err);
       alert("Registration failed.");

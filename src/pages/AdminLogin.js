@@ -35,7 +35,7 @@ function Login() {
     if (validateForm()) {
       setIsLoading(true);
 
-      api.postData(api.apiUrl + "/api/auth/login", formData, false)
+      api.postData(api.apiUrl + "/api/admin/auth/login", formData, false)
         .then((res) => {
           if (res.token) {
             LocalStorageManager.setItem("token", res.token)
