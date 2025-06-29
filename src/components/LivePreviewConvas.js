@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CanvasItem from "./CanvasItem";
 import { useParams, useSearchParams } from "react-router-dom";
 import API from "../utils/API";
@@ -10,29 +10,40 @@ const LivePreviewCanvas = () => {
   const device = searchParams.get("device");
   const page = searchParams.get("page");
   const api = new API();
+  const intervalRef = useRef(null);
+
+  const fetchProject = async () => {
+    try {
+      const res = await api.getData(api.apiUrl + `/api/project/load/${projectId}`);
+      if (!res) throw new Error("Projet not FOUND.");
+      if (res.pages?.length) {
+        const selectedPage = res.pages.find((pag) => pag.id == page);
+        if (!selectedPage) return;
+
+        const newCanvas = device === "mobile"
+          ? selectedPage.canvasMobile
+          : selectedPage.canvasWeb;
+
+        setCanvasItems((prevCanvas) => {
+          const prevString = JSON.stringify(prevCanvas);
+          const newString = JSON.stringify(newCanvas);
+          if (prevString !== newString) {
+            return newCanvas;
+          }
+          return prevCanvas;
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        const res = await api.getData(api.apiUrl + `/api/project/load/${projectId}`);
-        if (!res) throw new Error("Projet not FOUND.");
-        if (res.pages?.length) {
-          const selectedPage = res.pages.find((pag) => pag.id == page);
-          if (!selectedPage) return;
+    fetchProject(); // initial
+    intervalRef.current = setInterval(fetchProject, 2000);
 
-          if (device === "mobile") {
-            setCanvasItems(selectedPage.canvasMobile);
-          } else {
-            setCanvasItems(selectedPage.canvasWeb);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchProject();
-  }, [projectId, device]);
+    return () => clearInterval(intervalRef.current);
+  }, [projectId, device, page]);
 
   return (
     <div className="w-full min-h-screen bg-white dark:bg-gray-900 p-10 flex justify-center items-start">

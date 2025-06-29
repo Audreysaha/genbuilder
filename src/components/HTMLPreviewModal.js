@@ -1,31 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { generateReactCode } from "../utils/generateReactCode";
 
-const HTMLPreviewModal = ({ show, onClose, widgets }) => {
-  const { jsx, css } = generateReactCode(widgets);
+const HTMLPreviewModal = ({ show, onClose, widgets, device }) => {
+  const {
+    jsxWeb,
+    cssWeb,
+    jsxNative
+  } = generateReactCode(widgets);
+
+  const isMobile = device === "mobile";
+
   const [activeTab, setActiveTab] = useState("jsx");
 
-  const jsxFormatted = `import "./styles.css";\n\nexport default function App() {\n  return (\n    <div className="relative w-full h-screen">\n${jsx
-    .split("\n")
-    .map((line) => "      " + line)
-    .join("\n")}\n    </div>\n  );\n}`;
+  useEffect(() => {
+    if (show) {
+      setActiveTab(isMobile ? "native" : "jsx");
+    }
+  }, [device, show]);
+
+  const tabs = isMobile
+    ? [
+        {
+          key: "native",
+          label: "Canvas.native.js",
+          content: jsxNative
+        }
+      ]
+    : [
+        {
+          key: "jsx",
+          label: "code.jsx",
+          content: jsxWeb
+        },
+        {
+          key: "css",
+          label: "styles.css",
+          content: cssWeb
+        }
+      ];
 
   const handleDownload = () => {
-    const jsxBlob = new Blob([jsxFormatted], { type: "text/jsx" });
-    const cssBlob = new Blob([css], { type: "text/css" });
-
-    const downloadFile = (blob, filename) => {
+    tabs.forEach((tab) => {
+      const blob = new Blob([tab.content], {
+        type: tab.key === "css" ? "text/css" : "text/jsx",
+      });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = filename;
+      link.download = tab.label;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    };
-
-    downloadFile(jsxBlob, "code.jsx");
-    downloadFile(cssBlob, "styles.css");
+    });
   };
 
   return (
@@ -46,64 +72,48 @@ const HTMLPreviewModal = ({ show, onClose, widgets }) => {
             exit={{ scale: 0.9, opacity: 0 }}
           >
             <div className="flex mb-2 border-b border-gray-300 justify-between">
-              <div className="lex mb-2 border-b border-gray-300">
-                <button
-                  className={`px-4 py-2 font-medium ${
-                    activeTab === "jsx"
-                      ? "border-b-2 border-blue-500 text-blue-600"
-                      : "text-gray-500"
-                  }`}
-                  onClick={() => setActiveTab("jsx")}
-                >
-                  code.jsx
-                </button>
-                <button
-                  className={`px-4 py-2 font-medium ${
-                    activeTab === "css"
-                      ? "border-b-2 border-blue-500 text-blue-600"
-                      : "text-gray-500"
-                  }`}
-                  onClick={() => setActiveTab("css")}
-                >
-                  styles.css
-                </button>
+              <div className="flex">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    className={`px-4 py-2 font-medium ${
+                      activeTab === tab.key
+                        ? "border-b-2 border-blue-500 text-blue-600"
+                        : "text-gray-500"
+                    }`}
+                    onClick={() => setActiveTab(tab.key)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </div>
-              <div className="flex justify-between items-center mb-4">
-                {/* <h2 className="text-xl font-bold">Generated React Code</h2> */}
+              <div>
                 <button onClick={onClose}>❌</button>
               </div>
             </div>
 
-            {activeTab === "jsx" ? (
-              <textarea
-                readOnly
-                className="w-full h-full border border-gray-300 rounded-lg p-4 font-mono text-sm resize-none"
-                value={jsxFormatted}
-              />
-            ) : (
-              <textarea
-                readOnly
-                className="w-full h-full border border-gray-300 rounded-lg p-4 font-mono text-sm resize-none"
-                value={css}
-              />
-            )}
+            <textarea
+              readOnly
+              className="w-full h-full border border-gray-300 rounded-lg p-4 font-mono text-sm resize-none"
+              value={tabs.find((t) => t.key === activeTab)?.content || ""}
+            />
 
             <div className="mt-4 flex justify-end gap-2">
               <button
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    activeTab === "jsx" ? jsxFormatted : css
+                    tabs.find((t) => t.key === activeTab)?.content || ""
                   )
                 }
               >
-                Copy {activeTab === "jsx" ? "JSX" : "CSS"}
+                Copy
               </button>
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 onClick={handleDownload}
               >
-                Download
+                Download All
               </button>
             </div>
           </motion.div>

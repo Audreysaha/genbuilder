@@ -406,6 +406,7 @@ const FlutterFlowClone = () => {
         show={showCode}
         onClose={() => setShowCode(false)}
         widgets={canvasItems}
+        device={device}
       />
     </div>
   );
