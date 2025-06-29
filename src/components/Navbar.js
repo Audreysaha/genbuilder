@@ -17,50 +17,40 @@ const Navbar = ({
   setZoom,
   deviceSize,
   setDeviceSize,
+  PageSearchInput,
   showCode,
   setShowCode,
   handleUndoClick,
   handleRedoClick,
   mode,
   setMode,
+  activePageId,
+  onSelectPage,
+  pages,
+  activeTab,
   // canvasItems,
   // activePageId,
   setDevice,
   onRefreshCanvas,
 }) => {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const searchRef = useRef(null);
   const [canvasItems, setCanvasItems] = useState([]);
   const [items, setItems] = useState([]); 
   const [active, setActive] = useState(null);
-  const searchRef = useRef(null);
   const [viewMode, setViewMode] = useState("web");
-
-  
- 
-  // // Rafraîchir le contenu du canvas : tout vider
-  // const onRefreshCanvas = () => {
-  //   setCanvasItems([]); // Vide tous les éléments du canvas
-  //   setItems([]); // (optionnel) Vide aussi les items si nécessaire
-  // };
-
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
-  const [search, setSearch] = useState("");
-  const [pages, setPages] = useState([
-    { id: 1, name: "Home" },
-    { id: 2, name: "About" },
-    { id: 3, name: "Contact" },
-    { id: 4, name: "Dashboard" },
-    { id: 5, name: "Settings" },
-  ]);
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
-
   const api = new API();
   const user = jwtDecode(LocalStorageManager.getItem("token")); 
+
+  const isLayerTab = activeTab === "layers";
 
   useEffect(() => {
     const root = document.documentElement;
@@ -73,6 +63,23 @@ const Navbar = ({
     }
   }, [darkMode]);
   
+   const filteredPages = isLayerTab
+    ? pages.filter((page) =>
+        page.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
+
+    // Close dropdown when clicked outside for search bar pages
+    useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []); 
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -141,17 +148,22 @@ const Navbar = ({
   ];
   const [deviceSelectedMod, setDeviceSelectedMod] = useState("web")
 
-  const activePageId = 1; // à remplacer par la vraie valeur ou passer en prop
   const { projectId } = useParams();
   function hadlePreviewClick(){
     window.open(`/preview/${projectId}?device=${deviceSelectedMod}&page=${activePageId}`, "_blank");
-    // window.open(`/preview/${projectId}?device=${deviceSelectedMod}&page=${activePageId}`, "_blank");
   }
 
   const isAuthenticated = !!LocalStorageManager.getItem("token");
-  const filteredPages = pages.filter(page =>
-    page.name.toLowerCase().includes(search.toLowerCase())
-  );
+
+  <PageSearchInput
+  activeTab={activeTab}
+  pages={pages} // this comes from the SidebarBuilder logic
+  onSelectPage={(page) => {
+    // Optional: switch to selected page
+    console.log("Selected page from layers tab:", page);
+  }}
+/>
+
 
   return (
       <div className="flex items-center justify-between h-[55px] px-4 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
@@ -210,50 +222,50 @@ const Navbar = ({
         </div>
 
         {/* Search */}
-        <div className="relative w-[200px]" ref={searchRef} >
-          <div className="absolute inset-y-1 left-1 flex items-center pointer-events-none">
-            <FaHome className="text-gray-600 dark:text-gray-300" size={17} />
-          </div>
-          <div className="absolute inset-y-0 right-2 flex items-center justify-center pointer-events-none">
-            <HiChevronUpDown
-              className="text-gray-600 dark:text-gray-300"
-              size={18}
-            />
-          </div>
-          <input
-            type="search"
-            placeholder="Home"
-            value={search}
-           onChange={e => {
+    <div className="relative w-[200px]" ref={searchRef}>
+      <div className="absolute inset-y-1 left-1 flex items-center pointer-events-none">
+        <FaHome className="text-gray-600 dark:text-gray-300" size={17} />
+      </div>
+      <div className="absolute inset-y-0 right-2 flex items-center justify-center pointer-events-none">
+        <HiChevronUpDown className="text-gray-600 dark:text-gray-300" size={18} />
+      </div>
+      <input
+        type="search"
+        placeholder="Search Pages"
+        value={search}
+        onChange={(e) => {
           setSearch(e.target.value);
           setDropdownOpen(true);
         }}
         onFocus={() => setDropdownOpen(true)}
         className="w-full pl-7 pr-8 py-1 rounded border text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
       />
-          {search && dropdownOpen &&  (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow z-20 max-h-40 overflow-y-auto">
-              {filteredPages.length > 0 ? (
-                filteredPages.map(page => (
-                  <div
-                    key={page.id}
-                    className="px-3 py-1 hover:bg-indigo-100  dark:text-white dark:hover:bg-indigo-700 cursor-pointer text-sm"
-                    onClick={() => {
-                      setSearch(page.name);
-                      setDropdownOpen(false);
-                    }}
-                  >
-                    {page.name}
-                  </div>
-                ))
-              ) : (
-                <div className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">
-                  No results
-                </div>
-              )}
+
+      {/* Only show dropdown if tab is "layers" */}
+      {isLayerTab && search && dropdownOpen && (
+        <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow z-20 max-h-40 overflow-y-auto">
+          {filteredPages.length > 0 ? (
+            filteredPages.map((page) => (
+              <div
+                key={page.id}
+                className="px-3 py-1 hover:bg-indigo-100 dark:hover:bg-indigo-700 dark:text-white cursor-pointer text-sm"
+                onClick={() => {
+                  setSearch(page.name);
+                  setDropdownOpen(false);
+                  onSelectPage?.(page);
+                }}
+              >
+                {page.name}
+              </div>
+            ))
+          ) : (
+            <div className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">
+              No results
             </div>
           )}
         </div>
+      )}
+    </div>
 
           {/* Zoom */}
           <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
@@ -276,19 +288,18 @@ const Navbar = ({
         </div>
 
       {/* Center: Device Toggle + Buttons */}
-      <div className="flex items-center space-x-4">
-        {/* View Mode Toggle */}
-        <div className="flex items-center border rounded-full overflow-hidden text-sm">
-          {["web", "mobile"].map((modeOption) => (
-            <button
-              key={modeOption}
-              onClick={() => {
-                setViewMode(modeOption);
-                // setDevice(modeOption);
-                setDeviceSize(modeOption === "web" ? "desktop" : "mobile");
-              }}
-              className={`px-3 py-1 transition-colors ${
-                viewMode === modeOption
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center border rounded-full overflow-hidden text-sm">
+            {["web", "mobile"].map((modeOption) => (
+              <button
+                key={modeOption}
+                onClick={() => {
+                  setViewMode(modeOption);
+                  setDevice(modeOption);
+                  setDeviceSelectedMod(modeOption)
+                  setDeviceSize(modeOption === "web" ? "desktop" : "mobile");
+                }}
+                className={`px-3 py-1 transition-colors ${viewMode === modeOption
                   ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-600 dark:text-white"
                   : "bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
                   }`}
@@ -299,7 +310,7 @@ const Navbar = ({
           </div>
 
           {/* Device sizes */}
-          <div className="flex items-center space-x-2">
+           <div className="flex items-center space-x-2">
             {(viewMode === "web"
               ? [
                 { icon: FaTabletAlt, size: 18, type: "tablet" },

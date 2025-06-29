@@ -37,7 +37,7 @@ const LivePreviewCanvas = () => {
   return (
     <div className="w-full min-h-screen bg-white dark:bg-gray-900 p-10 flex justify-center items-start">
       {device === "mobile" ? (
-        <div className="w-[375px] h-[812px] border-[12px] border-gray-800 rounded-[40px] overflow-hidden shadow-lg relative bg-white">
+        <div className="w-[375px] h-[700px] border-[12px] border-gray-800 rounded-[40px] overflow-hidden shadow-lg relative bg-white">
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-gray-700 rounded-full"></div>
           <div className="w-full h-full overflow-auto relative">
             {canvasItems.map((item) => (

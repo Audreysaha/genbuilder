@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FiLayers, FiSearch, FiChevronRight,FiPlus} from "react-icons/fi";
 import API from "../utils/API";
 
-
 export default function SidebarBuilder({
   activeTab,
   setActiveTab,
@@ -12,17 +11,21 @@ export default function SidebarBuilder({
   mediaElements,
   layoutElements,
   topographyElements,
+  setCanvasItems,
   projectPages = [],
   activePageId = null,
   onSelectPage = () => {},
   handleAddProjectPages,
-  fetchProject
+  fetchProject,
+  handleRenameProjectPage,
+  handleDeletePage,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredVisual, setFilteredVisual] = useState(visualItems);
   const [filteredMedia, setFilteredMedia] = useState(mediaElements);
   const [filteredLayout, setFilteredLayout] = useState(layoutElements);
-  const [filteredTopography, setFilteredTopography] =useState(topographyElements);
+  const [filteredTopography, setFilteredTopography] =
+    useState(topographyElements);
   const [projectPagesName, setProjectPagesName] = useState("");
   const [showAddPageInput, setShowAddPageInput] = useState(false);
   const [renamingPageId, setRenamingPageId] = useState(null);
@@ -62,7 +65,26 @@ export default function SidebarBuilder({
       setFilteredLayout(filterItems(layoutElements));
       setFilteredTopography(filterItems(topographyElements));
     }
-  }, [searchTerm, visualItems, mediaElements, layoutElements, topographyElements]);
+  }, [
+    searchTerm,
+    visualItems,
+    mediaElements,
+    layoutElements,
+    topographyElements,
+  ]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        contextMenuRef.current &&
+        !contextMenuRef.current.contains(e.target)
+      ) {
+        setContextMenu({ ...contextMenu, visible: false });
+      }
+    };
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [contextMenu]);
 
   return (
     <>
@@ -98,20 +120,20 @@ export default function SidebarBuilder({
       `}</style>
 
       <div className="flex h-screen">
-      {/* Left tab panel */}
-      <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
-        <button
-          onClick={() => setActiveTab("widgets")}
-          className={`p-3 rounded-lg transition-colors ${
-            activeTab === "widgets"
-              ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
-              : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
-          }`}
-          aria-label="Widgets tab"
-          type="button"
-        >
-        <FiPlus size={20} />
-        </button>
+        {/* Left tab panel */}
+        <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
+          <button
+            onClick={() => setActiveTab("widgets")}
+            className={`p-3 rounded-lg transition-colors ${
+              activeTab === "widgets"
+                ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
+                : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
+            }`}
+            aria-label="Widgets tab"
+            type="button"
+          >
+            <FiPlus size={20} />
+          </button>
           <button
             onClick={() => setActiveTab("layers")}
             className={`p-3 rounded-lg transition-colors ${
@@ -123,6 +145,19 @@ export default function SidebarBuilder({
           >
             <FiLayers size={20} />
           </button>
+
+          <button
+            onClick={() => setActiveTab("templates")}
+            className={`p-3 rounded-lg transition-colors ${
+              activeTab === "templates"
+                ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
+                : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
+            }`}
+            aria-label="template tab"
+          >
+             <CgTemplate size={20} />
+            </button>
+           
         </div>
         
     {activeTab === "layers" && (
@@ -261,8 +296,6 @@ export default function SidebarBuilder({
                 </div>
               </div>
             </div>
-
-          
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar h-full pb-32">
