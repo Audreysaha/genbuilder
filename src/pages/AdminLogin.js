@@ -35,7 +35,7 @@ function Login() {
     if (validateForm()) {
       setIsLoading(true);
 
-      api.postData(api.apiUrl + "/api/auth/login", formData, false)
+      api.postData(api.apiUrl + "/api/admin/auth/login", formData, false)
         .then((res) => {
           if (res.token) {
             LocalStorageManager.setItem("token", res.token)
@@ -54,20 +54,18 @@ function Login() {
 
   return (
     <div className="h-screen bg-indigo-200 flex flex-col justify-center py-12 sm:px-8 lg:px-8">
-      
-
-      <div className="mt-4 sm:mx-auto w-[3100px] h-[500px] max-w-4xl flex justify-center">
-        <div className="bg-white py-1 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)]  sm:px-8 border border-white">
+      <div className="mt-4 sm:mx-auto w-[3100px] h-[460px] max-w-4xl flex justify-center">
+        <div className="bg-white py-8 px-10 border border-white rounded-md w-[420px]">
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-indigo-600">
+        <h2 className="mt-1 text-center text-3xl font-extrabold text-indigo-600">
           Login as Admin
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-400">
+        <p className="mt-9 text-center text-sm text-gray-400">
         </p>
       </div>
             <div>
-              <label htmlFor="email" className="block text-m font-medium text-gray-600 mb-4">
+              <label htmlFor="email" className="block text-m font-medium text-gray-600 mb-3">
                 Email
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
@@ -89,7 +87,7 @@ function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-m font-medium text-gray-600 mb-2">
+              <label htmlFor="password" className="block text-m font-medium text-gray-600 mb-3">
                 Password
               </label>
               <div className="mt-1 relative rounded-md shadow-sm hover:indigo-700">
@@ -129,12 +127,11 @@ function Login() {
                 </Link>
               </div>
             </div>
-
-            <div className= "mb-8">
+            <div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-[105%] flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium text-white bg-indigo-600 hover:bg-indigo-700 indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                className={`w-[105%] flex justify-center mb-26 py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium text-white bg-indigo-600 hover:bg-indigo-700 indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
               >
                 {isLoading ? (
                   <>

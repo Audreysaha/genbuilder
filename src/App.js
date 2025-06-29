@@ -30,6 +30,34 @@ const PrivateRoute = ({ element }) => {
   return element;
 };
 
+const PrivateAdminRoute = ({ element }) => {
+  const token = LocalStorageManager.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+
+    if (decoded.exp < currentTime) {
+      localStorage.removeItem("token");
+      return <Navigate to="/" replace />;
+    }
+
+    if (decoded.role !== "admin") {
+      localStorage.removeItem("token");
+      return <Navigate to="/" replace />;
+    }
+
+    return element;
+  } catch (error) {
+    localStorage.removeItem("token");
+    return <Navigate to="/" replace />;
+  }
+};
+
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
   // Check localStorage on initial load
@@ -49,18 +77,16 @@ useEffect(() => {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/AdminLogin" element={<Adminlogin />} />
        
-       {/*<Route path="/AdminSignup" element={<AdminSignup />} />*/} 
+       {/* <Route path="/AdminSignup" element={<AdminSignup />} />  */}
 
-        {/* Protected Routes */}
         <Route path="/project_dashboard" element={<PrivateRoute element={<ProjectsDashboard />} />} />
-        <Route path="/Admin_dashboard" element={<PrivateRoute element={<AdminDashboard />}/>} />
+        <Route path="/Admin_dashboard" element={<PrivateAdminRoute element={<AdminDashboard />}/>} />
         <Route path="/interface/:projectId" element={<PrivateRoute element={<Interface />} />} />
         <Route path="/preview/:projectId" element={<PrivateRoute element={<LivePreviewCanvas />} />} />
         <Route path="/docs" element={<PrivateRoute element={<Docs />} />} />

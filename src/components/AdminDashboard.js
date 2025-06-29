@@ -1,28 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiUsers,FiMoon, FiSun, FiTrash2,} from "react-icons/fi";
+import { FiHome, FiUsers,FiTrash2,FiLogOut} from "react-icons/fi";
 import { GoProjectSymlink } from "react-icons/go";
 import API from "../utils/API";
 
 const api = new API();
 
 export default function AdminDashboard() {
-  const [darkMode, setDarkMode] = useState(() => {
-    const stored = localStorage.getItem("darkMode");
-    return stored !== null
-      ? stored === "true"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("darkMode", darkMode);
-  }, [darkMode]);
-
   const [activePage, setActivePage] = useState("dashboard");
   const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState(null);
+  const [clicked, setClicked] = useState(false);
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
@@ -54,16 +43,21 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSettingsClick = () => {
-    setActivePage("settings");
-    setSettingsDropdownOpen(!settingsDropdownOpen);
+  const handleLogout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/"; 
+};
+
+  const handleClick = () => {
+    setClicked(true);
+    handleLogout();
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <div className="flex h-screen bg-gray-100 text-gray-800 dark:text-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-gray-800 shadow-md hidden md:block">
-        <div className="p-4 text-xl font-bold border-b border-gray-200 dark:border-gray-700">
+      <aside className="w-64 bg-white shadow-md hidden md:block">
+        <div className="p-5 text-xl font-bold border-b border-gray-200 dark:border-gray-700">
           Admin Panel
         </div>
         <nav className="mt-4">
@@ -94,43 +88,53 @@ export default function AdminDashboard() {
             >
               <FiUsers /> Users
             </li>
+
             <li
-              onClick={handleSettingsClick}
-              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded justify-between transition ${
-                activePage === "settings"
+            onClick={() => {
+                setActivePage("projects");
+                setSettingsDropdownOpen(false);
+              }}
+              className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded transition ${
+                activePage === "projects"
                   ? "bg-indigo-600 text-white dark:bg-indigo-500"
                   : "hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <GoProjectSymlink /> Projects
-              </div>
-              
+            <GoProjectSymlink /> Projects
             </li>
-
           </ul>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold capitalize">{activePage}</h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="text-xl p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            aria-label="Toggle Dark Mode"
-          >
-            {darkMode ? <FiSun /> : <FiMoon />}
-          </button>
-        </header>
+  <div className="flex-1 flex flex-col">
+  {/* Header */}
+  <header className="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
+    <h1 className="text-xl font-semibold capitalize text-gray-800 dark:text-white">
+      {activePage}
+    </h1>
+
+    <button
+      onClick={handleLogout}
+      className="bg-white p-2 rounded-lg transition text-black flex items-center gap-2 w-[140px] justify-end"
+      aria-label="Logout"
+      title="Logout"
+    >
+       <FiLogOut
+        size={25}
+        className={`transition ${
+          clicked ? "text-indigo-600" : "text-black"
+        } hover:text-indigo-700`}
+      />
+    </button>
+  </header>
+
 
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto">
           {activePage === "dashboard" && (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-lg transition">
+              <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition">
                 <h2 className="text-lg font-semibold mb-2">Users</h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   {/* Nombre total utilisateurs */}

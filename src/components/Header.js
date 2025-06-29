@@ -34,7 +34,7 @@ export default function Header() {
               to="/"
               className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 hover:from-indigo-300 hover:to-purple-300 transition-all duration-300"
             >
-              GenBuilder
+              Codeless Pro
             </Link>
           </div>
 
