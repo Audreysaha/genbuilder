@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FiLayers, FiSearch, FiChevronRight, FiPlus, FiMoreVertical } from "react-icons/fi";
+import {
+  FiLayers,
+  FiSearch,
+  FiChevronRight,
+  FiPlus,
+  FiMoreVertical,
+} from "react-icons/fi";
 import { CgTemplate } from "react-icons/cg";
 import API from "../utils/API";
 
@@ -11,8 +17,7 @@ export default function SidebarBuilder({
   visualItems,
   mediaElements,
   layoutElements,
-  onDeletePage,
-  pages, 
+  pages,
   SidebarPages,
   topographyElements,
   projectPages = [],
@@ -20,7 +25,6 @@ export default function SidebarBuilder({
   onSelectPage = () => {},
   handleAddProjectPages,
   fetchProject,
-  handleRenameProjectPage,
   handleDeletePage,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,14 +35,6 @@ export default function SidebarBuilder({
     useState(topographyElements);
   const [projectPagesName, setProjectPagesName] = useState("");
   const [showAddPageInput, setShowAddPageInput] = useState(false);
-  const [projectTemplates, setProjectTemplates] = useState([]);
-  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
-  const [showAddTemplateInput, setShowAddTemplateInput] = useState(false);
-  const [newTemplateName, setNewTemplateName] = useState("");
-  const [activeTemplateId, setActiveTemplateId] = useState(null);
-  const [renamingPageId, setRenamingPageId] = useState(null);
-  const [newPageName, setNewPageName] = useState("");
-  const api = new API();
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
@@ -46,71 +42,16 @@ export default function SidebarBuilder({
     pageId: null,
   });
   const contextMenuRef = useRef();
+  const [renamingPageId, setRenamingPageId] = useState(null);
+  const [newPageName, setNewPageName] = useState("");
+  const api = new API();
 
-const handleAddTemplate = (name) => {
-  const newTemplate = {
-    id: Date.now(),
-    name,
-  };
-  setProjectTemplates(prev => [...prev, newTemplate]);
-};
+  function onDeletePage() {
+    
+  }
 
-const onSelectTemplate = (id) => {
-  setActiveTemplateId(id);
-};
-
-
-
-// Predefined Templates
-const prebuiltTemplates = [
-  {
-    id: "login-template",
-    name: "Login Form",
-    description: "Email and password login screen.",
-    content: [
-      { type: "heading", text: "Welcome Back" },
-      { type: "input", placeholder: "Email" },
-      { type: "input", placeholder: "Password" },
-      { type: "submit-button", text: "Login" },
-    ],
-  },
-  {
-    id: "landing-template",
-    name: "Landing Page",
-    description: "Hero section with call-to-action.",
-    content: [
-      { type: "heading", text: "Welcome to GenBuilder" },
-      { type: "paragraph", text: "Build UIs without code." },
-      { type: "button", text: "Get Started" },
-    ],
-  },
-  {
-    id: "interface-template",
-    name: "App Interface",
-    description: "Basic layout with header, sidebar and content area.",
-    content: [
-      { type: "header", text: "App Header" },
-      { type: "sidebar", text: "Sidebar Menu" },
-      { type: "container", text: "Main Content Area" },
-    ],
-  },
-]
-
-  function handleRenameProjectPage(pageId, pageName) {
-    api
-      .putData(
-        api.apiUrl + `/api/project/pages/${pageId}/rename`,
-        {
-          name: pageName,
-        },
-        false
-      )
-      .then((res) => {
-        fetchProject();
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
+  function handleRenameProjectPage() {
+    
   }
 
   useEffect(() => {
@@ -150,44 +91,8 @@ const prebuiltTemplates = [
     return () => window.removeEventListener("click", handleClickOutside);
   }, [contextMenu]);
 
-  <SidebarPages
-  pages={pages}
-  onDeletePage={handleDeletePage}  // ✅ This is important
-/>
-
   return (
     <>
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f3f4f6;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #a5b4fc;
-          border-radius: 10px;
-          border: 2px solid #f3f4f6;
-        }
-        html.dark .custom-scrollbar::-webkit-scrollbar-track {
-          background: #1f2937;
-        }
-        html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #6366f1;
-          border: 2px solid #1f2937;
-        }
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #a5b4fc #f3f4f6;
-        }
-        html.dark .custom-scrollbar {
-          scrollbar-color: #6366f1 #1f2937;
-        }
-        .icon-wrapper svg {
-          stroke-width: 1 !important;
-        }
-      `}</style>
-
       <div className="flex h-screen">
         {/* Left tab panel */}
         <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
@@ -216,7 +121,7 @@ const prebuiltTemplates = [
             <FiLayers size={20} />
           </button>
 
-            <button
+          <button
             onClick={() => setActiveTab("templates")}
             className={`p-3 rounded-lg transition-colors ${
               activeTab === "templates"
@@ -231,156 +136,147 @@ const prebuiltTemplates = [
 
         {activeTab === "layers" && (
           <aside className="w-fit bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 ">
-            {projectPages.length > 0 && (
-              <div className="h-full">
-                <div className="flex justify-between items-center pb-1">
-                  <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans ">
-                    Pages
-                  </div>
-                  <div
-                    onClick={() => setShowAddPageInput(true)}
-                    className="bg-indigo-600 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
-                  >
-                    <FiPlus size={40} />
-                  </div>
+            <div className="h-full">
+              <div className="flex justify-between items-center pb-1">
+                <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans ">
+                  Pages
                 </div>
-                {/* Separator Line */}
-                <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
-
-                <div className="flex-1 overflow-auto h-full">
-                  {showAddPageInput && (
-                    <div className="flex items-center space-x-2 mb-2">
-                      <input
-                        type="text"
-                        value={projectPagesName}
-                        onChange={(e) => setProjectPagesName(e.target.value)}
-                        placeholder="Page name"
-                        className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
-                      />
-                      <button
-                        onClick={() => {
-                          if (projectPagesName.trim()) {
-                            handleAddProjectPages(projectPagesName.trim());
-                            setProjectPagesName("");
-                            setShowAddPageInput(false);
-                          }
-                        }}
-                        className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Page List */}
-                  <div className="space-y-1 relative">
-                    {projectPages
-                      .slice()
-                      .sort((a, b) => a.id - b.id)
-                      .map((page) => (
-                        <div
-                          key={page.id}
-                          className="flex items-center gap-2 relative"
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            setContextMenu({
-                              visible: true,
-                              x: e.pageX,
-                              y: e.pageY,
-                              pageId: page.id,
-                            });
-                          }}
-                        >
-                          {renamingPageId === page.id ? (
-                            <>
-                              <input
-                                type="text"
-                                value={newPageName}
-                                onChange={(e) => setNewPageName(e.target.value)}
-                                className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white"
-                              />
-                              <button
-                                onClick={() => {
-                                  if (newPageName.trim()) {
-                                    handleRenameProjectPage(
-                                      page.id,
-                                      newPageName.trim()
-                                    );
-                                    setRenamingPageId(null);
-                                    setNewPageName("");
-                                  }
-                                }}
-                                className="text-green-600 hover:text-green-800"
-                                title="Save"
-                              >
-                                save
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setRenamingPageId(null);
-                                  setNewPageName("");
-                                }}
-                                className="text-red-600 hover:text-red-800"
-                                title="Cancel"
-                              >
-                                cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                            <button
-                            onClick={() => onSelectPage(page.id)}
-                            className={`flex items-center justify-between px-3 py-2 rounded-lg w-[300px] text-sm transition ${
-                            activePageId === page.id
-                            ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
-                            }`}
->
-                                  <span>{page.name}</span>
-                                  <FiMoreVertical />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      ))}
-
-                    {/* Menu contextuel */}
-                    {contextMenu.visible && (
-                      <ul
-                        ref={contextMenuRef}
-                        className="absolute z-50 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-md py-1 text-sm"
-                        style={{ top: contextMenu.y, left: contextMenu.x }}
-                      >
-                        <li
-                          className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
-                          onClick={() => {
-                            const selectedPage = projectPages.find(
-                              (p) => p.id === contextMenu.pageId
-                            );
-                            if (selectedPage) {
-                              setRenamingPageId(selectedPage.id);
-                              setNewPageName(selectedPage.name);
-                            }
-                            setContextMenu({ ...contextMenu, visible: false });
-                          }}
-                        >
-                          Rename
-                        </li>
-                        <li className="...">
-                          {pages.map((page) => (
-                          <div key={page.id}>
-                          <span>{page.name}</span>
-                          <button onClick={() => onDeletePage(page.id)}>Delete</button>
-                          </div>
-                        ))}
-                          Delete
-                        </li>
-                      </ul>
-                    )}
-                  </div>
+                <div
+                  onClick={() => setShowAddPageInput(true)}
+                  className="bg-indigo-600 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
+                >
+                  <FiPlus size={40} />
                 </div>
               </div>
-            )}
+              <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
+
+              <div className="flex-1 overflow-auto h-full">
+                {showAddPageInput && (
+                  <div className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={projectPagesName}
+                      onChange={(e) => setProjectPagesName(e.target.value)}
+                      placeholder="Page name"
+                      className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
+                    />
+                    <button
+                      onClick={() => {
+                        if (projectPagesName.trim()) {
+                          handleAddProjectPages(projectPagesName.trim());
+                          setProjectPagesName("");
+                          setShowAddPageInput(false);
+                        }
+                      }}
+                      className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+                    >
+                      Add
+                    </button>
+                  </div>
+                )}
+
+                <div className="space-y-1 relative">
+                  {projectPages
+                    .slice()
+                    .sort((a, b) => a.id - b.id)
+                    .map((page) => (
+                      <div
+                        key={page.id}
+                        className="flex items-center gap-2 relative"
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          setContextMenu({
+                            visible: true,
+                            x: e.pageX,
+                            y: e.pageY,
+                            pageId: page.id,
+                          });
+                        }}
+                      >
+                        {renamingPageId === page.id ? (
+                          <>
+                            <input
+                              type="text"
+                              value={newPageName}
+                              onChange={(e) => setNewPageName(e.target.value)}
+                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white"
+                            />
+                            <button
+                              onClick={() => {
+                                if (newPageName.trim()) {
+                                  handleRenameProjectPage(
+                                    page.id,
+                                    newPageName.trim()
+                                  );
+                                  setRenamingPageId(null);
+                                  setNewPageName("");
+                                }
+                              }}
+                              className="text-green-600 hover:text-green-800"
+                            >
+                              save
+                            </button>
+                            <button
+                              onClick={() => {
+                                setRenamingPageId(null);
+                                setNewPageName("");
+                              }}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              cancel
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => onSelectPage(page.id)}
+                            className={`flex items-center justify-between px-3 py-2 rounded-lg w-[300px] text-sm transition ${
+                              activePageId === page.id
+                                ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                                : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
+                            }`}
+                          >
+                            <span>{page.name}</span>
+                            <FiMoreVertical />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+
+                  {contextMenu.visible && (
+                    <ul
+                      ref={contextMenuRef}
+                      className="absolute z-50 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-md py-1 text-sm"
+                      style={{ top: contextMenu.y, left: contextMenu.x }}
+                    >
+                      <li
+                        className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                        onClick={() => {
+                          const selectedPage = projectPages.find(
+                            (p) => p.id === contextMenu.pageId
+                          );
+                          if (selectedPage) {
+                            setRenamingPageId(selectedPage.id);
+                            setNewPageName(selectedPage.name);
+                          }
+                          setContextMenu({ ...contextMenu, visible: false });
+                        }}
+                      >
+                        Rename
+                      </li>
+                      <li
+                        className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                        onClick={() => {
+                          onDeletePage(contextMenu.pageId);
+                          setContextMenu({ ...contextMenu, visible: false });
+                        }}
+                      >
+                        Delete
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
           </aside>
         )}
 
@@ -399,11 +295,11 @@ const prebuiltTemplates = [
                     <FiPlus size={40} />
                   </div>
                 </div>
-                 {/* Separator Line */}
+                {/* Separator Line */}
                 <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
-                </div>
+              </div>
             )}
-        </aside>
+          </aside>
         )}
 
         {/* Main sidebar content */}
