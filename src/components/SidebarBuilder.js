@@ -46,12 +46,32 @@ export default function SidebarBuilder({
   const [newPageName, setNewPageName] = useState("");
   const api = new API();
 
-  function onDeletePage() {
-    
+  function onDeletePage(pageId) {
+    api
+      .deleteData(api.apiUrl + `/api/project/pages/${pageId}/delete`, {})
+      .then((res) => {
+        fetchProject();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
   }
 
-  function handleRenameProjectPage() {
-    
+  function handleRenameProjectPage(pageId, pageName) {
+    api
+      .putData(
+        api.apiUrl + `/api/project/pages/${pageId}/rename`,
+        {
+          name: pageName,
+        },
+        false
+      )
+      .then((res) => {
+        fetchProject();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
   }
 
   useEffect(() => {
@@ -150,7 +170,7 @@ export default function SidebarBuilder({
               </div>
               <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
 
-              <div className="flex-1 overflow-auto h-full">
+              <div className="flex-1 overflow-auto h-full relative">
                 {showAddPageInput && (
                   <div className="flex items-center space-x-2 mb-2">
                     <input
@@ -175,23 +195,14 @@ export default function SidebarBuilder({
                   </div>
                 )}
 
-                <div className="space-y-1 relative">
+                <div className="space-y-1">
                   {projectPages
                     .slice()
                     .sort((a, b) => a.id - b.id)
                     .map((page) => (
                       <div
                         key={page.id}
-                        className="flex items-center gap-2 relative"
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          setContextMenu({
-                            visible: true,
-                            x: e.pageX,
-                            y: e.pageY,
-                            pageId: page.id,
-                          });
-                        }}
+                        className="flex min-w-[200px] items-center gap-2 relative"
                       >
                         {renamingPageId === page.id ? (
                           <>
@@ -227,17 +238,34 @@ export default function SidebarBuilder({
                             </button>
                           </>
                         ) : (
-                          <button
-                            onClick={() => onSelectPage(page.id)}
-                            className={`flex items-center justify-between px-3 py-2 rounded-lg w-[300px] text-sm transition ${
-                              activePageId === page.id
-                                ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-                                : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
-                            }`}
-                          >
-                            <span>{page.name}</span>
-                            <FiMoreVertical />
-                          </button>
+                          <div className={`relative w-full flex items-center justify-between rounded-lg text-sm transition ${
+                                activePageId === page.id
+                                  ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
+                              }`}>
+                            <button
+                              onClick={() => onSelectPage(page.id)}
+                              className={`flex-1 text-left px-3 py-2 `}
+                            >
+                              {page.name}
+                            </button>
+                            <div className="absolute right-2 top-2">
+                              <FiMoreVertical
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Important pour ne pas déclencher onSelectPage
+                                  const rect =
+                                    e.currentTarget.getBoundingClientRect();
+                                  setContextMenu({
+                                    visible: true,
+                                    x: rect.left,
+                                    y: rect.bottom + 4, // décalage vertical de 4px
+                                    pageId: page.id,
+                                  });
+                                }}
+                                className="cursor-pointer p-1 w-5 h-5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                              />
+                            </div>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -245,8 +273,9 @@ export default function SidebarBuilder({
                   {contextMenu.visible && (
                     <ul
                       ref={contextMenuRef}
-                      className="absolute z-50 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-md py-1 text-sm"
+                      className="fixed z-50 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-md py-1 text-sm min-w-[120px]"
                       style={{ top: contextMenu.y, left: contextMenu.x }}
+                      onClick={(e) => e.stopPropagation()} // Eviter fermeture immédiate du menu au clic dedans
                     >
                       <li
                         className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
@@ -258,7 +287,12 @@ export default function SidebarBuilder({
                             setRenamingPageId(selectedPage.id);
                             setNewPageName(selectedPage.name);
                           }
-                          setContextMenu({ ...contextMenu, visible: false });
+                          setContextMenu({
+                            visible: false,
+                            x: 0,
+                            y: 0,
+                            pageId: null,
+                          });
                         }}
                       >
                         Rename
@@ -267,7 +301,12 @@ export default function SidebarBuilder({
                         className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={() => {
                           onDeletePage(contextMenu.pageId);
-                          setContextMenu({ ...contextMenu, visible: false });
+                          setContextMenu({
+                            visible: false,
+                            x: 0,
+                            y: 0,
+                            pageId: null,
+                          });
                         }}
                       >
                         Delete
