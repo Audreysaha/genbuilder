@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiUsers,FiTrash2,FiLogOut} from "react-icons/fi";
+import { FiHome, FiUsers, FiTrash2, FiLogOut } from "react-icons/fi";
 import { GoProjectSymlink } from "react-icons/go";
 import API from "../utils/API";
 
@@ -7,35 +7,41 @@ const api = new API();
 
 export default function AdminDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
-  const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState(null);
+  const [projectsCount, setProjectsCount] = useState(0);
   const [clicked, setClicked] = useState(false);
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
     setErrorUsers(null);
     try {
-      // GET /api/users retourne les users avec projectCount
       const data = await api.getData(api.apiUrl + "/api/users");
       setUsers(data);
+
+      // Somme des projectCount de tous les users
+      const totalProjects = data.reduce(
+        (acc, user) => acc + (user.projectCount || 0),
+        0
+      );
+      setProjectsCount(totalProjects);
     } catch (error) {
       setErrorUsers("Failed to load users");
+      setProjectsCount(0);
     } finally {
       setLoadingUsers(false);
     }
   };
 
   useEffect(() => {
-      fetchUsers();
+    fetchUsers();
   }, [activePage]);
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await api.deleteData(api.apiUrl + `/api/users/${userId}`);
-        // rafraîchir la liste
         fetchUsers();
       } catch (error) {
         alert("Failed to delete user");
@@ -44,9 +50,9 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => {
-  localStorage.removeItem("token");
-  window.location.href = "/"; 
-};
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
 
   const handleClick = () => {
     setClicked(true);
@@ -63,10 +69,7 @@ export default function AdminDashboard() {
         <nav className="mt-4">
           <ul className="space-y-2">
             <li
-              onClick={() => {
-                setActivePage("dashboard");
-                setSettingsDropdownOpen(false);
-              }}
+              onClick={() => setActivePage("dashboard")}
               className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded transition ${
                 activePage === "dashboard"
                   ? "bg-indigo-600 text-white dark:bg-indigo-500"
@@ -76,10 +79,7 @@ export default function AdminDashboard() {
               <FiHome /> Dashboard
             </li>
             <li
-              onClick={() => {
-                setActivePage("users");
-                setSettingsDropdownOpen(false);
-              }}
+              onClick={() => setActivePage("users")}
               className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded transition ${
                 activePage === "users"
                   ? "bg-indigo-600 text-white dark:bg-indigo-500"
@@ -88,47 +88,42 @@ export default function AdminDashboard() {
             >
               <FiUsers /> Users
             </li>
-
             <li
-            onClick={() => {
-                setActivePage("projects");
-                setSettingsDropdownOpen(false);
-              }}
+              onClick={() => setActivePage("projects")}
               className={`px-4 py-2 flex items-center gap-2 cursor-pointer rounded transition ${
                 activePage === "projects"
                   ? "bg-indigo-600 text-white dark:bg-indigo-500"
                   : "hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
-            <GoProjectSymlink /> Projects
+              <GoProjectSymlink /> Projects
             </li>
           </ul>
         </nav>
       </aside>
 
       {/* Main Content */}
-  <div className="flex-1 flex flex-col">
-  {/* Header */}
-  <header className="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
-    <h1 className="text-xl font-semibold capitalize text-gray-800 dark:text-white">
-      {activePage}
-    </h1>
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
+          <h1 className="text-xl font-semibold capitalize text-gray-800 dark:text-white">
+            {activePage}
+          </h1>
 
-    <button
-      onClick={handleLogout}
-      className="bg-white p-2 rounded-lg transition text-black flex items-center gap-2 w-[140px] justify-end"
-      aria-label="Logout"
-      title="Logout"
-    >
-       <FiLogOut
-        size={25}
-        className={`transition ${
-          clicked ? "text-indigo-600" : "text-black"
-        } hover:text-indigo-700`}
-      />
-    </button>
-  </header>
-
+          <button
+            onClick={handleLogout}
+            className="bg-white p-2 rounded-lg transition text-black flex items-center gap-2 w-[140px] justify-end"
+            aria-label="Logout"
+            title="Logout"
+          >
+            <FiLogOut
+              size={25}
+              className={`transition ${
+                clicked ? "text-indigo-600" : "text-black"
+              } hover:text-indigo-700`}
+            />
+          </button>
+        </header>
 
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto">
@@ -137,14 +132,15 @@ export default function AdminDashboard() {
               <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition">
                 <h2 className="text-lg font-semibold mb-2">Users</h2>
                 <p className="text-gray-600 dark:text-gray-300">
-                  {/* Nombre total utilisateurs */}
                   {users.length} users registered
                 </p>
               </div>
-              {/* Autres stats possibles */}
+
               <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-lg transition">
                 <h2 className="text-lg font-semibold mb-2">Projects</h2>
-                <p className="text-gray-600 dark:text-gray-300">Automate it</p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {projectsCount} projects total
+                </p>
               </div>
             </div>
           )}
