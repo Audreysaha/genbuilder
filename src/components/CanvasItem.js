@@ -16,6 +16,40 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode ,id}) 
     type,
   } = item;
 
+// when you right click manu panel for delete
+const [menu, setMenu] = useState({ visible: false, x: 0, y: 0 });
+const handleContextMenu = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  setMenu({
+    visible: true,
+    x: e.clientX,
+    y: e.clientY,
+  });
+};
+const handleCloseMenu = () => setMenu({ ...menu, visible: false });
+const handleDelete = () => {
+  handleCloseMenu();
+  if (typeof onUpdate === "function") {
+    onUpdate(item.id, { delete: true }); // You can handle actual deletion in parent
+  }
+};
+const handleEdit = () => {
+  handleCloseMenu();
+  if (typeof onSelect === "function") {
+    onSelect(item.id); // Or open a modal, etc.
+  }
+};
+// Optional: Close menu on click outside
+useEffect(() => {
+  if (!menu.visible) return;
+  const close = () => setMenu({ ...menu, visible: false });
+  window.addEventListener("click", close);
+  return () => window.removeEventListener("click", close);
+}, [menu.visible]);
+
+
+//position of items on canvas
   const initialX = item.x ?? Math.floor(Math.random() * 200);
   const initialY = item.y ?? Math.floor(Math.random() * 200);
 
@@ -88,8 +122,8 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode ,id}) 
 
 //Form Element
 case "submit-button":
-   const props = item.props || {}
-   const borderRadius = props.borderRadius ? `${props.borderRadius}px` : "0px";
+const props = item.props || {}
+const borderRadius = props.borderRadius ? `${props.borderRadius}px` : "0px";
   return (
     <button
       type="button"
@@ -1308,29 +1342,12 @@ case "H5":
   });
   }
   }}
-//   onClick={(e) => {
-//     e.stopPropagation();
-//     onSelect();
-//   }}
-//   onContextMenu={(e) => {
-//     e.preventDefault();
-//     if (typeof window.showCanvasContextMenu === "function") {
-//       window.showCanvasContextMenu(e, item.id);
-//     }
-//   }}
-//   enableResizing={true}
-//   style={{
-//     border: isSelected ? "2px solid blue" : "none",
-//     boxSizing: "border-box",
-//   }}
-// >
-//   <div style={{ width: "100%", height: "100%" }}>
-//     {renderContent()}
-//   </div>
-// </Rnd>
 
-//   );
-// };
+  onContextMenu={(e) => {
+    e.preventDefault();
+    if (typeof window.showCanvasContextMenu === "function") {
+      window.showCanvasContextMenu(e, item.id);
+    }}}
 
 onClick={(e) => {
         if (!isPreviewMode) {
@@ -1347,10 +1364,59 @@ style={{
     border: isSelected && !isPreviewMode ? "2px solid blue" : "none",
     boxSizing: "border-box",
     }}
+  
     >
     <div style={{ width: "100%", height: "100%", pointerEvents: "auto" }}>
     {renderContent()}
     </div>
+  
+    {/* Context Menu */}
+  {menu.visible && (
+    <div
+      style={{
+        position: "fixed",
+        top: menu.y,
+        left: menu.x,
+        background: "#fff",
+        border: "1px solid #ccc",
+        borderRadius: 4,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        zIndex: 9999,
+        minWidth: 120,
+      }}
+      onClick={e => e.stopPropagation()}
+    >
+      <button
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "8px 16px",
+          border: "none",
+          background: "none",
+          textAlign: "left",
+           cursor: "pointer"
+        }}
+        onClick={handleEdit}
+      >
+        Edit
+      </button>
+      <button
+        style={{
+          display: "block",
+          width: "100%",
+          padding: "8px 16px",
+          border: "none",
+          background: "none",
+          textAlign: "left",
+          color: "red",
+          cursor: "pointer"
+        }}
+        onClick={handleDelete}
+      >
+        Delete
+      </button>
+    </div>
+  )}
     </Rnd>
   );
 };
