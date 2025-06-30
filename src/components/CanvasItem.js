@@ -11,6 +11,7 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode ,id}) 
     src,
     content,
     onDelete,
+    handleUpdate,
     setItems,
     type,
   } = item;
@@ -36,17 +37,17 @@ const CanvasItem = ({ item, onUpdate, isSelected, onSelect, isPreviewMode ,id}) 
 
   const contentRef = useRef(null);
 
-    const handleDragStop = (e, d) => {
-    if (typeof onUpdate === "function") {
-      onUpdate(id, { x: d.x, y: d.y });
-    }
-  };
+  //   const handleDragStop = (e, d) => {
+  //   if (typeof onUpdate === "function") {
+  //     onUpdate(id, { x: d.x, y: d.y });
+  //   }
+  // };
 
-  const handleClick = () => {
-    if (typeof onSelect === "function") {
-      onSelect(id);
-    }
-  }
+  // const handleClick = () => {
+  //   if (typeof onSelect === "function") {
+  //     onSelect(id);
+  //   }
+  // }
 
   const commonStyle = {
     backgroundColor: item.backgroundColor || "transparent",
@@ -106,17 +107,25 @@ case "submit-button":
       contentEditable={true}
       suppressContentEditableWarning={true}
       onClick={(e) => {
-        e.stopPropagation();
-        onSelect(props.id);
-      }}
+      e.stopPropagation();
+      if (typeof onSelect === "function") {
+      onSelect(props.id);
+        }
+        }}
+
+      // onInput={(e) =>
+      //   onUpdate(props.id, {
+      //     props: {
+      //       ...props,
+      //       content: e.currentTarget.textContent, // stores manually typed text
+      //     }
+      //   })
+      // }
       onInput={(e) =>
-        onUpdate(props.id, {
-          props: {
-            ...props,
-            content: e.currentTarget.textContent, // stores manually typed text
-          }
-        })
-      }
+              !isPreviewMode &&
+              typeof onUpdate === "function" &&
+              onUpdate(item.id, { content: e.currentTarget.textContent })
+            }
     >
       {props?.content || "Submit"}
     </button>
@@ -137,7 +146,7 @@ case "textfield":
         padding: item.props?.padding || "8px",
         border: isSelected ? "2px solid gray" : "1px solid #6b7280",
         borderRadius: item.props?.borderRadius || "10px",
-       
+      
       }}
       value={item.props?.content || ""}
       onChange={(e) => {
@@ -153,7 +162,7 @@ case "textfield":
     />
   );
 
- case "text":
+case "text":
   return (
     <textarea
       className="w-full h-full focus:outline-none resize-none"
@@ -203,10 +212,10 @@ case "checkbox":
   return (
     <label
       style={{ ...commonStyle, ...labelStyle }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(item.id);
-      }}
+      // onClick={(e) => {
+      //   e.stopPropagation();
+      //   onSelect(item.id);
+      // }}
     >
       <input type="checkbox" />
       <span
@@ -252,19 +261,19 @@ case "dropdown":
         appearance: "auto",
         border: "1px solid #ccc",
       }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(item.id);
-      }}
+      // onClick={(e) => {
+      //   e.stopPropagation();
+      //   onSelect(item.id);
+      // }}
       value={dropdownProps.content || ""}
-      onChange={(e) =>
-        onUpdate(item.id, {
-          props: {
-            ...dropdownProps,
-            content: e.target.value,
-          },
-        })
-      }
+      // onChange={(e) =>
+      //   onUpdate(item.id, {
+      //     props: {
+      //       ...dropdownProps,
+      //       content: e.target.value,
+      //     },
+      //   })
+      // }
     >
       <option value="" disabled>
         Select an option
@@ -313,18 +322,21 @@ case "search":
           border: isSelected ? "2px solid blue" : "1px solid #6b7280",
           height: searchProps.height || "100%",
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(item.id);
-        }}
-        onChange={(e) =>
-          onUpdate(item.id, {
-            props: {
-              ...searchProps,
-              placeholder: e.target.value,
-            },
-          })
-        }
+        // onClick={(e) => {
+        //   e.stopPropagation();
+        //   onSelect(item.id);
+        // }}
+        onChange={(e) => {
+        if (typeof onUpdate === "function") {
+        onUpdate(item.id, {
+        props: {
+        ...searchProps,
+        placeholder: e.target.value,
+      },
+    });
+  }
+}}
+
       />
     </div>
   );
@@ -358,7 +370,7 @@ case "list":
           onBlur={(e) => {
             const newContent = [...arr];
             newContent[i] = e.target.textContent;
-            onUpdate(item.id, { content: newContent.join(",") });
+            // onUpdate(item.id, { content: newContent.join(",") });
           }}
           className="cursor-text outline-none list-item"
           style={{
@@ -403,14 +415,14 @@ case "radio-button":
         contentEditable
         suppressContentEditableWarning
         spellCheck={false}
-        onBlur={(e) =>
-          onUpdate(item.id, {
-            props: {
-              ...radioProps,
-              label: e.currentTarget.textContent,
-            },
-          })
-        }
+        // onBlur={(e) =>
+        //   onUpdate(item.id, {
+        //     props: {
+        //       ...radioProps,
+        //       label: e.currentTarget.textContent,
+        //     },
+        //   })
+        // }
         onClick={(e) => e.stopPropagation()}
         className="outline-none"
         style={{
@@ -445,14 +457,14 @@ case "radio-button2":
         contentEditable
         suppressContentEditableWarning
         spellCheck={false}
-        onBlur={(e) =>
-          onUpdate(item.id, {
-            props: {
-              ...radio2Props,
-              label: e.currentTarget.textContent,
-            },
-          })
-        }
+        // onBlur={(e) =>
+        //   onUpdate(item.id, {
+        //     props: {
+        //       ...radio2Props,
+        //       label: e.currentTarget.textContent,
+        //     },
+        //   })
+        // }
         // onClick={(e) => e.stopPropagation()}
         className="outline-none"
         style={{
@@ -501,15 +513,20 @@ case "toggle-button":
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation();
-          onSelect(item.id);
-          onUpdate(item.id, {
-            props: {
-              ...toggleProps,
-              checked: !toggleProps.checked,
-            },
-          });
-        }}
+        e.stopPropagation();
+        if (typeof onSelect === "function") {
+        onSelect(item.id);
+        }
+        if (typeof onUpdate === "function") {
+        onUpdate(item.id, {
+        props: {
+        ...toggleProps,
+        checked: !toggleProps.checked,
+      },
+    });
+  }
+}}
+
         className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
           toggleProps.checked ? "bg-indigo-600" : "bg-gray-300"
         }`}
@@ -539,16 +556,19 @@ case "container":
       }
       }
       onClick={(e) => {
-        e.stopPropagation(); // Prevent deselecting on parent click
-        onSelect(); // Mark container as selected
-      }}
+      e.stopPropagation();
+      if (typeof onSelect === 'function') {
+      onSelect();
+  }
+}}
+
     >
       {item.children && item.children.length > 0 ? (
         item.children.map((child) => (
           <CanvasItem
             key={child.id}
             item={child}
-            onUpdate={(childId, updates) => {
+            handleUpdate={(childId, updates) => {
               const updatedChildren = item.children.map((c) =>
                 c.id === childId ? { ...c, ...updates } : c
               );
@@ -556,7 +576,7 @@ case "container":
             }}
             isSelected={child.id === item.selectedChildId}
             onSelect={() =>
-              onUpdate(item.id, { selectedChildId: child.id })
+              handleUpdate(item.id, { selectedChildId: child.id })
             }
           />
         ))
@@ -715,9 +735,12 @@ case "navbar": {
     const updatedItems = menuItems.map(item =>
       item.id === id ? { ...item, label: newLabel } : item
     );
-    onUpdate(item.id, {
-      props: { ...navbarProps, menuItems: updatedItems }
-    });
+  if (typeof onUpdate === "function") {
+  onUpdate(item.id, {
+    props: { ...navbarProps, menuItems: updatedItems }
+  });
+}
+
   };
 
   return (
@@ -740,9 +763,12 @@ case "navbar": {
         borderRadius,
       }}
       onClick={(e) => {
-        e.stopPropagation();      // Prevent parent deselection
-        onSelect(item.id);        // ✅ Trigger SidebarProperties for this navbar
-      }}
+      e.stopPropagation();
+      if (typeof onSelect === "function") {
+    onSelect(item.id);
+  }
+}}
+
     >
       {menuItems.map((menu) => (
         <div
@@ -785,9 +811,12 @@ case "sidebar": {
     const updatedItems = menuItems.map(item =>
       item.id === id ? { ...item, label: newLabel } : item
     );
-    onUpdate(item.id, {
-      props: { ...sidebarProps, menuItems: updatedItems }
-    });
+    if (typeof onUpdate === "function") {
+  onUpdate(item.id, {
+    props: { ...sidebarProps, menuItems: updatedItems }
+  });
+}
+
   };
 
   return (
@@ -832,7 +861,7 @@ case "sidebar": {
 case "footer": {
   const footerProps = item.props || {};
   const content = footerProps.content || "Footer content here";
-  const height = footerProps.height ? `${footerProps.height}px` : "150px";
+  const height = footerProps.height ? `${footerProps.height}px` : "100%";
   const fontSize = footerProps.fontSize ? `${footerProps.fontSize}px` : "16px";
   const borderRadius = footerProps.borderRadius ? `${footerProps.borderRadius}px` : "0px";
 
@@ -842,23 +871,25 @@ case "footer": {
       contentEditable
       suppressContentEditableWarning
       spellCheck={false}
-      onBlur={(e) =>
-        onUpdate(item.id, {
-          props: { ...footerProps, content: e.currentTarget.textContent }
-        })
-      }
-      onClick={(e) => e.stopPropagation()}
+      onBlur={(e) => {
+      if (typeof onUpdate === 'function') {
+    onUpdate(item.id, {
+      props: { ...footerProps, content: e.currentTarget.textContent }
+    });
+  }
+}}
       style={{
+        ...commonStyle,
+        height: footerProps.height || "100%",
         backgroundColor: footerProps.backgroundColor || "#f3f4f6",
         color: footerProps.textColor || "#111827",
-        height: height,
-        minHeight: "40px",
         fontSize: fontSize,
         borderRadius: item.props?.borderRadius ? `${item.props.borderRadius}px` : "0px",
         padding: "0 10px",
         boxSizing: "border-box",
         cursor: "text",
       }}
+      onClick={(e) => e.stopPropagation()}
     >
       {content}
     </footer>
@@ -881,18 +912,23 @@ case "tabs": {
   ];
 
   const setActiveTab = (id) => {
-    onUpdate(item.id, {
-      props: { ...props, activeTabId: id, selectedTabId: id },
-    });
+    if (typeof onUpdate === 'function') {
+      onUpdate(item.id, {
+        props: { ...props, activeTabId: id, selectedTabId: id },
+      });
+    }
   };
 
   const updateTabLabel = (id, newLabel) => {
     const updated = tabItems.map(tab =>
       tab.id === id ? { ...tab, label: newLabel } : tab
     );
-    onUpdate(item.id, {
-      props: { ...props, tabItems: updated },
-    });
+   if (typeof onUpdate === "function") {
+  onUpdate(item.id, {
+    props: { ...props, tabItems: updated },
+  });
+}
+
   };
 
   const updateTabContent = (id, newContent) => {
@@ -928,10 +964,15 @@ case "tabs": {
             spellCheck={false}
             onBlur={(e) => updateTabLabel(tab.id, e.currentTarget.textContent)}
             onClick={(e) => {
-              e.stopPropagation();
-              setActiveTab(tab.id);
-              onSelect(item.id + "-" + tab.id); // 🔁 This makes Sidebar show tab-specific props
+            e.stopPropagation(); 
+            if (typeof setActiveTab === "function") {
+            setActiveTab(tab.id);
+            }
+            if (typeof onSelect === "function") {
+            onSelect(item.id + "-" + tab.id);
+            }
             }}
+
             style={{
               padding: "4px 10px",
               borderBottom: tab.id === activeTabId ? "2px solid #3b82f6" : "2px solid transparent",
@@ -995,13 +1036,18 @@ case "image": {
             alt: file.name,
           };
 
-          onUpdate(item.id, {
-            images: [...(item.images || []), newImage],
-            selectedImageIndex: (item.images || []).length,
-          });
-        };
-        reader.readAsDataURL(file);
+          if (typeof onUpdate === "function") {
+        onUpdate(item.id, {
+          images: [...(item.images || []), newImage],
+          selectedImageIndex: (item.images || []).length,
+        });
       }
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
     };
     fileInput.click();
   };
@@ -1011,7 +1057,9 @@ case "image": {
       className="cursor-pointer w-fit h-fit"
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(item.id);
+        if (typeof onSelect === 'function') {
+          onSelect(item.id);
+        }
       }}
       onDoubleClick={triggerFileInput}
       style={{
@@ -1081,7 +1129,9 @@ case "video": {
       className="cursor-pointer w-full h-full"
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(item.id);
+        if (typeof onSelect === 'function') {
+          onSelect(item.id);
+        }
       }}
       onDoubleClick={triggerFileInput}
       style={{
@@ -1241,36 +1291,67 @@ case "H5":
   }}
   position={{ x: item.x ?? initialX, y: item.y ?? initialY }}
   bounds="parent"
-  onDragStop={(e, d) => onUpdate(item.id, { x: d.x, y: d.y })}
+  disableDragging={isPreviewMode}
+  enableResizing={!isPreviewMode}
+  onDragStop={(e, d) => {
+        if (!isPreviewMode && typeof onUpdate === "function") {
+          onUpdate(item.id, { x: d.x, y: d.y });
+        }
+      }}
   onResizeStop={(e, direction, ref, delta, position) => {
-    onUpdate(item.id, {
-      width: parseInt(ref.style.width),
-      height: parseInt(ref.style.height),
-      x: position.x,
-      y: position.y,
-    });
+  if (!isPreviewMode && typeof onUpdate === "function") {
+  onUpdate(item.id, {
+  width: parseInt(ref.style.width),
+  height: parseInt(ref.style.height),
+  x: position.x,
+  y: position.y,
+  });
+  }
   }}
-  onClick={(e) => {
-    e.stopPropagation();
-    onSelect();
-  }}
-  onContextMenu={(e) => {
-    e.preventDefault();
-    if (typeof window.showCanvasContextMenu === "function") {
-      window.showCanvasContextMenu(e, item.id);
-    }
-  }}
-  enableResizing={true}
-  style={{
-    border: isSelected ? "2px solid blue" : "none",
-    boxSizing: "border-box",
-  }}
->
-  <div style={{ width: "100%", height: "100%" }}>
-    {renderContent()}
-  </div>
-</Rnd>
+//   onClick={(e) => {
+//     e.stopPropagation();
+//     onSelect();
+//   }}
+//   onContextMenu={(e) => {
+//     e.preventDefault();
+//     if (typeof window.showCanvasContextMenu === "function") {
+//       window.showCanvasContextMenu(e, item.id);
+//     }
+//   }}
+//   enableResizing={true}
+//   style={{
+//     border: isSelected ? "2px solid blue" : "none",
+//     boxSizing: "border-box",
+//   }}
+// >
+//   <div style={{ width: "100%", height: "100%" }}>
+//     {renderContent()}
+//   </div>
+// </Rnd>
 
+//   );
+// };
+
+onClick={(e) => {
+        if (!isPreviewMode) {
+          e.stopPropagation();
+          typeof onSelect === "function" && onSelect();
+        }
+      }}
+enableUserSelectHack={false}
+dragAxis={isPreviewMode ? "none" : "both"}
+resizeHandleComponent={isPreviewMode ? {} : undefined}
+resizeHandleStyles={isPreviewMode ? {} : undefined}
+className={isPreviewMode ? "pointer-events-none" : ""}
+style={{
+    border: isSelected && !isPreviewMode ? "2px solid blue" : "none",
+    boxSizing: "border-box",
+    }}
+    >
+    <div style={{ width: "100%", height: "100%", pointerEvents: "auto" }}>
+    {renderContent()}
+    </div>
+    </Rnd>
   );
 };
 

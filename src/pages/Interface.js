@@ -51,7 +51,7 @@ const Interface = () => {
   const getDeviceDimensions = () => {
     switch (deviceSize) {
       case "mobile":
-        return { width: 375, height: 640 };
+        return { width: 360, height: 640 };
       case "tablet":
         return { width: 675, height: 570 };
       case "desktop":

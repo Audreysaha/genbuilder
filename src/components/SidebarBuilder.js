@@ -60,6 +60,42 @@ const onSelectTemplate = (id) => {
 };
 
 
+
+// Predefined Templates
+const prebuiltTemplates = [
+  {
+    id: "login-template",
+    name: "Login Form",
+    description: "Email and password login screen.",
+    content: [
+      { type: "heading", text: "Welcome Back" },
+      { type: "input", placeholder: "Email" },
+      { type: "input", placeholder: "Password" },
+      { type: "submit-button", text: "Login" },
+    ],
+  },
+  {
+    id: "landing-template",
+    name: "Landing Page",
+    description: "Hero section with call-to-action.",
+    content: [
+      { type: "heading", text: "Welcome to GenBuilder" },
+      { type: "paragraph", text: "Build UIs without code." },
+      { type: "button", text: "Get Started" },
+    ],
+  },
+  {
+    id: "interface-template",
+    name: "App Interface",
+    description: "Basic layout with header, sidebar and content area.",
+    content: [
+      { type: "header", text: "App Header" },
+      { type: "sidebar", text: "Sidebar Menu" },
+      { type: "container", text: "Main Content Area" },
+    ],
+  },
+]
+
   function handleRenameProjectPage(pageId, pageName) {
     api
       .putData(
@@ -119,7 +155,6 @@ const onSelectTemplate = (id) => {
   onDeletePage={handleDeletePage}  // ✅ This is important
 />
 
-
   return (
     <>
       <style>{`
@@ -168,6 +203,7 @@ const onSelectTemplate = (id) => {
           >
             <FiPlus size={20} />
           </button>
+
           <button
             onClick={() => setActiveTab("layers")}
             className={`p-3 rounded-lg transition-colors ${
@@ -179,6 +215,7 @@ const onSelectTemplate = (id) => {
           >
             <FiLayers size={20} />
           </button>
+
             <button
             onClick={() => setActiveTab("templates")}
             className={`p-3 rounded-lg transition-colors ${
@@ -192,79 +229,6 @@ const onSelectTemplate = (id) => {
           </button>
         </div>
 
-    {activeTab === "templates" && (
-  <aside className="w-fit bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2">
-    {projectTemplates.length > 0 && (
-      <div className="h-full">
-        {/* Header */}
-        <div className="flex justify-between items-center pb-1">
-          <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans">
-            Templates
-          </div>
-          <div
-            onClick={() => setShowAddTemplateInput(true)}
-            className="bg-indigo-600 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
-          >
-            <FiPlus size={18} />
-          </div>
-        </div>
-
-        {/* Separator */}
-        <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
-
-        {/* Input Form */}
-        {showAddTemplateInput && (
-          <div className="flex items-center space-x-2 mb-2">
-            <input
-              type="text"
-              value={newTemplateName}
-              onChange={(e) => setNewTemplateName(e.target.value)}
-              placeholder="Template name"
-              className="w-full px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
-            />
-            <button
-              onClick={() => {
-                if (newTemplateName.trim()) {
-                  handleAddTemplate(newTemplateName.trim());
-                  setNewTemplateName("");
-                  setShowAddTemplateInput(false);
-                }
-              }}
-              className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded"
-            >
-              Add
-            </button>
-          </div>
-        )}
-
-        {/* Template List */}
-        <div className="space-y-1">
-          {projectTemplates
-            .slice()
-            .sort((a, b) => a.id - b.id)
-            .map((template) => (
-              <button
-                key={template.id}
-                onClick={() => onSelectTemplate(template.id)}
-                className={`flex items-center justify-between px-3 py-2 rounded-lg w-[300px] text-sm transition ${
-                  activeTemplateId === template.id
-                    ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
-                }`}
-              >
-                <span className="truncate">{template.name}</span>
-                <FiMoreVertical className="ml-2" />
-              </button>
-            ))}
-        </div>
-      </div>
-    )}
-  </aside>
-)}
-
-
-                
-        
         {activeTab === "layers" && (
           <aside className="w-fit bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 ">
             {projectPages.length > 0 && (
@@ -418,6 +382,28 @@ const onSelectTemplate = (id) => {
               </div>
             )}
           </aside>
+        )}
+
+        {activeTab === "templates" && (
+          <aside className="w-[240px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 ">
+            {projectPages.length > 0 && (
+              <div className="h-full">
+                <div className="flex justify-between items-center pb-1">
+                  <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans ">
+                    Templates
+                  </div>
+                  <div
+                    onClick={() => setShowAddPageInput(true)}
+                    className="bg-indigo-600 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
+                  >
+                    <FiPlus size={40} />
+                  </div>
+                </div>
+                 {/* Separator Line */}
+                <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
+                </div>
+            )}
+        </aside>
         )}
 
         {/* Main sidebar content */}

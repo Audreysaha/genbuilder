@@ -8,6 +8,7 @@ import React, {
 import CanvasItem from "./CanvasItem";
 import debounce from "lodash.debounce";
 import API from "../utils/API";
+import { useDrop } from "react-dnd";
 
 const Canvas = forwardRef(
   (
@@ -19,6 +20,7 @@ const Canvas = forwardRef(
       setCanvasItems,
       // addComponentToCanvas,
       onSelectWidget,
+      handleAddItem,
       projectId,
       deviceSize,
       project,
@@ -38,15 +40,6 @@ const Canvas = forwardRef(
       setRedoStack([]);
     };
 
-    // const handleDrop = (e) => {
-    //   e.preventDefault();
-    //   const componentType = e.dataTransfer.getData("componentType");
-    //   if (componentType) {
-    //     pushToUndoStack(canvasItems);
-    //     addComponentToCanvas(componentType);
-    //   }
-    // };
-
     const addComponentToCanvas = (componentType, position = { x: 50, y: 50 }) => {
   const newItem = {
     id: Date.now(),
@@ -58,8 +51,7 @@ const Canvas = forwardRef(
   setCanvasItems((prev) => [...prev, newItem]);
 };
 
- 
-   const handleDrop = (e) => {
+  const handleDrop = (e) => {
   e.preventDefault();
   const componentType = e.dataTransfer.getData("componentType");
   if (componentType) {
