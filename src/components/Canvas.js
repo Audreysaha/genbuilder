@@ -40,7 +40,11 @@ const Canvas = forwardRef(
       setRedoStack([]);
     };
 
-    const addComponentToCanvas = (componentType, position = { x: 50, y: 50 }) => {
+ {canvasItems.map(item => (
+  <CanvasItem key={item.id} item={item}  />
+))}
+
+  const addComponentToCanvas = (componentType, position = { x: 50, y: 50 }) => {
   const newItem = {
     id: Date.now(),
     type: componentType,
@@ -206,6 +210,8 @@ const Canvas = forwardRef(
     window.showCanvasContextMenu = null;
   };
 }, []);
+
+
 
     return (
       <div

@@ -1080,8 +1080,8 @@ const CanvasItem = ({
           ? `${imageProps.borderRadius}px`
           : "0px";
 
-        const width = imageProps.width ? `${imageProps.width}px` : "200px";
-        const height = imageProps.height ? `${imageProps.height}px` : "200px";
+        const width = imageProps.width ? `${imageProps.width}px` : "auto";
+        const height = imageProps.height ? `${imageProps.height}px` : "auto";
 
         const img =
           (item.images && item.images[item.selectedImageIndex]) ||
@@ -1131,8 +1131,8 @@ const CanvasItem = ({
             onDoubleClick={triggerFileInput}
             style={{
               ...commonStyle,
-              width,
-              height,
+              height: imageProps.height || "auto",
+              width: imageProps.width || "auto",
               borderRadius,
               overflow: "hidden",
               background: imageProps.backgroundColor || "transparent",
@@ -1155,9 +1155,9 @@ const CanvasItem = ({
 
       case "video": {
         const videoProps = item.props || {};
-        const borderRadius = videoProps.borderRadius
-          ? `${videoProps.borderRadius}px`
-          : "0px";
+        const borderRadius = videoProps.borderRadius ? `${videoProps.borderRadius}px`: "0px";
+        const width = videoProps.width ? `${videoProps.width}px` : "100%";
+        const height = videoProps.height ? `${videoProps.height}px` : "100%";
         const triggerFileInput = (e) => {
           e?.stopPropagation();
           const fileInput = document.createElement("input");
@@ -1203,8 +1203,9 @@ const CanvasItem = ({
             onDoubleClick={triggerFileInput}
             style={{
               ...commonStyle,
-              width: videoProps.width ? `${videoProps.width}px` : "100%",
-              height: videoProps.height ? `${videoProps.height}px` : "100%",
+               height: videoProps.height || "100%",
+              width: videoProps.height || "100%",
+              
               borderRadius,
               overflow: "hidden",
               display: "flex",

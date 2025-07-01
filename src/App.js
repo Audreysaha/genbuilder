@@ -98,6 +98,7 @@ function App() {
         <Route path="/AdminLogin" element={<Adminlogin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
+
        {/* <Route path="/AdminSignup" element={<AdminSignup />} />  */}
 
         <Route path="/project_dashboard" element={<PrivateRoute element={<ProjectsDashboard />} />} />

@@ -535,7 +535,50 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
         </div>
       </div>
     ))}
-  </div>
+    {/* Width input */}
+    <div>
+      <label
+        htmlFor="image-width"
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
+        Width (px)
+      </label>
+      <input
+        id="image-width"
+        type="number"
+        min={10}
+        max={2000}
+        value={item.props?.width || 200}
+        onChange={(e) => {
+          const newWidth = Math.max(10, Math.min(2000, Number(e.target.value)));
+          updateProp("props", { ...item.props, width: newWidth });
+        }}
+        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 text-sm text-gray-900 dark:text-gray-100"
+      />
+    </div>
+
+    {/* Height input */}
+    <div>
+      <label
+        htmlFor="image-height"
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
+        Height (px)
+      </label>
+      <input
+        id="image-height"
+        type="number"
+        min={10}
+        max={2000}
+        value={item.props?.height || 200}
+        onChange={(e) => {
+          const newHeight = Math.max(10, Math.min(2000, Number(e.target.value)));
+          updateProp("props", { ...item.props, height: newHeight });
+        }}
+        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 text-sm text-gray-900 dark:text-gray-100"
+      />
+    </div>
+    </div>
 )}
 
 {/*exclude text property properties */}

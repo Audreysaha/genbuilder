@@ -369,6 +369,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
           onSelectPage={setActivePageId}
           handleAddProjectPages={handleAddProjectPages}
           fetchProject={fetchProject}
+          setCanvasItems={setCanvasItems}
         />
 
         <Canvas
@@ -386,6 +387,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
           addComponentToCanvas={addComponentToCanvas}
           onSelectWidget={handleSelectWidget}
         />
+
 
       {
         mode === "Edit" ? (
