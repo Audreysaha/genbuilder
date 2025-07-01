@@ -46,9 +46,9 @@ const LivePreviewCanvas = () => {
   }, [projectId, device, page]);
 
   return (
-    <div className="w-full min-h-screen bg-white dark:bg-gray-900 p-10 flex justify-center items-start">
+    <div className="fixed inset-0 w-screen h-screen bg-white dark:bg-gray-900 p-0 m-0 flex justify-center items-start z-50">
       {device === "mobile" ? (
-        <div className="w-[375px] h-[700px] border-[12px] border-gray-800 rounded-[40px] overflow-hidden shadow-lg relative bg-white">
+        <div className="w-[375px] h-[700px] border-[12px] border-gray-800 rounded-[40px] overflow-hidden shadow-lg relative bg-white mt-10">
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-gray-700 rounded-full"></div>
           <div className="w-full h-full overflow-auto relative">
             {canvasItems.map((item) => (
@@ -57,7 +57,7 @@ const LivePreviewCanvas = () => {
           </div>
         </div>
       ) : (
-        <div className="w-full h-full relative">
+        <div className="absolute inset-0 w-full h-full bg-white dark:bg-gray-900 overflow-auto">
           {canvasItems.map((item) => (
             <CanvasItem key={item.id} item={item} isPreviewMode={true} />
           ))}

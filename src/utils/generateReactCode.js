@@ -275,7 +275,6 @@ export const generateReactCode = (items) => {
         break;
 
 
-      
 
       // ... (le reste de ton switch déjà bien implémenté)
     }
