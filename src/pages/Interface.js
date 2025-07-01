@@ -244,10 +244,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
           setActivePageId(res.pages[0].id);
           setProjectPages(
             res.pages?.map((page) => {
-              return {
-                id: page.id,
-                name: page.name,
-              };
+              return page
             })
           );
         } else if (device === "web") {
@@ -255,10 +252,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
           setActivePageId(res.pages[0].id);
           setProjectPages(
             res.pages?.map((page) => {
-              return {
-                id: page.id,
-                name: page.name,
-              };
+              return page
             })
           );
         }
@@ -307,10 +301,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
         setActivePageId(project?.pages.filter((pag) => pag.id == activePageId)[0].id);
         setProjectPages(
           project?.pages?.map((page) => {
-            return {
-              id: page.id,
-              name: page.name,
-            };
+            return page
           })
         );
       } else if (device === "web") {
@@ -318,10 +309,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
         setActivePageId(project?.pages.filter((pag) => pag.id == activePageId)[0].id);
         setProjectPages(
           project?.pages.map((page) => {
-            return {
-              id: page.id,
-              name: page.name,
-            };
+            return page
           })
         );
       }
@@ -338,6 +326,8 @@ const handleRefreshCanvas = () => setCanvasItems([]);
         setShowCode={setShowCode}
         deviceSize={deviceSize}
         setDeviceSize={setDeviceSize}
+        device={device}
+        projectPages={projectPages}
         handleUndoClick={handleUndoClick}
         handleRedoClick={handleRedoClick}
         mode={mode}
@@ -345,7 +335,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
         setDevice={setDevice}
         handleRefreshCanvas={handleRefreshCanvas}
                 onRefreshCanvas={handleRefreshCanvas}
-
+        widgets={canvasItems}
         canvasItems={canvasItems}
         activePageId={activePageId}
       />
