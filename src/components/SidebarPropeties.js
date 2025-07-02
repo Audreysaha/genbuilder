@@ -10,7 +10,7 @@ const [canvasItems, setCanvasItems] = useState([]);
 const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   if (!item)
     return (
-      <div className="p-20 bg-white border-gray-600 dark:bg-gray-900 text-gray-500 dark:text-white">No element selected</div>);
+      <div className="p-4 w-50 bg-white border-gray-600 dark:bg-gray-900 ext-gray-500 dark:text-white">No element selected</div>);
 
 
   const updateProp = (key, value) => {
@@ -38,7 +38,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   const gridRows = chunkArray(gridOptions, 2);
 
   return (
-    <div className="p-4 space-y-3 w-[350px] border-l bg-gray-50 dark:bg-gray-900 dark:border-gray-700 h-full overflow-y-auto">
+    <div className="p-4 space-y-3 w-[280px] border-l bg-gray-50 dark:bg-gray-900 dark:border-gray-700 h-full overflow-y-auto">
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Properties</h2>
 
   {/* ICON */}
@@ -141,7 +141,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
                 className={`flex-1 flex flex-col items-center p-4 rounded border cursor-pointer ${
                   item.gridType === id
                     ? "bg-indigo-200 dark:bg-indigo-600 text-indigo-900 dark:text-white"
-                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"
+                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-white"
                 }`}
               >
                 <div
@@ -236,7 +236,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 
         {/* Height & Width */}
         <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-700">Height (px)</label>
+          <label className="block text-sm font-medium dark:text-white text-gray-700">Height (px)</label>
           <input
             type="number"
             min={50}
@@ -248,7 +248,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
             className="w-full border rounded px-2 py-1"
           />
 
-          <label className="block text-sm font-medium text-gray-700">Width (px)</label>
+          <label className="block text-sm font-medium dark:text-white text-gray-700">Width (px)</label>
           <input
             type="number"
             min={50}
@@ -268,7 +268,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
       <div className="space-y-4">
           {/* Font Family */}
           <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-100">Font Family</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-white">Font Family</label>
             <select
             value={item.props?.fontFamily || "Arial, sans-serif"}
             onChange={(e) =>  onUpdate(item.id, { props: { ...item.props, fontFamily: e.target.value }, })
@@ -539,7 +539,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     <div>
       <label
         htmlFor="image-width"
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        className="block text-sm font-medium text-gray-700 dark:text-white"
       >
         Width (px)
       </label>
@@ -561,7 +561,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
     <div>
       <label
         htmlFor="image-height"
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        className="block text-sm font-medium text-gray-700 dark:text-white"
       >
         Height (px)
       </label>

@@ -27,17 +27,13 @@ const Navbar = ({
   onSelectPage,
   pages,
   activeTab,
-  // canvasItems,
-  // activePageId,
   setDevice,
-  onRefreshCanvas,
+  setCanvasItems,
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const searchRef = useRef(null);
-  const [canvasItems, setCanvasItems] = useState([]);
-  const [items, setItems] = useState([]); 
   const [active, setActive] = useState(null);
   const [viewMode, setViewMode] = useState("web");
   const [darkMode, setDarkMode] = useState(() => {
@@ -347,7 +343,7 @@ const Navbar = ({
 
     <div>
     <button
-      onClick={onRefreshCanvas}
+      onClick={() => setCanvasItems([])}
       className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-800 dark:hover:bg-red-700 dark:text-white"
       title="Refresh Canvas"
       >

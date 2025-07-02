@@ -514,10 +514,10 @@ function handleLoadTemplate(template) {
     <>
       <div className="flex h-screen">
         {/* Left tab panel */}
-        <div className="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4">
+        <div className="w-[40px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-6 space-y-6">
           <button
             onClick={() => setActiveTab("widgets")}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-1 rounded-lg transition-colors ${
               activeTab === "widgets"
                 ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
                 : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
@@ -525,46 +525,46 @@ function handleLoadTemplate(template) {
             aria-label="Widgets tab"
             type="button"
           >
-            <FiPlus size={20} />
+            <FiPlus size={18} />
           </button>
 
           <button
             onClick={() => setActiveTab("layers")}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-1 rounded-lg transition-colors ${
               activeTab === "layers"
                 ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
                 : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
             }`}
             aria-label="Layers tab"
           >
-            <FiLayers size={20} />
+            <FiLayers size={18} />
           </button>
 
           <button
             onClick={() => setActiveTab("templates")}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-1 rounded-lg transition-colors ${
               activeTab === "templates"
                 ? "bg-indigo-600 text-white dark:bg-blue-700 dark:text-white"
                 : "hover:bg-indigo-400 dark:hover:bg-indigo-800 dark:text-gray-300"
             }`}
             aria-label="Templates tab"
           >
-            <CgTemplate size={24} />
+            <CgTemplate size={19} />
           </button>
         </div>
 
         {activeTab === "layers" && (
-          <aside className="w-fit bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 ">
+          <aside className="w-[240px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-2 ">
             <div className="h-full">
               <div className="flex justify-between items-center pb-1">
-                <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans ">
+                <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[22px] font-sans ">
                   Pages
                 </div>
                 <div
                   onClick={() => setShowAddPageInput(true)}
-                  className="bg-indigo-600 rounded-md p-2 w-8 h-8 flex items-center justify-center text-white cursor-pointer"
+                  className="bg-indigo-600 rounded-md p-2 w-7 h-7 flex items-center justify-center text-white cursor-pointer"
                 >
-                  <FiPlus size={40} />
+                  <FiPlus size={22} />
                 </div>
               </div>
               <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
@@ -609,7 +609,7 @@ function handleLoadTemplate(template) {
                               type="text"
                               value={newPageName}
                               onChange={(e) => setNewPageName(e.target.value)}
-                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white"
+                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white text-black dark:text-white"
                             />
                             <button
                               onClick={() => {
@@ -672,9 +672,9 @@ function handleLoadTemplate(template) {
                   {contextMenu.visible && (
                     <ul
                       ref={contextMenuRef}
-                      className="fixed z-50 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-md py-1 text-sm min-w-[120px]"
+                      className="fixed z-50 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-md py-1 text-sm w-[120px] "
                       style={{ top: contextMenu.y, left: contextMenu.x }}
-                      onClick={(e) => e.stopPropagation()} // Eviter fermeture immédiate du menu au clic dedans
+                      onClick={(e) => e.stopPropagation()} // Avoid immediate close of menu
                     >
                       <li
                         className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
@@ -697,7 +697,7 @@ function handleLoadTemplate(template) {
                         Rename
                       </li>
                       <li
-                        className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                        className="px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={() => {
                           onDeletePage(contextMenu.pageId);
                           setContextMenu({
@@ -719,17 +719,17 @@ function handleLoadTemplate(template) {
         )}
 
  {activeTab === "templates" && (
-  <aside className="w-[320px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
+  <aside className="w-[270px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center pb-1 mb-2">
-        <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans">
+        <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[24px] font-sans">
         Pre-Build Templates
         </div>
       </div>
       <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
 
       {/* Prebuilt Templates List */}
-      <div className="mb-4 flex-1 overflow-y-auto pb-32">
+      <div className="mb-4 flex-1 pb-32">
         <div className="space-y-3">
           {PREBUILT_TEMPLATES.map((tpl) => (
             <button
@@ -739,7 +739,7 @@ function handleLoadTemplate(template) {
                 ${tpl.previewColor} dark:bg-opacity-60`}
               onClick={() => handleLoadTemplate(tpl)}
             >
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-200 dark:gray-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
                 {tpl.name[0]}
               </div>
               <div className="flex flex-col text-left">
@@ -756,14 +756,14 @@ function handleLoadTemplate(template) {
 
         {/* Main sidebar content */}
         {activeTab === "widgets" && (
-          <div className="w-80 h-screen flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="w-[280px] h-screen flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden">
             {/* Header */}
-            <div className="px-3 py-3 font-Tahoma text-left text-gray-800 dark:text-gray-200 text-[20px] font-sans">
+            <div className="px-3 py-3 font-Tahoma text-left text-gray-800 dark:text-gray-200 text-[24px] font-sans">
               User-Interface Builder
             </div>
 
             {/* Search */}
-            <div className="mx-2 w-[290px]">
+            <div className="mx-2 w-[250px]">
               <div className="border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 rounded-md">
                 <div className="flex items-center px-2 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500">
                   <input
@@ -860,7 +860,7 @@ function Section({ label, expanded, onToggle, items }) {
               key={_i}
               draggable
               onDragStart={(e) => e.dataTransfer.setData("componentType", type)}
-              className="flex flex-col items-center justify-center p-3 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-grab"
+              className="flex flex-col items-center justify-center p-1 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-grab"
             >
               <div className="icon-wrapper">
                 {Icon && (

@@ -18,21 +18,23 @@ const Canvas = forwardRef(
       zoom,
       canvasItems,
       setCanvasItems,
-      // addComponentToCanvas,
       onSelectWidget,
-      handleAddItem,
       projectId,
-      deviceSize,
       project,
       activePageId,
-      device
+      device,
     },
     ref
   ) => {
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [undoStack, setUndoStack] = useState([]);
     const [redoStack, setRedoStack] = useState([]);
-    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, itemId: null });
+    const [contextMenu, setContextMenu] = useState({
+      visible: false,
+      x: 0,
+      y: 0,
+      itemId: null,
+    });
     const api = new API();
 
     const pushToUndoStack = (items) => {
@@ -40,62 +42,67 @@ const Canvas = forwardRef(
       setRedoStack([]);
     };
 
- {canvasItems.map(item => (
-  <CanvasItem key={item.id} item={item}  />
-))}
+    {
+      canvasItems.map((item) => <CanvasItem key={item.id} item={item} />);
+    }
 
-  const addComponentToCanvas = (componentType, position = { x: 50, y: 50 }) => {
-  const newItem = {
-    id: Date.now(),
-    type: componentType,
-    x: position.x,
-    y: position.y,
-    // ...other default properties...
-  };
-  setCanvasItems((prev) => [...prev, newItem]);
-};
+    const addComponentToCanvas = (
+      componentType,
+      position = { x: 50, y: 50 }
+    ) => {
+      const newItem = {
+        id: Date.now(),
+        type: componentType,
+        x: position.x,
+        y: position.y,
+        // ...other default properties...
+      };
+      setCanvasItems((prev) => [...prev, newItem]);
+    };
 
-  const handleDrop = (e) => {
-  e.preventDefault();
-  const componentType = e.dataTransfer.getData("componentType");
-  if (componentType) {
-    // Find the inner canvas div (the one with relative w-full h-full bg-white)
-    const canvasDiv = e.currentTarget.querySelector('.relative.w-full.h-full.bg-white');
-    const rect = canvasDiv.getBoundingClientRect();
+    const handleDrop = (e) => {
+      e.preventDefault();
+      const componentType = e.dataTransfer.getData("componentType");
+      if (componentType) {
+        // Find the inner canvas div (the one with relative w-full h-full bg-white)
+        const canvasDiv = e.currentTarget.querySelector(
+          ".relative.w-full.h-full.bg-white"
+        );
+        const rect = canvasDiv.getBoundingClientRect();
 
-    // Calculate mouse position relative to the canvas, accounting for zoom
-    const x = (e.clientX - rect.left) / (zoom / 100);
-    const y = (e.clientY - rect.top) / (zoom / 100);
+        // Calculate mouse position relative to the canvas, accounting for zoom
+        const x = (e.clientX - rect.left) / (zoom / 100);
+        const y = (e.clientY - rect.top) / (zoom / 100);
 
-    pushToUndoStack(canvasItems);
-    addComponentToCanvas(componentType, { x, y });
-  }
-};
+        pushToUndoStack(canvasItems);
+        addComponentToCanvas(componentType, { x, y });
+      }
+    };
     const saveCanvasToDatabase = async () => {
-  if (!Array.isArray(project?.pages)) {
-    console.error("project.pages is undefined or not an array");
-    return;
-  }
-  const page = project.pages.find(page => page.id == activePageId);
-  if (!page) {
-    console.error("No page found with id", activePageId);
-    return;
-  }
-  if (device === "mobile") {
-    page.canvasMobile = canvasItems;
-  } else {
-    page.canvasWeb = canvasItems;
-  }
-  try {
-    await api.putData(
-      api.apiUrl + `/api/project/update/${projectId}`,
-      { pages: project.pages },
-      false
-    );
-  } catch (error) {
-    console.error("Error in Saving :", error);
-  }
-};
+      if (!Array.isArray(project?.pages)) {
+        console.error("project.pages is undefined or not an array");
+        return;
+      }
+      const page = project.pages.find((page) => page.id == activePageId);
+      if (!page) {
+        console.error("No page found with id", activePageId);
+        return;
+      }
+      if (device === "mobile") {
+        page.canvasMobile = canvasItems;
+      } else {
+        page.canvasWeb = canvasItems;
+      }
+      try {
+        await api.putData(
+          api.apiUrl + `/api/project/update/${projectId}`,
+          { pages: project.pages },
+          false
+        );
+      } catch (error) {
+        console.error("Error in Saving :", error);
+      }
+    };
 
     const debouncedSave = useMemo(
       () => debounce(saveCanvasToDatabase, 3000),
@@ -103,9 +110,9 @@ const Canvas = forwardRef(
     );
 
     useEffect(() => {
-      if (canvasItems.length > 0) {
-        debouncedSave();
-      }
+      // if (canvasItems.length > 0) {
+      debouncedSave();
+      // }
     }, [canvasItems]);
 
     const handleCanvasClick = (e) => {
@@ -158,7 +165,6 @@ const Canvas = forwardRef(
     };
 
     useEffect(() => {
-      
       const handleKeyDown = (e) => {
         const target = e.target;
         const isInput =
@@ -194,24 +200,22 @@ const Canvas = forwardRef(
     }, [canvasItems, selectedItemId, undoStack, redoStack]);
 
     useEffect(() => {
-  window.showCanvasContextMenu = (e, itemId) => {
-    setContextMenu({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY,
-      itemId,
-    });
-  };
-  // Hide menu on click elsewhere
-  const hideMenu = () => setContextMenu((m) => ({ ...m, visible: false }));
-  window.addEventListener("click", hideMenu);
-  return () => {
-    window.removeEventListener("click", hideMenu);
-    window.showCanvasContextMenu = null;
-  };
-}, []);
-
-
+      window.showCanvasContextMenu = (e, itemId) => {
+        setContextMenu({
+          visible: true,
+          x: e.clientX,
+          y: e.clientY,
+          itemId,
+        });
+      };
+      // Hide menu on click elsewhere
+      const hideMenu = () => setContextMenu((m) => ({ ...m, visible: false }));
+      window.addEventListener("click", hideMenu);
+      return () => {
+        window.removeEventListener("click", hideMenu);
+        window.showCanvasContextMenu = null;
+      };
+    }, []);
 
     return (
       <div
@@ -261,7 +265,6 @@ const Canvas = forwardRef(
             backgroundColor: "white", // Keep drop area white
           }}
         >
-        
           <div className="relative w-full h-full bg-white">
             {canvasItems.map((item) => (
               <CanvasItem
@@ -275,45 +278,45 @@ const Canvas = forwardRef(
           </div>
         </div>
         {contextMenu.visible && (
-  <div
-    style={{
-      position: "fixed",
-      top: contextMenu.y,
-      left: contextMenu.x,
-      background: "white",
-      border: "1px solid #ccc",
-      zIndex: 9999,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-      padding: "8px 0",
-      minWidth: 120,
-    }}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <div
-      style={{ padding: "8px 16px", cursor: "pointer" }}
-      onClick={() => {
-        // Delete item
-        pushToUndoStack(canvasItems);
-        setCanvasItems((items) =>
-          items.filter((item) => item.id !== contextMenu.itemId)
-        );
-        setContextMenu((m) => ({ ...m, visible: false }));
-      }}
-    >
-      Delete
-    </div>
-    <div
-      style={{ padding: "8px 16px", cursor: "pointer" }}
-      onClick={() => {
-        // Edit item (select it for editing)
-        setSelectedItemId(contextMenu.itemId);
-        if (onSelectWidget) onSelectWidget(contextMenu.itemId);
-        setContextMenu((m) => ({ ...m, visible: false }));
-      }}
-    >
-      Edit
-    </div>
-  </div>
+          <div
+            style={{
+              position: "fixed",
+              top: contextMenu.y,
+              left: contextMenu.x,
+              background: "white",
+              border: "1px solid #ccc",
+              zIndex: 9999,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              padding: "8px 0",
+              minWidth: 120,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{ padding: "8px 16px", cursor: "pointer" }}
+              onClick={() => {
+                // Delete item
+                pushToUndoStack(canvasItems);
+                setCanvasItems((items) =>
+                  items.filter((item) => item.id !== contextMenu.itemId)
+                );
+                setContextMenu((m) => ({ ...m, visible: false }));
+              }}
+            >
+              Delete
+            </div>
+            <div
+              style={{ padding: "8px 16px", cursor: "pointer" }}
+              onClick={() => {
+                // Edit item (select it for editing)
+                setSelectedItemId(contextMenu.itemId);
+                if (onSelectWidget) onSelectWidget(contextMenu.itemId);
+                setContextMenu((m) => ({ ...m, visible: false }));
+              }}
+            >
+              Edit
+            </div>
+          </div>
         )}
       </div>
     );

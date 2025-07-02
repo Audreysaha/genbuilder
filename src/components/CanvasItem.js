@@ -70,17 +70,30 @@ const CanvasItem = ({
 
   const contentRef = useRef(null);
 
-  //   const handleDragStop = (e, d) => {
-  //   if (typeof onUpdate === "function") {
-  //     onUpdate(id, { x: d.x, y: d.y });
-  //   }
-  // };
-
-  // const handleClick = () => {
-  //   if (typeof onSelect === "function") {
-  //     onSelect(id);
-  //   }
-  // }
+  // Utility function to preserve cursor position
+  const preserveCursorPosition = (element, callback) => {
+    if (isPreviewMode) return callback();
+    
+    const selection = window.getSelection();
+    const cursorPos = selection.rangeCount > 0 ? selection.getRangeAt(0).startOffset : 0;
+    
+    callback();
+    
+    requestAnimationFrame(() => {
+      try {
+        const range = document.createRange();
+        const textNode = element.firstChild || element;
+        if (textNode.nodeType === Node.TEXT_NODE) {
+          range.setStart(textNode, Math.min(cursorPos, textNode.textContent.length));
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      } catch (err) {
+        // Ignore positioning errors
+      }
+    });
+  };
 
   const commonStyle = {
     backgroundColor: item.backgroundColor || "transparent",
@@ -137,10 +150,10 @@ const CanvasItem = ({
                 : "0px",
               color: props?.textColor || "#ffffff",
               cursor: "grab",
-              textAlign: "left", // Ensures text starts from the left
+              textAlign: "left",
               direction: "ltr",
             }}
-            contentEditable={true}
+            contentEditable={!isPreviewMode}
             suppressContentEditableWarning={true}
             onClick={(e) => {
               e.stopPropagation();
@@ -148,19 +161,18 @@ const CanvasItem = ({
                 onSelect(props.id);
               }
             }}
-            // onInput={(e) =>
-            //   onUpdate(props.id, {
-            //     props: {
-            //       ...props,
-            //       content: e.currentTarget.textContent, // stores manually typed text
-            //     }
-            //   })
-            // }
-            onInput={(e) =>
-              !isPreviewMode &&
-              typeof onUpdate === "function" &&
-              onUpdate(item.id, { content: e.currentTarget.textContent })
-            }
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, { 
+                    props: {
+                      ...props,
+                      content: e.currentTarget.textContent
+                    }
+                  });
+                });
+              }
+            }}
           >
             {props?.content || "Submit"}
           </button>
@@ -233,7 +245,7 @@ const CanvasItem = ({
         const labelStyle = {
           color: checkboxProps.textColor || "black",
           backgroundColor: checkboxProps.backgroundColor || "transparent",
-          fontSize: checkboxProps.fontSize || "16px", // optional, can be removed if not needed
+          fontSize: checkboxProps.fontSize || "16px",
           padding: "0.25rem",
           display: "inline-flex",
           alignItems: "center",
@@ -244,26 +256,41 @@ const CanvasItem = ({
         };
 
         return (
-          <label
-            style={{ ...commonStyle, ...labelStyle }}
-            // onClick={(e) => {
-            //   e.stopPropagation();
-            //   onSelect(item.id);
-            // }}
-          >
-            <input type="checkbox" />
+          <label style={{ ...commonStyle, ...labelStyle }}>
+            <input 
+              type="checkbox" 
+              checked={checkboxProps.checked || false}
+              onChange={(e) => {
+                if (!isPreviewMode && typeof onUpdate === "function") {
+                  onUpdate(item.id, {
+                    props: {
+                      ...checkboxProps,
+                      checked: e.target.checked,
+                    },
+                  });
+                }
+              }}
+            />
             <span
-              contentEditable
+              contentEditable={!isPreviewMode}
               suppressContentEditableWarning
               onClick={(e) => e.stopPropagation()}
-              onInput={(e) =>
-                onUpdate(item.id, {
-                  props: {
-                    ...checkboxProps,
-                    content: e.currentTarget.textContent,
-                  },
-                })
-              }
+              onInput={(e) => {
+                if (!isPreviewMode && typeof onUpdate === "function") {
+                  preserveCursorPosition(e.currentTarget, () => {
+                    onUpdate(item.id, {
+                      props: {
+                        ...checkboxProps,
+                        content: e.currentTarget.textContent,
+                      },
+                    });
+                  });
+                }
+              }}
+              style={{
+                direction: "ltr",
+                textAlign: "left",
+              }}
             >
               {checkboxProps.content || "Check me"}
             </span>
@@ -295,19 +322,17 @@ const CanvasItem = ({
               appearance: "auto",
               border: "1px solid #ccc",
             }}
-            // onClick={(e) => {
-            //   e.stopPropagation();
-            //   onSelect(item.id);
-            // }}
             value={dropdownProps.content || ""}
-            // onChange={(e) =>
-            //   onUpdate(item.id, {
-            //     props: {
-            //       ...dropdownProps,
-            //       content: e.target.value,
-            //     },
-            //   })
-            // }
+            onChange={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                onUpdate(item.id, {
+                  props: {
+                    ...dropdownProps,
+                    content: e.target.value,
+                  },
+                });
+              }
+            }}
           >
             <option value="" disabled>
               Select an option
@@ -327,7 +352,7 @@ const CanvasItem = ({
           <div
             style={{
               position: "relative",
-              width: searchProps.width || "100%", // dynamic width
+              width: searchProps.width || "100%",
               height: searchProps.height || "100%",
             }}
           >
@@ -335,7 +360,7 @@ const CanvasItem = ({
               style={{
                 position: "absolute",
                 top: "50%",
-                left: "8px", // closer to left edge
+                left: "8px",
                 transform: "translateY(-50%)",
                 color: "#6b7280",
                 pointerEvents: "none",
@@ -344,11 +369,11 @@ const CanvasItem = ({
             />
             <input
               type="search"
-              value={searchProps.placeholder || ""}
+              value={searchProps.content || ""}
               placeholder={searchProps.placeholder || "Search..."}
               className="w-full"
               style={{
-                paddingLeft: "1.5rem", // 👈 reduced padding so placeholder is near icon
+                paddingLeft: "1.5rem",
                 backgroundColor: searchProps.backgroundColor || "#e5e7eb",
                 color: searchProps.textColor || "#000000",
                 fontSize: searchProps.fontSize || "14px",
@@ -356,16 +381,12 @@ const CanvasItem = ({
                 border: isSelected ? "2px solid blue" : "1px solid #6b7280",
                 height: searchProps.height || "100%",
               }}
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   onSelect(item.id);
-              // }}
               onChange={(e) => {
-                if (typeof onUpdate === "function") {
+                if (!isPreviewMode && typeof onUpdate === "function") {
                   onUpdate(item.id, {
                     props: {
                       ...searchProps,
-                      placeholder: e.target.value,
+                      content: e.target.value,
                     },
                   });
                 }
@@ -391,24 +412,30 @@ const CanvasItem = ({
               lineHeight: listProps.lineHeight || "normal",
               fontFamily: listProps.fontFamily || "inherit",
               padding: "0.5rem",
-              gap: "1.5rem", // spacing between items
+              gap: "1.5rem",
               listStyleType: "disc",
             }}
           >
             {listContent.split(",").map((li, i, arr) => (
               <li
                 key={i}
-                contentEditable
+                contentEditable={!isPreviewMode}
                 suppressContentEditableWarning
-                onBlur={(e) => {
-                  const newContent = [...arr];
-                  newContent[i] = e.target.textContent;
-                  // onUpdate(item.id, { content: newContent.join(",") });
+                onInput={(e) => {
+                  if (!isPreviewMode && typeof onUpdate === "function") {
+                    preserveCursorPosition(e.currentTarget, () => {
+                      const newContent = [...arr];
+                      newContent[i] = e.currentTarget.textContent;
+                      onUpdate(item.id, { content: newContent.join(",") });
+                    });
+                  }
                 }}
                 className="cursor-text outline-none list-item"
                 style={{
-                  display: "list-item", // ensures bullets appear even in flex
+                  display: "list-item",
                   listStylePosition: "inside",
+                  direction: "ltr",
+                  textAlign: "left",
                 }}
               >
                 {li.trim()}
@@ -432,11 +459,13 @@ const CanvasItem = ({
               type="radio"
               name={radioProps.name || `radio-group-${item.id}`}
               checked={radioProps.checked || false}
-              onChange={() =>
-                onUpdate(item.id, {
-                  props: { ...radioProps, checked: true },
-                })
-              }
+              onChange={() => {
+                if (!isPreviewMode && typeof onUpdate === "function") {
+                  onUpdate(item.id, {
+                    props: { ...radioProps, checked: true },
+                  });
+                }
+              }}
               className="form-radio text-indigo-600"
               style={{
                 width: 18,
@@ -445,17 +474,21 @@ const CanvasItem = ({
               onClick={(e) => e.stopPropagation()}
             />
             <span
-              contentEditable
+              contentEditable={!isPreviewMode}
               suppressContentEditableWarning
               spellCheck={false}
-              // onBlur={(e) =>
-              //   onUpdate(item.id, {
-              //     props: {
-              //       ...radioProps,
-              //       label: e.currentTarget.textContent,
-              //     },
-              //   })
-              // }
+              onInput={(e) => {
+                if (!isPreviewMode && typeof onUpdate === "function") {
+                  preserveCursorPosition(e.currentTarget, () => {
+                    onUpdate(item.id, {
+                      props: {
+                        ...radioProps,
+                        label: e.currentTarget.textContent,
+                      },
+                    });
+                  });
+                }
+              }}
               onClick={(e) => e.stopPropagation()}
               className="outline-none"
               style={{
@@ -467,6 +500,8 @@ const CanvasItem = ({
                 lineHeight: radioProps.lineHeight || "normal",
                 fontFamily: radioProps.fontFamily || "inherit",
                 minWidth: 40,
+                direction: "ltr",
+                textAlign: "left",
               }}
             >
               {radioProps.label || "Radio Option"}
@@ -490,18 +525,21 @@ const CanvasItem = ({
               className="text-black dark:text-black"
             />
             <span
-              contentEditable
+              contentEditable={!isPreviewMode}
               suppressContentEditableWarning
               spellCheck={false}
-              // onBlur={(e) =>
-              //   onUpdate(item.id, {
-              //     props: {
-              //       ...radio2Props,
-              //       label: e.currentTarget.textContent,
-              //     },
-              //   })
-              // }
-              // onClick={(e) => e.stopPropagation()}
+              onInput={(e) => {
+                if (!isPreviewMode && typeof onUpdate === "function") {
+                  preserveCursorPosition(e.currentTarget, () => {
+                    onUpdate(item.id, {
+                      props: {
+                        ...radio2Props,
+                        label: e.currentTarget.textContent,
+                      },
+                    });
+                  });
+                }
+              }}
               className="outline-none"
               style={{
                 color: radio2Props.textColor || "#000000",
@@ -509,6 +547,8 @@ const CanvasItem = ({
                 lineHeight: radio2Props.lineHeight || "normal",
                 fontFamily: radio2Props.fontFamily || "inherit",
                 minWidth: 40,
+                direction: "ltr",
+                textAlign: "left",
               }}
             >
               {radio2Props.label || "Radio Option2"}
@@ -533,16 +573,25 @@ const CanvasItem = ({
             }}
           >
             <span
-              contentEditable
+              contentEditable={!isPreviewMode}
               suppressContentEditableWarning
               spellCheck={false}
-              onBlur={(e) =>
-                onUpdate(item.id, {
-                  content: e.currentTarget.textContent,
-                })
-              }
+              onInput={(e) => {
+                if (!isPreviewMode && typeof onUpdate === "function") {
+                  preserveCursorPosition(e.currentTarget, () => {
+                    onUpdate(item.id, {
+                      content: e.currentTarget.textContent,
+                    });
+                  });
+                }
+              }}
               onClick={(e) => e.stopPropagation()}
-              style={{ outline: "none", minWidth: 40 }}
+              style={{ 
+                outline: "none", 
+                minWidth: 40,
+                direction: "ltr",
+                textAlign: "left",
+              }}
             >
               {labelText}
             </span>
@@ -553,7 +602,7 @@ const CanvasItem = ({
                 if (typeof onSelect === "function") {
                   onSelect(item.id);
                 }
-                if (typeof onUpdate === "function") {
+                if (!isPreviewMode && typeof onUpdate === "function") {
                   onUpdate(item.id, {
                     props: {
                       ...toggleProps,
@@ -607,12 +656,16 @@ const CanvasItem = ({
                     const updatedChildren = item.children.map((c) =>
                       c.id === childId ? { ...c, ...updates } : c
                     );
-                    onUpdate(item.id, { children: updatedChildren });
+                    if (typeof onUpdate === "function") {
+                      onUpdate(item.id, { children: updatedChildren });
+                    }
                   }}
                   isSelected={child.id === item.selectedChildId}
-                  onSelect={() =>
-                    handleUpdate(item.id, { selectedChildId: child.id })
-                  }
+                  onSelect={() => {
+                    if (typeof onUpdate === "function") {
+                      onUpdate(item.id, { selectedChildId: child.id });
+                    }
+                  }}
                 />
               ))
             ) : (
@@ -624,9 +677,7 @@ const CanvasItem = ({
         );
 
       case "grid": {
-        // Extract grid properties from item.props or fallback to item.gridType
         const props = item.props || {};
-        // Use gridType from item or props
         const gridType = item.gridType || props.gridType || "2-cols";
         const columnsMap = {
           "2-cols": 2,
@@ -635,7 +686,6 @@ const CanvasItem = ({
           "5-cols": 5,
           "6-cols": 6,
         };
-        // Responsive columns (fallback to gridType if not set)
         const cols =
           props.display === "flex"
             ? 1
@@ -646,9 +696,7 @@ const CanvasItem = ({
               columnsMap[gridType] ||
               2;
 
-        // Responsive grid columns
         const getResponsiveCols = () => {
-          // Try to use the largest breakpoint set, fallback to gridType
           return (
             props.cols_xl ||
             props.cols_lg ||
@@ -659,7 +707,6 @@ const CanvasItem = ({
           );
         };
 
-        // Distribute children into columns
         const childrenInCells = Array.from(
           { length: getResponsiveCols() },
           () => []
@@ -676,14 +723,14 @@ const CanvasItem = ({
             parentGridId: item.id,
             columnIndex: colIndex,
           });
-          onUpdate(item.id, { children: updatedChildren });
+          if (typeof onUpdate === "function") {
+            onUpdate(item.id, { children: updatedChildren });
+          }
         };
 
-        // Determine display type (grid, flex, etc.)
         const displayType = props.display || "grid";
         const flexDirection = props.flexDirection || "row";
 
-        // Compose style based on sidebar properties
         const style = {
           backgroundColor: props.backgroundColor || "transparent",
           height: props.height ? `${props.height}px` : "auto",
@@ -709,7 +756,9 @@ const CanvasItem = ({
             style={style}
             onClick={(e) => {
               e.stopPropagation();
-              onSelect(item.id);
+              if (typeof onSelect === "function") {
+                onSelect(item.id);
+              }
             }}
           >
             {childrenInCells.map((childArray, colIndex) => (
@@ -739,14 +788,18 @@ const CanvasItem = ({
                         const updatedChildren = item.children.map((c) =>
                           c.id === childId ? { ...c, ...updates } : c
                         );
-                        onUpdate(item.id, { children: updatedChildren });
+                        if (typeof onUpdate === "function") {
+                          onUpdate(item.id, { children: updatedChildren });
+                        }
                       }}
                       isSelected={
                         isSelected && child.id === item.selectedChildId
                       }
-                      onSelect={() =>
-                        onUpdate(item.id, { selectedChildId: child.id })
-                      }
+                      onSelect={() => {
+                        if (typeof onUpdate === "function") {
+                          onUpdate(item.id, { selectedChildId: child.id });
+                        }
+                      }}
                     />
                   ))
                 ) : (
@@ -778,8 +831,8 @@ const CanvasItem = ({
         ];
 
         const updateMenuItem = (id, newLabel) => {
-          const updatedItems = menuItems.map((item) =>
-            item.id === id ? { ...item, label: newLabel } : item
+          const updatedItems = menuItems.map((menuItem) =>
+            menuItem.id === id ? { ...menuItem, label: newLabel } : menuItem
           );
           if (typeof onUpdate === "function") {
             onUpdate(item.id, {
@@ -817,20 +870,26 @@ const CanvasItem = ({
             {menuItems.map((menu) => (
               <div
                 key={menu.id}
-                contentEditable
+                contentEditable={!isPreviewMode}
                 suppressContentEditableWarning={true}
                 spellCheck={false}
                 className="cursor-text rounded px-2 py-1"
-                onClick={(e) => e.stopPropagation()} // Prevent this from overriding the parent click
-                onBlur={(e) =>
-                  updateMenuItem(menu.id, e.currentTarget.textContent)
-                }
+                onClick={(e) => e.stopPropagation()}
+                onInput={(e) => {
+                  if (!isPreviewMode && typeof onUpdate === "function") {
+                    preserveCursorPosition(e.currentTarget, () => {
+                      updateMenuItem(menu.id, e.currentTarget.textContent);
+                    });
+                  }
+                }}
                 style={{
                   whiteSpace: "pre-wrap",
                   outline: "none",
                   fontSize,
                   borderRadius,
                   height: navbarProps.height || "100%",
+                  direction: "ltr",
+                  textAlign: "left",
                 }}
               >
                 {menu.label}
@@ -860,8 +919,8 @@ const CanvasItem = ({
         ];
 
         const updateMenuItem = (id, newLabel) => {
-          const updatedItems = menuItems.map((item) =>
-            item.id === id ? { ...item, label: newLabel } : item
+          const updatedItems = menuItems.map((menuItem) =>
+            menuItem.id === id ? { ...menuItem, label: newLabel } : menuItem
           );
           if (typeof onUpdate === "function") {
             onUpdate(item.id, {
@@ -889,19 +948,25 @@ const CanvasItem = ({
             {menuItems.map((menu) => (
               <div
                 key={menu.id}
-                contentEditable
+                contentEditable={!isPreviewMode}
                 suppressContentEditableWarning={true}
                 spellCheck={false}
-                className="cursor-text  rounded px-2 py-1"
+                className="cursor-text rounded px-2 py-1"
                 onClick={(e) => e.stopPropagation()}
-                onBlur={(e) =>
-                  updateMenuItem(menu.id, e.currentTarget.textContent)
-                }
+                onInput={(e) => {
+                  if (!isPreviewMode && typeof onUpdate === "function") {
+                    preserveCursorPosition(e.currentTarget, () => {
+                      updateMenuItem(menu.id, e.currentTarget.textContent);
+                    });
+                  }
+                }}
                 style={{
                   whiteSpace: "pre-wrap",
                   outline: "none",
-                  fontSize: sidebarProps.fontsize || "auto", // Apply the font size from props
+                  fontSize: sidebarProps.fontsize || "auto",
                   width: sidebarProps.width || "auto",
+                  direction: "ltr",
+                  textAlign: "left",
                 }}
               >
                 {menu.label}
@@ -925,16 +990,18 @@ const CanvasItem = ({
         return (
           <footer
             className="w-full flex items-center justify-center"
-            contentEditable
+            contentEditable={!isPreviewMode}
             suppressContentEditableWarning
             spellCheck={false}
-            onBlur={(e) => {
-              if (typeof onUpdate === "function") {
-                onUpdate(item.id, {
-                  props: {
-                    ...footerProps,
-                    content: e.currentTarget.textContent,
-                  },
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, {
+                    props: {
+                      ...footerProps,
+                      content: e.currentTarget.textContent,
+                    },
+                  });
                 });
               }
             }}
@@ -950,6 +1017,8 @@ const CanvasItem = ({
               padding: "0 10px",
               boxSizing: "border-box",
               cursor: "text",
+              direction: "ltr",
+              textAlign: "left",
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -958,120 +1027,110 @@ const CanvasItem = ({
         );
       }
 
-      case "tabs":
-        {
-          const props = item.props || {};
-          const height = props.height ? `${props.height}px` : "100%";
-          const fontSize = props.fontSize ? `${props.fontSize}px` : "16px";
-          const backgroundColor = props.backgroundColor || "#ffffff";
-          const textColor = props.textColor || "#111827";
-          const activeTabId = props.activeTabId || "tab1";
-          const selectedTabId = props.selectedTabId || null;
+      case "tabs": {
+        const props = item.props || {};
+        const height = props.height ? `${props.height}px` : "100%";
+        const fontSize = props.fontSize ? `${props.fontSize}px` : "16px";
+        const backgroundColor = props.backgroundColor || "#ffffff";
+        const textColor = props.textColor || "#111827";
+        const activeTabId = props.activeTabId || "tab1";
+        const selectedTabId = props.selectedTabId || null;
 
-          const tabItems = props.tabItems || [
-            { id: "tab1", label: "Tab 1", content: "Tab 1 Content" },
-            { id: "tab2", label: "Tab 2", content: "Tab 2 Content" },
-            { id: "tab3", label: "Tab 3", content: "Tab 3 Content" },
-          ];
+        const tabItems = props.tabItems || [
+          { id: "tab1", label: "Tab 1", content: "Tab 1 Content" },
+          { id: "tab2", label: "Tab 2", content: "Tab 2 Content" },
+          { id: "tab3", label: "Tab 3", content: "Tab 3 Content" },
+        ];
 
-          const setActiveTab = (id) => {
-            if (typeof onUpdate === "function") {
-              onUpdate(item.id, {
-                props: { ...props, activeTabId: id, selectedTabId: id },
-              });
-            }
-          };
+        const setActiveTab = (id) => {
+          if (!isPreviewMode && typeof onUpdate === "function") {
+            onUpdate(item.id, {
+              props: { ...props, activeTabId: id, selectedTabId: id },
+            });
+          }
+        };
 
-          const updateTabLabel = (id, newLabel) => {
-            const updated = tabItems.map((tab) =>
-              tab.id === id ? { ...tab, label: newLabel } : tab
-            );
-            if (typeof onUpdate === "function") {
-              onUpdate(item.id, {
-                props: { ...props, tabItems: updated },
-              });
-            }
-          };
-
-          const updateTabContent = (id, newContent) => {
-            const updated = tabItems.map((tab) =>
-              tab.id === id ? { ...tab, content: newContent } : tab
-            );
+        const updateTabLabel = (id, newLabel) => {
+          const updated = tabItems.map((tab) =>
+            tab.id === id ? { ...tab, label: newLabel } : tab
+          );
+          if (!isPreviewMode && typeof onUpdate === "function") {
             onUpdate(item.id, {
               props: { ...props, tabItems: updated },
             });
-          };
+          }
+        };
 
-          const activeTab = tabItems.find((tab) => tab.id === activeTabId);
-
-          return (
-            <aside
-              style={{
-                ...commonStyle,
-                backgroundColor,
-                color: textColor,
-                height: props.height || "100%",
-                fontSize: props.fontsize || "auto",
-                padding: "10px",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Tab Headers */}
-              <div className="flex space-x-4 border-b border-gray-300 mb-2">
-                {tabItems.map((tab) => (
-                  <div
-                    key={tab.id}
-                    contentEditable
-                    suppressContentEditableWarning
-                    spellCheck={false}
-                    onBlur={(e) =>
-                      updateTabLabel(tab.id, e.currentTarget.textContent)
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (typeof setActiveTab === "function") {
-                        setActiveTab(tab.id);
-                      }
-                      if (typeof onSelect === "function") {
-                        onSelect(item.id + "-" + tab.id);
-                      }
-                    }}
-                    style={{
-                      padding: "4px 10px",
-                      borderBottom:
-                        tab.id === activeTabId
-                          ? "2px solid #3b82f6"
-                          : "2px solid transparent",
-                      fontWeight: tab.id === activeTabId ? "bold" : "normal",
-                      fontSize: props.fontSize || "auto",
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                      userSelect: "none",
-                    }}
-                  >
-                    {tab.label}
-                  </div>
-                ))}
-              </div>
-            </aside>
+        const updateTabContent = (id, newContent) => {
+          const updated = tabItems.map((tab) =>
+            tab.id === id ? { ...tab, content: newContent } : tab
           );
-        }
+          if (!isPreviewMode && typeof onUpdate === "function") {
+            onUpdate(item.id, {
+              props: { ...props, tabItems: updated },
+            });
+          }
+        };
+
+        const activeTab = tabItems.find((tab) => tab.id === activeTabId);
 
         return (
-          <hr
-            className="w-full"
+          <aside
             style={{
-              border: "none",
-              borderTop: `${item.props?.thickness || 4}px solid ${item.props?.color || "#4f46e5"}`,
-              borderRadius: item.props?.thickness
-                ? `${item.props?.thickness / 2}px`
-                : "2px",
-              width: item.props?.width || "100%",
-              margin: `${item.props?.margin || 32}px 0`,
+              ...commonStyle,
+              backgroundColor,
+              color: textColor,
+              height: props.height || "100%",
+              fontSize: props.fontsize || "auto",
+              padding: "10px",
             }}
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <div className="flex space-x-4 border-b border-gray-300 mb-2">
+              {tabItems.map((tab) => (
+                <div
+                  key={tab.id}
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  spellCheck={false}
+                  onInput={(e) => {
+                    if (!isPreviewMode && typeof onUpdate === "function") {
+                      preserveCursorPosition(e.currentTarget, () => {
+                        updateTabLabel(tab.id, e.currentTarget.textContent);
+                      });
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (typeof setActiveTab === "function") {
+                      setActiveTab(tab.id);
+                    }
+                    if (typeof onSelect === "function") {
+                      onSelect(item.id + "-" + tab.id);
+                    }
+                  }}
+                  style={{
+                    padding: "4px 10px",
+                    borderBottom:
+                      tab.id === activeTabId
+                        ? "2px solid #3b82f6"
+                        : "2px solid transparent",
+                    fontWeight: tab.id === activeTabId ? "bold" : "normal",
+                    fontSize: props.fontSize || "auto",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    userSelect: "none",
+                    direction: "ltr",
+                    textAlign: "left",
+                  }}
+                >
+                  {tab.label}
+                </div>
+              ))}
+            </div>
+          </aside>
         );
+      }
 
       //Media Element
       case "image": {
@@ -1155,9 +1214,12 @@ const CanvasItem = ({
 
       case "video": {
         const videoProps = item.props || {};
-        const borderRadius = videoProps.borderRadius ? `${videoProps.borderRadius}px`: "0px";
+        const borderRadius = videoProps.borderRadius
+          ? `${videoProps.borderRadius}px`
+          : "0px";
         const width = videoProps.width ? `${videoProps.width}px` : "100%";
         const height = videoProps.height ? `${videoProps.height}px` : "100%";
+        
         const triggerFileInput = (e) => {
           e?.stopPropagation();
           const fileInput = document.createElement("input");
@@ -1167,30 +1229,32 @@ const CanvasItem = ({
             const file = event.target.files[0];
             if (file) {
               const url = URL.createObjectURL(file);
-              onUpdate(item.id, {
-                src: url,
-                props: {
-                  ...videoProps,
-                  fileName: file.name,
-                },
-              });
+              if (typeof onUpdate === "function") {
+                onUpdate(item.id, {
+                  src: url,
+                  props: {
+                    ...videoProps,
+                    fileName: file.name,
+                  },
+                });
+              }
             }
           };
           fileInput.click();
         };
 
-        // Handle manual URL input for video
         const handleUrlChange = (e) => {
-          onUpdate(item.id, {
-            src: e.target.value,
-            props: {
-              ...videoProps,
-              fileName: undefined,
-            },
-          });
+          if (typeof onUpdate === "function") {
+            onUpdate(item.id, {
+              src: e.target.value,
+              props: {
+                ...videoProps,
+                fileName: undefined,
+              },
+            });
+          }
         };
 
-        // Only render the video if a src is present (i.e., a video is selected)
         return (
           <div
             className="cursor-pointer w-full h-full"
@@ -1203,9 +1267,8 @@ const CanvasItem = ({
             onDoubleClick={triggerFileInput}
             style={{
               ...commonStyle,
-               height: videoProps.height || "100%",
+              height: videoProps.height || "100%",
               width: videoProps.height || "100%",
-              
               borderRadius,
               overflow: "hidden",
               display: "flex",
@@ -1246,108 +1309,185 @@ const CanvasItem = ({
         );
       }
 
-      //Topography Element
+      //Typography Element
       case "H1":
         const h1Props = item.props || {};
-        const content = item.content || "Header 1";
+        const h1Content = item.content || "Header 1";
         return (
           <h1
             className="font-bold p-2"
-            contentEditable
+            contentEditable={!isPreviewMode}
             suppressContentEditableWarning={true}
             spellCheck={false}
-            onInput={(e) => (item.text = e.currentTarget.textContent)}
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, { 
+                    content: e.currentTarget.textContent 
+                  });
+                });
+              }
+            }}
             style={{
               ...commonStyle,
               fontSize: h1Props.fontSize || "3.5rem",
               color: h1Props.textColor || "inherit",
-
               lineHeight: h1Props.lineHeight || "normal",
               backgroundColor: h1Props.backgroundColor || "transparent",
+              direction: "ltr",
+              textAlign: "left",
             }}
           >
-            {content}
+            {h1Content}
           </h1>
         );
 
       case "H2":
         const h2Props = item.props || {};
-        const content1 = item.content || "Header 2";
+        const h2Content = item.content || "Header 2";
         return (
           <h2
             className="font-bold p-2"
-            contentEditable
+            contentEditable={!isPreviewMode}
             suppressContentEditableWarning={true}
             spellCheck={false}
-            onInput={(e) => (item.text = e.currentTarget.textContent)}
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, { 
+                    content: e.currentTarget.textContent 
+                  });
+                });
+              }
+            }}
             style={{
               ...commonStyle,
               fontSize: h2Props.fontSize || "3.0rem",
               color: h2Props.textColor || "inherit",
               lineHeight: h2Props.lineHeight || "normal",
               backgroundColor: h2Props.backgroundColor || "transparent",
+              direction: "ltr",
+              textAlign: "left",
             }}
           >
-            {content1}
+            {h2Content}
           </h2>
         );
 
       case "H3":
         const h3Props = item.props || {};
+        const h3Content = item.content || item.text || "Header 3";
         return (
           <h3
-            className="text-center font-bold p-2"
+            className="font-bold p-2"
+            contentEditable={!isPreviewMode}
+            suppressContentEditableWarning={true}
+            spellCheck={false}
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, { 
+                    content: e.currentTarget.textContent 
+                  });
+                });
+              }
+            }}
             style={{
               ...commonStyle,
-              fontSize: "2.5rem",
+              fontSize: h3Props.fontSize || "2.5rem",
               color: h3Props.textColor || "inherit",
+              lineHeight: h3Props.lineHeight || "normal",
+              backgroundColor: h3Props.backgroundColor || "transparent",
+              direction: "ltr",
+              textAlign: "left",
             }}
-            contentEditable
-            suppressContentEditableWarning={true}
-            onInput={(e) => (item.text = e.currentTarget.textContent)}
-            spellCheck={false}
           >
-            {item.text || "Header 3"}
+            {h3Content}
           </h3>
         );
 
       case "H4":
         const h4Props = item.props || {};
+        const h4Content = item.content || item.text || "Header 4";
         return (
           <h4
-            className="text-center font-bold p-2"
+            className="font-bold p-2"
+            contentEditable={!isPreviewMode}
+            suppressContentEditableWarning={true}
+            spellCheck={false}
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, { 
+                    content: e.currentTarget.textContent 
+                  });
+                });
+              }
+            }}
             style={{
               ...commonStyle,
-              fontSize: "2.0rem",
+              fontSize: h4Props.fontSize || "2.0rem",
               color: h4Props.textColor || "inherit",
+              lineHeight: h4Props.lineHeight || "normal",
+              backgroundColor: h4Props.backgroundColor || "transparent",
+              direction: "ltr",
+              textAlign: "left",
             }}
-            contentEditable
-            suppressContentEditableWarning={true}
-            onInput={(e) => (item.text = e.currentTarget.textContent)}
-            spellCheck={false}
           >
-            {item.text || "Header 4"}
+            {h4Content}
           </h4>
         );
 
       case "H5":
         const h5Props = item.props || {};
+        const h5Content = item.content || item.text || "Header 5";
         return (
           <h5
-            className="text-center font-bold p-2"
+            className="font-bold p-2"
+            contentEditable={!isPreviewMode}
+            suppressContentEditableWarning={true}
+            spellCheck={false}
+            onInput={(e) => {
+              if (!isPreviewMode && typeof onUpdate === "function") {
+                preserveCursorPosition(e.currentTarget, () => {
+                  onUpdate(item.id, { 
+                    content: e.currentTarget.textContent 
+                  });
+                });
+              }
+            }}
             style={{
               ...commonStyle,
-              fontSize: "1.5rem",
+              fontSize: h5Props.fontSize || "1.5rem",
               color: h5Props.textColor || "inherit",
+              lineHeight: h5Props.lineHeight || "normal",
+              backgroundColor: h5Props.backgroundColor || "transparent",
+              direction: "ltr",
+              textAlign: "left",
             }}
-            contentEditable
-            suppressContentEditableWarning={true}
-            onInput={(e) => (item.text = e.currentTarget.textContent)}
-            spellCheck={false}
           >
-            {item.text || "Header 5"}
+            {h5Content}
           </h5>
         );
+
+      // Divider case that was missing from original
+      case "divider":
+        return (
+          <hr
+            className="w-full"
+            style={{
+              border: "none",
+              borderTop: `${item.props?.thickness || 4}px solid ${item.props?.color || "#4f46e5"}`,
+              borderRadius: item.props?.thickness
+                ? `${item.props?.thickness / 2}px`
+                : "2px",
+              width: item.props?.width || "100%",
+              margin: `${item.props?.margin || 32}px 0`,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        );
+
       // Add a default case to handle unknown types
       default:
         return null;

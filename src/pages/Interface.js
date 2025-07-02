@@ -60,7 +60,7 @@ const Interface = () => {
         return { width: 555, height: 767 };
     }
   };
-const handleRefreshCanvas = () => setCanvasItems([]);
+  const handleRefreshCanvas = () => setCanvasItems([]);
 
   const visualItems = [
     { type: "submit-button", label: "Submit", icon: FiSend },
@@ -343,9 +343,7 @@ const handleRefreshCanvas = () => setCanvasItems([]);
         mode={mode}
         setMode={setMode}
         setDevice={setDevice}
-        handleRefreshCanvas={handleRefreshCanvas}
-                onRefreshCanvas={handleRefreshCanvas}
-
+        setCanvasItems={setCanvasItems}
         canvasItems={canvasItems}
         activePageId={activePageId}
       />
