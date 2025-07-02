@@ -5,6 +5,7 @@ import {
   FiChevronRight,
   FiPlus,
   FiMoreVertical,
+  FiCode,
 } from "react-icons/fi";
 import { CgTemplate } from "react-icons/cg";
 import API from "../utils/API";
@@ -13,6 +14,8 @@ export default function SidebarBuilder({
   activeTab,
   setActiveTab,
   expandedSections,
+  showCode,
+  setShowCode,
   toggleSection,
   visualItems,
   mediaElements,
@@ -551,6 +554,16 @@ function handleLoadTemplate(template) {
           >
             <CgTemplate size={19} />
           </button>
+
+            <button
+              onClick={() => setShowCode(!showCode)}
+                className={`p-3 rounded-lg ${showCode
+                        ? "bg-blue-100 text-white dark:bg-blue-700"
+                        : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
+                    }`}
+                  >
+                    <FiCode size={20}  />
+                  </button>
         </div>
 
         {activeTab === "layers" && (
@@ -756,14 +769,14 @@ function handleLoadTemplate(template) {
 
         {/* Main sidebar content */}
         {activeTab === "widgets" && (
-          <div className="w-[280px] h-screen flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="w-[300px] h-screen flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden">
             {/* Header */}
             <div className="px-3 py-3 font-Tahoma text-left text-gray-800 dark:text-gray-200 text-[24px] font-sans">
               User-Interface Builder
             </div>
 
             {/* Search */}
-            <div className="mx-2 w-[250px]">
+            <div className="mx-2 w-[270px]">
               <div className="border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 rounded-md">
                 <div className="flex items-center px-2 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500">
                   <input

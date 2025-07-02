@@ -607,7 +607,7 @@ const [iconSearch, setIconSearch] = useState(""); //icon searchbar
 
 {/* Background Color Picker */}
 <div className="space-y-4">
-{ item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4" && item.type !== "H5" && item.type !== "toggle-button" && (
+{ item.type !== "H1" && item.type !== "H2" && item.type !== "H3" && item.type !== "H4" && item.type !== "H5" && item.type !== "toggle-button" &&  (
 <div className="mt-4">
   <label className="text-sm font-medium text-gray-700 dark:text-white">
     Background Color

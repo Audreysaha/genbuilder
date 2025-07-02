@@ -48,10 +48,12 @@ const Interface = () => {
     setSelectedWidget(widget || null);
   };
 
+  
+
   const getDeviceDimensions = () => {
     switch (deviceSize) {
       case "mobile":
-        return { width: 360, height: 640 };
+        return { width: 460, height: 1024 };
       case "tablet":
         return { width: 675, height: 570 };
       case "desktop":

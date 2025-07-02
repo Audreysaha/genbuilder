@@ -216,7 +216,7 @@ const CanvasItem = ({
             style={{
               ...inputStyle,
               color: item.props?.textColor || "black",
-              backgroundColor: item.props?.backgroundColor || "white",
+              backgroundColor: item.props?.backgroundColor || "",
               fontSize: item.props?.fontSize || "16px",
               fontWeight: item.props?.bold ? "bold" : "normal",
               fontStyle: item.props?.italic ? "italic" : "normal",
@@ -670,7 +670,7 @@ const CanvasItem = ({
               ))
             ) : (
               <div className="text-gray-400 text-sm italic">
-                Drop items here...
+                {/* Drop items here... */}
               </div>
             )}
           </div>
@@ -1134,83 +1134,86 @@ const CanvasItem = ({
 
       //Media Element
       case "image": {
-        const imageProps = item.props || {};
-        const borderRadius = imageProps.borderRadius
-          ? `${imageProps.borderRadius}px`
-          : "0px";
+  const imageProps = item.props || {};
+  const borderRadius = imageProps.borderRadius
+    ? `${imageProps.borderRadius}px`
+    : "0px";
 
-        const width = imageProps.width ? `${imageProps.width}px` : "auto";
-        const height = imageProps.height ? `${imageProps.height}px` : "auto";
+  const width = imageProps.width ? `${imageProps.width}px` : "auto";
+  const height = imageProps.height ? `${imageProps.height}px` : "auto";
 
-        const img =
-          (item.images && item.images[item.selectedImageIndex]) ||
-          item.images?.[0] ||
-          {};
+  const img =
+    (item.images && item.images[item.selectedImageIndex]) ||
+    item.images?.[0] ||
+    {};
 
-        const triggerFileInput = (e) => {
-          e.stopPropagation();
-          const fileInput = document.createElement("input");
-          fileInput.type = "file";
-          fileInput.accept = "image/*";
-          fileInput.onchange = (event) => {
-            const file = event.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (loadEvent) => {
-                const newImage = {
-                  src: loadEvent.target.result,
-                  alt: file.name,
-                };
-
-                if (typeof onUpdate === "function") {
-                  onUpdate(item.id, {
-                    images: [...(item.images || []), newImage],
-                    selectedImageIndex: (item.images || []).length,
-                  });
-                }
-              };
-
-              if (file) {
-                reader.readAsDataURL(file);
-              }
-            }
+  const triggerFileInput = (e) => {
+    e.stopPropagation();
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (loadEvent) => {
+          const newImage = {
+            src: loadEvent.target.result,
+            alt: file.name,
           };
-          fileInput.click();
+
+          if (typeof onUpdate === "function") {
+            onUpdate(item.id, {
+              images: [...(item.images || []), newImage],
+              selectedImageIndex: (item.images || []).length,
+            });
+          }
         };
 
-        return (
-          <div
-            className="cursor-pointer w-fit h-fit"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (typeof onSelect === "function") {
-                onSelect(item.id);
-              }
-            }}
-            onDoubleClick={triggerFileInput}
-            style={{
-              ...commonStyle,
-              height: imageProps.height || "auto",
-              width: imageProps.width || "auto",
-              borderRadius,
-              overflow: "hidden",
-              background: imageProps.backgroundColor || "transparent",
-            }}
-          >
-            <img
-              src={img.src || lowcode}
-              alt={img.alt || "Image"}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: imageProps.objectFit || "contain",
-                borderRadius,
-              }}
-              draggable={true}
-            />
-          </div>
-        );
+        if (file) {
+          reader.readAsDataURL(file);
+        }
       }
+    };
+    fileInput.click();
+  };
+
+  return (
+    <div
+      className="cursor-move w-fit h-fit"
+      onClick={(e) => {
+        e.stopPropagation();
+        if (typeof onSelect === "function") {
+          onSelect(item.id);
+        }
+      }}
+      onDoubleClick={triggerFileInput}
+      style={{
+        ...commonStyle,
+        height: imageProps.height || "auto",
+        width: imageProps.width || "auto",
+        borderRadius,
+        overflow: "hidden",
+        background: imageProps.backgroundColor || "transparent",
+        // Add a visible border when selected
+        border: isSelected && !isPreviewMode ? "2px solid #3b82f6" : "none",
+      }}
+    >
+      <img
+        src={img.src || lowcode}
+        alt={img.alt || "Image"}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: imageProps.objectFit || "contain",
+          borderRadius,
+          pointerEvents: "none", // Let Rnd handle drag events
+        }}
+        // draggable={false} // REMOVE or set to false
+      />
+    </div>
+  );
+}
 
       case "video": {
         const videoProps = item.props || {};

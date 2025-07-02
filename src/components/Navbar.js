@@ -207,53 +207,38 @@ const Navbar = ({
             </div>
           )}
         </div>
+           
+      {/* 🌙 Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
+        </button>
 
-        {/* Search */}
-    <div className="relative w-[200px]" ref={searchRef}>
-      <div className="absolute inset-y-1 left-1 flex items-center pointer-events-none">
-        <FaHome className="text-gray-600 dark:text-gray-300" size={17} />
-      </div>
-      <div className="absolute inset-y-0 right-2 flex items-center justify-center pointer-events-none">
-        <HiChevronUpDown className="text-gray-600 dark:text-gray-300" size={18} />
-      </div>
-      <input
-        type="search"
-        placeholder="Home"
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setDropdownOpen(true);
-        }}
-        onFocus={() => setDropdownOpen(true)}
-        className="w-full pl-7 pr-8 py-1 rounded border text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-      />
-
-      {/* Only show dropdown if tab is "layers" */}
-      {isLayerTab && search && dropdownOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow z-20 max-h-40 overflow-y-auto">
-          {filteredPages.length > 0 ? (
-            filteredPages.map((page) => (
-              <div
-                key={page.id}
-                className="px-3 py-1 hover:bg-indigo-100 dark:hover:bg-indigo-700 dark:text-white cursor-pointer text-sm"
-                onClick={() => {
-                  setSearch(page.name);
-                  setDropdownOpen(false);
-                  onSelectPage?.(page);
-                }}
-              >
-                {page.name}
-              </div>
-            ))
-          ) : (
-            <div className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">
-              No results
-            </div>
-          )}
+           {/* Undo/Redo */}
+          <div className="bg-white dark:bg-gray-900 rounded flex">
+            <div
+              onClick={handleUndoClick}
+              className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${active === "undo"
+                ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
+                : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+            title="Undo">
+            <RotateCcw className="w-5 h-5" />
+          </div>
+          <div
+            onClick={handleRedoClick}
+            className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
+              active === "redo"
+                ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
+                : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+            title="Redo">
+            <RotateCw className="w-5 h-5" />
+          </div>
         </div>
-      )}
-    </div>
-
           {/* Zoom */}
           <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
             <span
@@ -331,7 +316,7 @@ const Navbar = ({
 
         {/* Right Controls */}
         <div className="flex items-center space-x-2">
-          <button
+          {/* <button
             onClick={() => setShowCode(!showCode)}
             className={`p-3 rounded-lg ${showCode
               ? "bg-blue-100 text-white dark:bg-blue-700"
@@ -339,7 +324,7 @@ const Navbar = ({
           }`}
         >
           <FiCode size={20}  />
-        </button>
+        </button> */}
 
     <div>
     <button
@@ -351,38 +336,7 @@ const Navbar = ({
       </button>
     </div>
 
-        {/* 🌙 Dark Mode Toggle */}
-        <button
-          onClick={() => setDarkMode((prev) => !prev)}
-          className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
-          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
-        </button>
-
-          {/* Undo/Redo */}
-          <div className="bg-white dark:bg-gray-900 rounded flex">
-            <div
-              onClick={handleUndoClick}
-              className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${active === "undo"
-                ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
-                : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-            }`}
-            title="Undo">
-            <RotateCcw className="w-5 h-5" />
-          </div>
-          <div
-            onClick={handleRedoClick}
-            className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
-              active === "redo"
-                ? "text-indigo-600 bg-indigo-100 dark:bg-indigo-700 dark:text-white"
-                : "text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-            }`}
-            title="Redo">
-            <RotateCw className="w-5 h-5" />
-          </div>
-        </div>
-
+        
         {/* Mode Switch */}
         <div className="flex border border-gray-300 dark:border-gray-500 rounded-full text-sm font-medium overflow-hidden">
           <button
