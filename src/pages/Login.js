@@ -68,10 +68,10 @@ function Login() {
       </div>
 
       <div className="mt-4 sm:mx-auto w-full max-w-2xl flex justify-center">
-        <div className="bg-gray-1000 py-10 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="email" className="block text-m font-medium text-gray-300 mb-2">
+      <div className="bg-gray-1000 pt-8 pb-6 px-10 min-h-[450px] shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="mt-0">
+              <label htmlFor="email" className="block text-m font-medium text-gray-300 mb-2 mt-0">
                 Email
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
@@ -134,11 +134,11 @@ function Login() {
               </div>
             </div>
 
-            <div>
+            <div className="mt-20">
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-[105%] flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium text-white bg-indigo-600 hover:bg-indigo-700 indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                className={`w-[105%] mt-12 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium text-white bg-indigo-600 hover:bg-indigo-700 indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
               >
                 {isLoading ? (
                   <>
@@ -164,7 +164,7 @@ function Login() {
             </div>
           </form>
 
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-600"></div>
@@ -174,9 +174,9 @@ function Login() {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            {/* <div className="mt-6 grid grid-cols-2 gap-3">
               <div>
                 <a
                   href="#"
@@ -188,36 +188,12 @@ function Login() {
                 </a>
               </div>
 
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path
-                      d="M533.5 278.4c0-17.8-1.6-35-4.7-51.7H272v97.9h146.8c-6.3 33.9-25.6 62.7-54.8 81.9v67h88.7c52-47.9 82-118.3 82-195.1z"
-                      fill="#4285f4"
-                    />
-                    <path
-                      d="M272 544.3c73.4 0 135.2-24.3 180.3-66.2l-88.7-67c-24.7 16.6-56.5 26.3-91.6 26.3-70.4 0-130-47.6-151.5-111.4h-89v69.9c45.1 89.6 137.6 148.4 240.5 148.4z"
-                      fill="#34a853"
-                    />
-                    <path
-                      d="M120.5 321.1c-10.3-30.4-10.3-63.1 0-93.5v-69.9h-89c-37.6 73-37.6 160.6 0 233.6l89-70.2z"
-                      fill="#fbbc04"
-                    />
-                    <path
-                      d="M272 107.7c38.8-.6 76.2 14.1 104.6 40.7l78.5-78.5C402.7 24.7 340.9 0 272 0 169.1 0 76.6 58.8 31.5 148.4l89 69.9c21.5-63.8 81.1-111.4 151.5-111.4z"
-                      fill="#ea4335"
-                    />
-                  </svg>
-                </a>
-              </div>
-            </div>
+        
+            </div> */}
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 }
 

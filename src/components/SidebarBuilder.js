@@ -215,55 +215,7 @@ export default function SidebarBuilder({
       },
     ],
   },
-  {
-    id: 4,
-    name: "Newsletter Signup",
-    description: "A lightweight email subscription block for newsletters and updates.",
-    previewColor: "bg-yellow-100",
-    category: "Forms",
-    items: [
-      {
-        id: "t4-1",
-        type: "text",
-        props: {
-          content: "Stay Updated",
-          fontSize: 20,
-          fontWeight: "bold",
-          textAlign: "center",
-        },
-        x: 80,
-        y: 60,
-      },
-      {
-        id: "t4-2",
-        type: "textfield",
-        props: {
-          placeholder: "Enter your email",
-          width: 280,
-          height: 40,
-          borderRadius: "8px",
-          backgroundColor: "#ffffff",
-        },
-        x: 80,
-        y: 110,
-      },
-      {
-        id: "t4-3",
-        type: "submit-button",
-        props: {
-          content: "Subscribe",
-          width: 140,
-          height: 44,
-          backgroundColor: "#f59e0b",
-          color: "#ffffff",
-          borderRadius: "8px",
-          fontWeight: "bold",
-        },
-        x: 80,
-        y: 160,
-      },
-    ],
-  },
+  
   {
     id: 5,
     name: "Landing Page",
@@ -483,7 +435,6 @@ export default function SidebarBuilder({
 }
 
 ];
-
 
 function handleLoadTemplate(template) {
   const newItems = template.items.map(item => ({
@@ -768,7 +719,7 @@ function handleLoadTemplate(template) {
         )}
 
  {activeTab === "templates" && (
-  <aside className="w-[300px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
+  <aside className="w-[320px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center pb-1 mb-2">
         <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[26px] font-sans">

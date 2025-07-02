@@ -9,7 +9,7 @@ const testimonials = [
     company: 'Acme Inc.',
     image: Audrey,
     quote:
-      'We built our entire customer portal in just 2 weeks with GenBuilder. It would have taken months with traditional development.',
+      'We built our entire customer portal in just 2 weeks with Logistra. It would have taken months with traditional development.',
     rating: 5,
   },
   {
@@ -19,7 +19,7 @@ const testimonials = [
     image:
       'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=height=80&fit=facearea&facepad=2&w=256&h=256&q=80',
     quote:
-      'As a technical founder, I appreciate how GenBuilder lets me prototype ideas quickly without getting bogged down in implementation details.',
+      'As a technical founder, I appreciate how Logistra lets me prototype ideas quickly without getting bogged down in implementation details.',
     rating: 5,
   },
   {
@@ -28,7 +28,7 @@ const testimonials = [
     company: 'Global Corp',
     image: Rosvel,
     quote:
-      'Our internal tools team has reduced development time by 70% since switching to GenBuilder. The business loves how quickly we can respond to their needs.',
+      'Our internal tools team has reduced development time by 70% since switching to Logistra. The business loves how quickly we can respond to their needs.',
     rating: 4,
   },
 ];

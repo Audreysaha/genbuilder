@@ -65,7 +65,7 @@ export default function Footer() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
             <Link to="/" className="text-2xl font-bold gradient-text">
-              GenBuilder
+              Logistra
             </Link>
             <p className="text-gray-500 text-base">
               Empowering everyone to build software without writing code.
@@ -188,7 +188,7 @@ export default function Footer() {
         </div>
         <div className="mt-12 border-t border-gray-200 pt-8">
           <p className="text-base text-gray-400 xl:text-center">
-            &copy; {new Date().getFullYear()} GenBuilder. All rights reserved.
+            &copy; {new Date().getFullYear()} Logistra. All rights reserved.
           </p>
         </div>
       </div>

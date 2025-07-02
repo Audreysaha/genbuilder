@@ -100,7 +100,7 @@ return (
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
         >
-          How <span className="bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">GenBuilder</span> Works
+          How <span className="bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">Logistra</span> Works
         </motion.h2>
         <motion.p
           className="text-xl text-gray-400"

@@ -45,14 +45,14 @@ export default function Signup() {
         </h2>
       </div>
 
-       <div className="mt-4 sm:mx-auto w-[25%] max-w-2xl justify-center">
-        <div className="bg-black py-6 px-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
+       <div className="mt-6 sm:mx-auto w-[25%] max-w-2xl justify-center">
+        <div className="bg-black py-6 px-10 min-h-[480px] shadow-[0_0_20px_rgba(255,255,255,0.3)] sm:rounded-lg sm:px-8 border border-gray-700">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="name" className="block text-m font-medium text-gray-300">
+            <div className="mt-4">
+              <label htmlFor="name" className="block text-m font-medium text-gray-300 mt-3">
                 Full Name
               </label>
-              <div className="relative mt-2">
+              <div className="relative mt-3">
                 <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   id="name"
@@ -67,11 +67,11 @@ export default function Signup() {
               </div>
             </div>
 
-            <div>
-            <label htmlFor="Email" className="block text-m font-medium text-gray-300">
+            <div className="mt-4">
+            <label htmlFor="Email" className="block text-m font-medium text-gray-300 mt-6">
             Email
             </label>
-            <div className="relative mt-2">
+            <div className="relative mt-3">
             <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
             id="Email"
@@ -87,9 +87,8 @@ export default function Signup() {
           </div>
           </div>
 
-
-            <div>
-              <label htmlFor="password" className="block text-m font-medium text-gray-300">
+            <div className="mt-4">
+              <label htmlFor="password" className="block text-m font-medium text-gray-300 mt-6">
                 Password
               </label>
               <input
@@ -105,11 +104,11 @@ export default function Signup() {
               />
             </div>
 
-            <div>
+            <div className="mt-16">
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
+                className={`w-full mt-12 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
                   isLoading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
                 } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
               >
@@ -118,7 +117,7 @@ export default function Signup() {
             </div>
           </form>
 
-          <div className="mt-12 text-center">
+          <div className="mt-4 text-center">
             <p className="text-sm text-gray-400">
               Already have an account?{' '}
               <Link to="/login" className="font-medium text-indigo-400 hover:text-indigo-300">

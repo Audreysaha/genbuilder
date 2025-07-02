@@ -222,7 +222,7 @@ const Navbar = ({
       </div>
       <input
         type="search"
-        placeholder="Search Pages"
+        placeholder="Home"
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);

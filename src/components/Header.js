@@ -26,21 +26,21 @@ export default function Header() {
 
   return (
     <header className="bg-gradient-to-b from-black to-indigo-900 bg-no-repeat bg-center sticky top-0 z-50 backdrop-blur-sm">
-      <nav className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+      <nav className="mx-auto max-w-7xl px-10 sm:px-18 lg:px-1">
         <div className="flex items-center justify-between h-32">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 hover:from-indigo-300 hover:to-purple-300 transition-all duration-300"
+              className="text-[45px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 hover:from-indigo-300 hover:to-purple-300 transition-all duration-300"
             >
-              Codeless Pro
+              Logistra
             </Link>
           </div>
 
           {/* Center Navigation Links */}
           <div className="hidden lg:flex flex-2 justify-center">
-            <div className="flex space-x-5">
+            <div className="flex space-x-9">
               {mainLinks.map((link) =>
                 link.type === 'route' ? (
                   <Link
@@ -64,7 +64,7 @@ export default function Header() {
           </div>
 
           {/* Right-aligned Auth Buttons */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-6">
             {authLinks.map((link) => (
               <Link
                 key={link.name}

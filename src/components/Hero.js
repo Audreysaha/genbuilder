@@ -41,7 +41,7 @@ const Hero = () => {
           >
             Develop faster and smarter with{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
-              GenBuilder
+              Logistra
             </span>
           </motion.h1>
           
