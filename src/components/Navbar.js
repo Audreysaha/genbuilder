@@ -39,7 +39,6 @@ const Navbar = ({
   mode,
   setMode,
   activePageId,
-  onSelectPage,
   pages,
   activeTab,
   projectPages,
@@ -47,6 +46,7 @@ const Navbar = ({
   device,
   setDevice,
   onRefreshCanvas,
+  canvasItems
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -176,6 +176,34 @@ const Navbar = ({
     );
   }
 
+  function saveTemplate() {
+    const name = prompt("Entrez un nom pour le template :");
+
+    if (!name || name.trim() === "") {
+      alert("Le nom du template est requis.");
+      return;
+    }
+
+    if (!canvasItems || canvasItems.length === 0) {
+      alert("Aucun contenu à enregistrer.");
+      return;
+    }
+
+    api
+      .postData(api.apiUrl + "/api/templates/save", {
+        name: name.trim(),
+        content: canvasItems,
+      })
+      .then((res) => {
+        console.log("Template sauvegardé :", res);
+        alert("Template sauvegardé avec succès !");
+      })
+      .catch((err) => {
+        console.error("Erreur lors de la sauvegarde du template :", err);
+        alert("Erreur lors de la sauvegarde du template.");
+      });
+  }
+
   const isAuthenticated = !!LocalStorageManager.getItem("token");
 
   const { cssWeb, html } = generateReactCode(widgets);
@@ -223,8 +251,11 @@ const Navbar = ({
               >
                 Save
               </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white">
-                Save As
+              <button
+                onClick={() => saveTemplate()}
+                className="w-full text-left px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 text-gray-700 dark:text-white"
+              >
+                Save As Template
               </button>
               {isAuthenticated ? (
                 <button
@@ -255,7 +286,7 @@ const Navbar = ({
           )}
         </div>
 
-         {/* Undo/Redo */}
+        {/* Undo/Redo */}
         <div className="bg-white dark:bg-gray-900 rounded flex">
           <div
             onClick={handleUndoClick}
@@ -391,8 +422,6 @@ const Navbar = ({
           {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
         </button>
 
-       
-
         {/* Mode Switch */}
         <div className="flex border border-gray-300 dark:border-gray-500 rounded-full text-sm font-medium overflow-hidden">
           <button
@@ -437,7 +466,9 @@ const Navbar = ({
                 onClick={() =>
                   handleDeploy(html, cssWeb, "test1", activePageId)
                 }
-                href={projectPages.filter((page) => page.id == activePageId)[0]?.url}
+                href={
+                  projectPages.filter((page) => page.id == activePageId)[0]?.url
+                }
               >
                 Open site
               </motion.a>

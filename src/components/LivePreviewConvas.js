@@ -62,8 +62,7 @@ const LivePreviewCanvas = () => {
     const scaleY = containerHeight / originalCanvasSize.height;
 
     const uniformScale = Math.min(scaleX, scaleY);
-    
-    
+        
     return { scaleX: uniformScale, scaleY: uniformScale };
   };
 

@@ -35,7 +35,8 @@ export default function SidebarBuilder({
   const [filteredVisual, setFilteredVisual] = useState(visualItems);
   const [filteredMedia, setFilteredMedia] = useState(mediaElements);
   const [filteredLayout, setFilteredLayout] = useState(layoutElements);
-  const [filteredTopography, setFilteredTopography] = useState(topographyElements);
+  const [filteredTopography, setFilteredTopography] =
+    useState(topographyElements);
   const [projectPagesName, setProjectPagesName] = useState("");
   const [showAddPageInput, setShowAddPageInput] = useState(false);
   const [contextMenu, setContextMenu] = useState({
@@ -47,411 +48,35 @@ export default function SidebarBuilder({
   const contextMenuRef = useRef();
   const [renamingPageId, setRenamingPageId] = useState(null);
   const [newPageName, setNewPageName] = useState("");
+
+  const [prebuiltTemplates, setPrebuiltTemplates] = useState([]);
   const api = new API();
 
-  const PREBUILT_TEMPLATES = [
-  {
-    id: 1,
-    name: "Contact Form",
-    description: "A minimal contact form with two input fields and a  button.",
-    previewColor: "bg-indigo-100",
-    category: "Forms",
-    items: [
-      {
-        id: "t1-1",
-        type: "text",
-        props: {
-          content: "Contact Us",
-          fontSize: 24,
-          fontWeight: "bold",
-          textAlign: "center",
-          color: "#1e1e1e",
-        },
-        x: 100,
-        y: 40,
-      },
-      {
-        id: "t1-2",
-        type: "textfield",
-        props: {
-          placeholder: "Your Name",
-          width: 280,
-          height: 40,
-          borderRadius: "8px",
-          padding: "8px",
-          backgroundColor: "#ffffff",
-        },
-        x: 100,
-        y: 100,
-      },
-      {
-        id: "t1-3",
-        type: "textfield",
-        props: {
-          placeholder: "Your Email",
-          width: 280,
-          height: 40,
-          borderRadius: "8px",
-          padding: "8px",
-          backgroundColor: "#ffffff",
-        },
-        x: 100,
-        y: 160,
-      },
-      {
-        id: "t1-4",
-        type: "submit-button",
-        props: {
-          content: "Send Message",
-          width: 160,
-          height: 44,
-          backgroundColor: "#4f46e5",
-          color: "#ffffff",
-          borderRadius: "8px",
-          fontWeight: "bold",
-        },
-        x: 100,
-        y: 220,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Hero Section",
-    description: "A modern hero block featuring a headline, subheading, and a supporting image.",
-    previewColor: "bg-pink-100",
-    category: "Sections",
-    items: [
-      {
-        id: "t2-1",
-        type: "text",
-        props: {
-          content: "Welcome to Our Platform",
-          fontSize: 32,
-          fontWeight: "bold",
-          textAlign: "left",
-          color: "#111827",
-        },
-        x: 80,
-        y: 60,
-      },
-      {
-        id: "t2-2",
-        type: "text",
-        props: {
-          content: "Design interfaces visually, faster.",
-          fontSize: 18,
-          textAlign: "left",
-          color: "#6b7280",
-        },
-        x: 80,
-        y: 110,
-      },
-      {
-        id: "t2-3",
-        type: "image",
-        props: {
-          src: "https://placehold.co/200x100",
-          width: 240,
-          height: 120,
-          borderRadius: "12px",
-        },
-        x: 80,
-        y: 160,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Profile Card",
-    description: "A user profile component with avatar, name, title, and short bio.",
-    previewColor: "bg-green-100",
-    category: "Cards",
-    items: [
-      {
-        id: "t3-1",
-        type: "image",
-        props: {
-          src: "https://placehold.co/80x80",
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-        },
-        x: 120,
-        y: 40,
-      },
-      {
-        id: "t3-2",
-        type: "text",
-        props: {
-          content: "Jane Doe",
-          fontSize: 20,
-          fontWeight: "600",
-          textAlign: "center",
-        },
-        x: 110,
-        y: 130,
-      },
-      {
-        id: "t3-3",
-        type: "text",
-        props: {
-          content: "UI Designer",
-          fontSize: 14,
-          color: "#6b7280",
-          textAlign: "center",
-        },
-        x: 120,
-        y: 160,
-      },
-      {
-        id: "t3-4",
-        type: "text",
-        props: {
-          content: "Crafting beautiful, functional interfaces.",
-          fontSize: 12,
-          color: "#4b5563",
-          textAlign: "center",
-        },
-        x: 80,
-        y: 190,
-      },
-    ],
-  },
-  
-  {
-    id: 5,
-    name: "Landing Page",
-    description: "A sleek landing page with a header, bold headline, supporting text, image, and a call-to-action button.",
-    previewColor: "bg-blue-100",
-    category: "Pages",
-    items: [
-      {
-        id: "t5-1",
-        type: "text",
-        props: {
-          content: "ProductName",
-          fontSize: 20,
-          fontWeight: "bold",
-          textAlign: "left",
-          color: "#1e3a8a",
-        },
-        x: 40,
-        y: 20,
-      },
-      {
-        id: "t5-2",
-        type: "text",
-        props: {
-          content: "Build Stunning Interfaces Visually",
-          fontSize: 32,
-          fontWeight: "bold",
-          textAlign: "left",
-          color: "#111827",
-        },
-        x: 40,
-        y: 80,
-      },
-      {
-        id: "t5-3",
-        type: "text",
-        props: {
-          content: "No-code tools to design, prototype, and launch your UI faster than ever.",
-          fontSize: 16,
-          color: "#6b7280",
-          textAlign: "left",
-        },
-        x: 40,
-        y: 130,
-      },
-      {
-        id: "t5-4",
-        type: "submit-button",
-        props: {
-          content: "Get Started",
-          width: 160,
-          height: 44,
-          backgroundColor: "#2563eb",
-          color: "#ffffff",
-          borderRadius: "8px",
-          fontWeight: "bold",
-        },
-        x: 40,
-        y: 180,
-      },
-      {
-        id: "t5-5",
-        type: "image",
-        props: {
-          src: "https://placehold.co/300x160",
-          width: 300,
-          height: 160,
-          borderRadius: "12px",
-        },
-        x: 320,
-        y: 80,
-      },
-    ],
-  },
-{
-  id: 6,
-  name: "Simple Order Summary",
-  description: "A minimal order summary layout with product name, quantity, price, and a place order button.",
-  previewColor: "bg-orange-100",
-  category: "Orders",
-  items: [
-    {
-      id: "t6-1",
-      type: "text",
-      props: {
-        content: "Order Summary",
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-      },
-      x: 100,
-      y: 30,
-    },
-    {
-      id: "t6-2",
-      type: "text",
-      props: {
-        content: "Product: Wireless Mouse",
-        fontSize: 16,
-        textAlign: "left",
-      },
-      x: 80,
-      y: 90,
-    },
-    {
-      id: "t6-3",
-      type: "text",
-      props: {
-        content: "Quantity: 2",
-        fontSize: 16,
-        textAlign: "left",
-      },
-      x: 80,
-      y: 120,
-    },
-    {
-      id: "t6-4",
-      type: "text",
-      props: {
-        content: "Total: $40.00",
-        fontSize: 16,
-        fontWeight: "600",
-        textAlign: "left",
-      },
-      x: 80,
-      y: 150,
-    },
-    {
-      id: "t6-5",
-      type: "submit-button",
-      props: {
-        content: "Place Order",
-        width: 160,
-        height: 44,
-        backgroundColor: "#ef4444",
-        color: "#ffffff",
-        borderRadius: "8px",
-        fontWeight: "bold",
-      },
-      x: 100,
-      y: 200,
-    },
-  ],
-},
-{
-  id: 7,
-  name: "Product Checkout Card",
-  description: "A modern checkout card with product image, details, price, and a confirm order button.",
-  previewColor: "bg-lime-100",
-  category: "Orders",
-  items: [
-    {
-      id: "t7-1",
-      type: "image",
-      props: {
-        src: "https://placehold.co/100x100",
-        width: 100,
-        height: 100,
-        borderRadius: "12px",
-      },
-      x: 80,
-      y: 60,
-    },
-    {
-      id: "t7-2",
-      type: "text",
-      props: {
-        content: "Smart Headphones",
-        fontSize: 20,
-        fontWeight: "bold",
-        textAlign: "left",
-      },
-      x: 200,
-      y: 140,
-    },
-    {
-      id: "t7-3",
-      type: "text",
-      props: {
-        content: "Noise cancelling, Bluetooth, 30hr battery",
-        fontSize: 14,
-        color: "#6b7280",
-        textAlign: "left",
-      },
-      x: 200,
-      y: 170,
-    },
-    {
-      id: "t7-4",
-      type: "text",
-      props: {
-        content: "Price: $120.00",
-        fontSize: 16,
-        fontWeight: "600",
-        textAlign: "left",
-      },
-      x: 200,
-      y: 160,
-    },
-    {
-      id: "t7-5",
-      type: "submit-button",
-      props: {
-        content: "Confirm Order",
-        width: 160,
-        height: 44,
-        backgroundColor: "#10b981",
-        color: "#ffffff",
-        borderRadius: "8px",
-        fontWeight: "bold",
-      },
-      x: 200,
-      y: 160,
+  useEffect(() => {
+    api
+      .getData(api.apiUrl + "/api/templates/all")
+      .then((res) => {
+        if (res) {
+          setPrebuiltTemplates(res || []);
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading templates:", err);
+      });
+  }, []);
 
-    },
-  ],
-}
-
-];
-
-function handleLoadTemplate(template) {
-  const newItems = template.items.map(item => ({
-    ...item,
-    id: `${item.id}-${Date.now()}-${Math.floor(Math.random() * 10000)}`
-  }));
-  console.log("Loading template items:", newItems);
-  setCanvasItems(newItems);
-}
+  function handleLoadTemplate(template) {
+    const newItems = template.content.map((item) => ({
+      ...item,
+      id: `${item.id}-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+    }));
+    setCanvasItems(newItems);
+  }
 
   function onDeletePage(pageId) {
     api
       .deleteData(api.apiUrl + `/api/project/pages/${pageId}/delete`, {})
-      .then((res) => {
+      .then(() => {
         fetchProject();
       })
       .catch((err) => {
@@ -463,12 +88,10 @@ function handleLoadTemplate(template) {
     api
       .putData(
         api.apiUrl + `/api/project/pages/${pageId}/rename`,
-        {
-          name: pageName,
-        },
+        { name: pageName },
         false
       )
-      .then((res) => {
+      .then(() => {
         fetchProject();
       })
       .catch((err) => {
@@ -512,7 +135,6 @@ function handleLoadTemplate(template) {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, [contextMenu]);
-
   return (
     <>
       <div className="flex h-screen">
@@ -555,15 +177,16 @@ function handleLoadTemplate(template) {
             <CgTemplate size={19} />
           </button>
 
-            <button
-              onClick={() => setShowCode(!showCode)}
-                className={`p-3 rounded-lg ${showCode
-                        ? "bg-blue-100 text-white dark:bg-blue-700"
-                        : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
-                    }`}
-                  >
-                    <FiCode size={20}  />
-                  </button>
+          <button
+            onClick={() => setShowCode(!showCode)}
+            className={`p-3 rounded-lg ${
+              showCode
+                ? "bg-blue-100 text-white dark:bg-blue-700"
+                : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
+            }`}
+          >
+            <FiCode size={20} />
+          </button>
         </div>
 
         {activeTab === "layers" && (
@@ -650,11 +273,13 @@ function handleLoadTemplate(template) {
                             </button>
                           </>
                         ) : (
-                          <div className={`relative w-full flex items-center justify-between rounded-lg text-sm transition ${
-                                activePageId === page.id
-                                  ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
-                                  : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
-                              }`}>
+                          <div
+                            className={`relative w-full flex items-center justify-between rounded-lg text-sm transition ${
+                              activePageId === page.id
+                                ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white"
+                                : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300"
+                            }`}
+                          >
                             <button
                               onClick={() => onSelectPage(page.id)}
                               className={`flex-1 text-left px-3 py-2 `}
@@ -731,41 +356,54 @@ function handleLoadTemplate(template) {
           </aside>
         )}
 
- {activeTab === "templates" && (
-  <aside className="w-[270px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
-    <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center pb-1 mb-2">
-        <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[24px] font-sans">
-        Pre-Build Templates
-        </div>
-      </div>
-      <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
+        {activeTab === "templates" && (
+          <aside className="w-[270px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
+            <div className="h-full flex flex-col">
+              <div className="flex justify-between items-center pb-1 mb-2">
+                <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[24px] font-sans">
+                  Pre-Built Templates
+                </div>
+              </div>
+              <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
 
-      {/* Prebuilt Templates List */}
-      <div className="mb-4 flex-1 pb-32">
-        <div className="space-y-3">
-          {PREBUILT_TEMPLATES.map((tpl) => (
-            <button
-              key={tpl.id}
-              className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 transition
-                hover:scale-[1.03] hover:shadow-lg  
-                ${tpl.previewColor} dark:bg-opacity-60`}
-              onClick={() => handleLoadTemplate(tpl)}
-            >
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-200 dark:gray-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
-                {tpl.name[0]}
+              {/* Template list */}
+              <div className="mb-4 flex-1 pb-32">
+                <div className="space-y-3">
+                  {prebuiltTemplates.map((tpl) => {
+                    const preview = tpl.content?.find(
+                      (item) => item.type === "text" || item.type === "image"
+                    );
+
+                    return (
+                      <button
+                        key={tpl.id}
+                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 transition hover:scale-[1.03] hover:shadow-lg bg-gray-50 dark:bg-gray-800"
+                        onClick={() => handleLoadTemplate(tpl)}
+                      >
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-200 dark:bg-gray-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
+                          {tpl.name[0]}
+                        </div>
+
+                        <div className="flex flex-col text-left">
+                          <span className="font-semibold text-base text-gray-900 dark:text-white">
+                            {tpl.name}
+                          </span>
+                          <span className="text-xs text-gray-600 dark:text-gray-300 truncate max-w-[250px]">
+                            {preview?.type === "text"
+                              ? preview.props?.content
+                              : preview?.type === "image"
+                                ? "Image"
+                                : "No preview"}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="flex flex-col text-left">
-                <span className="font-semibold text-base text-gray-900 dark:text-white">{tpl.name}</span>
-                <span className="text-xs text-gray-600 dark:text-gray-300">{tpl.description}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  </aside>
-)}
+            </div>
+          </aside>
+        )}
 
         {/* Main sidebar content */}
         {activeTab === "widgets" && (
