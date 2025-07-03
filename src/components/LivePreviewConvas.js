@@ -14,7 +14,6 @@ const LivePreviewCanvas = () => {
   const intervalRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Tailles de design de référence (à ajuster selon vos besoins)
   const DESIGN_SIZES = {
     desktop: { width: 1655, height: 620 },
     mobile: { width: 460, height: 1024 }
@@ -52,7 +51,6 @@ const LivePreviewCanvas = () => {
     }
   };
 
-  // Calculer le facteur d'échelle basé sur les dimensions du container
   const calculateScale = () => {
     if (!containerRef.current) return { scaleX: 1, scaleY: 1 };
 
@@ -63,17 +61,12 @@ const LivePreviewCanvas = () => {
     const scaleX = containerWidth / originalCanvasSize.width;
     const scaleY = containerHeight / originalCanvasSize.height;
 
-    // Option 1: Garder les proportions (échelle uniforme)
     const uniformScale = Math.min(scaleX, scaleY);
     
-    // Option 2: Adapter complètement aux dimensions (peut déformer)
-    // return { scaleX, scaleY };
     
-    // Pour garder les proportions, utilisez l'échelle uniforme
     return { scaleX: uniformScale, scaleY: uniformScale };
   };
 
-  // Appliquer la mise à l'échelle aux éléments du canvas
   const getScaledItems = () => {
     const { scaleX, scaleY } = calculateScale();
     
@@ -83,7 +76,6 @@ const LivePreviewCanvas = () => {
       y: (item.y || 0) * scaleY,
       width: item.width ? item.width * scaleX : item.width,
       height: item.height ? item.height * scaleY : item.height,
-      // Mettre à l'échelle les propriétés de style si nécessaire
       props: {
         ...item.props,
         fontSize: item.props?.fontSize ? Math.round(parseInt(item.props.fontSize) * Math.min(scaleX, scaleY)) + 'px' : item.props?.fontSize,
@@ -94,16 +86,14 @@ const LivePreviewCanvas = () => {
   };
 
   useEffect(() => {
-    fetchProject(); // initial
+    fetchProject();
     intervalRef.current = setInterval(fetchProject, 2000);
 
     return () => clearInterval(intervalRef.current);
   }, [projectId, device, page]);
 
-  // Recalculer lors du redimensionnement de la fenêtre
   useEffect(() => {
     const handleResize = () => {
-      // Force un re-render pour recalculer l'échelle
       setCanvasItems(prev => [...prev]);
     };
 
@@ -122,7 +112,6 @@ const LivePreviewCanvas = () => {
             ref={containerRef}
             className="w-full h-full overflow-auto relative"
             style={{
-              // Taille de référence pour le calcul d'échelle mobile
               minHeight: '100%'
             }}
           >
