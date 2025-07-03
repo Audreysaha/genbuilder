@@ -368,6 +368,31 @@ ${jsxWeb
 }
 `.trim();
 
+  const fullHtmlCode = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generated Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      position: relative;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+${cssWeb.trim()}
+  </style>
+</head>
+<body>
+${jsxWeb.trim()}
+</body>
+</html>
+`.trim();
+
   const fullReactNativeCode = `
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
@@ -390,7 +415,8 @@ const styles = StyleSheet.create(${JSON.stringify(stylesNative, null, 2)});
   return {
     jsxWeb: fullReactWebCode,
     cssWeb: cssWeb.trim(),
+    html: fullHtmlCode,
     jsxNative: fullReactNativeCode,
-    stylesNative: stylesNative,
+    stylesNative,
   };
 };

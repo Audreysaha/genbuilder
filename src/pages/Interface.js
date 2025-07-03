@@ -246,10 +246,7 @@ const Interface = () => {
           setActivePageId(res.pages[0].id);
           setProjectPages(
             res.pages?.map((page) => {
-              return {
-                id: page.id,
-                name: page.name,
-              };
+              return page
             })
           );
         } else if (device === "web") {
@@ -257,10 +254,7 @@ const Interface = () => {
           setActivePageId(res.pages[0].id);
           setProjectPages(
             res.pages?.map((page) => {
-              return {
-                id: page.id,
-                name: page.name,
-              };
+              return page
             })
           );
         }
@@ -309,10 +303,7 @@ const Interface = () => {
         setActivePageId(project?.pages.filter((pag) => pag.id == activePageId)[0].id);
         setProjectPages(
           project?.pages?.map((page) => {
-            return {
-              id: page.id,
-              name: page.name,
-            };
+            return page
           })
         );
       } else if (device === "web") {
@@ -320,10 +311,7 @@ const Interface = () => {
         setActivePageId(project?.pages.filter((pag) => pag.id == activePageId)[0].id);
         setProjectPages(
           project?.pages.map((page) => {
-            return {
-              id: page.id,
-              name: page.name,
-            };
+            return page
           })
         );
       }
@@ -340,12 +328,16 @@ const Interface = () => {
         setShowCode={setShowCode}
         deviceSize={deviceSize}
         setDeviceSize={setDeviceSize}
+        device={device}
+        projectPages={projectPages}
         handleUndoClick={handleUndoClick}
         handleRedoClick={handleRedoClick}
         mode={mode}
         setMode={setMode}
         setDevice={setDevice}
-        setCanvasItems={setCanvasItems}
+        handleRefreshCanvas={handleRefreshCanvas}
+                onRefreshCanvas={handleRefreshCanvas}
+        widgets={canvasItems}
         canvasItems={canvasItems}
         activePageId={activePageId}
       />

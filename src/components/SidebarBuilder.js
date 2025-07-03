@@ -517,7 +517,7 @@ function handleLoadTemplate(template) {
     <>
       <div className="flex h-screen">
         {/* Left tab panel */}
-        <div className="w-[40px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-6 space-y-6">
+        <div className="w-[50px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-6 space-y-6">
           <button
             onClick={() => setActiveTab("widgets")}
             className={`p-1 rounded-lg transition-colors ${
