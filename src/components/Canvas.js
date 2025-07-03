@@ -8,7 +8,6 @@ import React, {
 import CanvasItem from "./CanvasItem";
 import debounce from "lodash.debounce";
 import API from "../utils/API";
-import { useDrop } from "react-dnd";
 
 const Canvas = forwardRef(
   (
