@@ -481,9 +481,6 @@ const Navbar = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-600 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
-                onClick={() =>
-                  handleDeploy(html, cssWeb, "test1", activePageId)
-                }
                 href={projectPages.filter((page) => page.id == activePageId)[0]?.url}
               >
                 Open site
