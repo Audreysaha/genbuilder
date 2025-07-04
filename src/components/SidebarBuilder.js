@@ -14,8 +14,6 @@ export default function SidebarBuilder({
   activeTab,
   setActiveTab,
   expandedSections,
-  showCode,
-  setShowCode,
   toggleSection,
   visualItems,
   mediaElements,
@@ -39,6 +37,7 @@ export default function SidebarBuilder({
     useState(topographyElements);
   const [projectPagesName, setProjectPagesName] = useState("");
   const [showAddPageInput, setShowAddPageInput] = useState(false);
+  const [showCode, setShowCode] = useState(false);
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
@@ -139,7 +138,7 @@ export default function SidebarBuilder({
     <>
       <div className="flex h-screen">
         {/* Left tab panel */}
-        <div className="w-[50px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-6 space-y-6">
+        <div className="w-[55px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-6 space-y-6">
           <button
             onClick={() => setActiveTab("widgets")}
             className={`p-1 rounded-lg transition-colors ${
@@ -150,7 +149,7 @@ export default function SidebarBuilder({
             aria-label="Widgets tab"
             type="button"
           >
-            <FiPlus size={18} />
+            <FiPlus size={22} />
           </button>
 
           <button
@@ -162,7 +161,7 @@ export default function SidebarBuilder({
             }`}
             aria-label="Layers tab"
           >
-            <FiLayers size={18} />
+            <FiLayers size={22} />
           </button>
 
           <button
@@ -174,19 +173,9 @@ export default function SidebarBuilder({
             }`}
             aria-label="Templates tab"
           >
-            <CgTemplate size={19} />
+            <CgTemplate size={22} />
           </button>
 
-          <button
-            onClick={() => setShowCode(!showCode)}
-            className={`p-3 rounded-lg ${
-              showCode
-                ? "bg-blue-100 text-white dark:bg-blue-700"
-                : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
-            }`}
-          >
-            <FiCode size={20} />
-          </button>
         </div>
 
         {activeTab === "layers" && (
@@ -232,9 +221,10 @@ export default function SidebarBuilder({
 
                 <div className="space-y-1">
                   {projectPages
-                    .slice()
-                    .sort((a, b) => a.id - b.id)
-                    .map((page) => (
+                    ?.filter((p) => p && typeof p.id === "number")
+                      .slice()
+                      .sort((a, b) => a.id - b.id)
+                      .map((page) =>  (
                       <div
                         key={page.id}
                         className="flex min-w-[200px] items-center gap-2 relative"
@@ -361,7 +351,7 @@ export default function SidebarBuilder({
             <div className="h-full flex flex-col">
               <div className="flex justify-between items-center pb-1 mb-2">
                 <div className="font-Tahoma text-gray-800 dark:text-gray-200 text-[24px] font-sans">
-                  Pre-Built Templates
+                  Templates
                 </div>
               </div>
               <div className="border-b border-gray-300 dark:border-gray-700 mb-4" />
@@ -414,7 +404,7 @@ export default function SidebarBuilder({
             </div>
 
             {/* Search */}
-            <div className="mx-2 w-[270px]">
+            <div className="mx-2 w-[240px]">
               <div className="border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 rounded-md">
                 <div className="flex items-center px-2 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500">
                   <input

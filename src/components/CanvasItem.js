@@ -185,9 +185,9 @@ const CanvasItem = ({
             placeholder={item.props?.placeholder || "Enter text..."}
             style={{
               ...inputStyle,
-              backgroundColor: item.props?.backgroundColor || "white",
+              backgroundColor: item.props?.backgroundColor || "transparent",
               color: item.props?.textColor || "black",
-              fontSize: item.props?.fontSize || "16px",
+              fontSize: item.props?.fontSize || "auto",
               textAlign: item.props?.textAlign || "left",
               lineHeight: item.props?.lineHeight || "normal",
               padding: item.props?.padding || "8px",
@@ -216,7 +216,7 @@ const CanvasItem = ({
             style={{
               ...inputStyle,
               color: item.props?.textColor || "black",
-              backgroundColor: item.props?.backgroundColor || "",
+              backgroundColor: item.props?.backgroundColor || "transparent",
               fontSize: item.props?.fontSize || "16px",
               fontWeight: item.props?.bold ? "bold" : "normal",
               fontStyle: item.props?.italic ? "italic" : "normal",

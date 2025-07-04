@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, Send, User, RefreshCw, Paperclip } from 'lucide-react';
+import axios from 'axios'
+
+
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -15,31 +18,113 @@ function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = (e) => {
+  const canvasRef = useRef(null)
+  
+  // ...existing code...
+
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+
+  // Get the latest AI message
+  const lastAI = [...messages].reverse().find(m => m.role === 'ai');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (lastAI && lastAI.text) {
+    // Convert <br> and \n to line breaks, strip other HTML tags
+    let text = lastAI.text
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/?[^>]+(>|$)/g, '') // remove all HTML tags
+      .replace(/\\n/g, '\n'); // handle escaped newlines
+
+    // Optional: decode HTML entities
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    text = textarea.value;
+
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#222';
+    const lineHeight = 22;
+    const maxWidth = canvas.width - 20;
+    let x = 10, y = 30;
+
+    text.split('\n').forEach(paragraph => {
+      let words = paragraph.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+      y += lineHeight;
+    });
+  }
+}, [messages]);
+const [showIframe, setShowIframe] = useState(false);
+
+const lastAI = [...messages].reverse().find(m => m.role === 'ai');
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
 
     if (inputMessage.trim() || uploadedFile) {
       const messageContent = inputMessage;
+      // const userMessage = {
+      //   // id: `msg-${Date.now()}-user`,
+      //   // content: messageContent + (uploadedFile ? ` (Attached: ${uploadedFile.name})` : ''),
+      //   role: 'user',
+      //   text: messageContent
+      //   // timestamp: new Date().toISOString(),
+      // };
       const userMessage = {
-        id: `msg-${Date.now()}-user`,
-        content: messageContent + (uploadedFile ? ` (Attached: ${uploadedFile.name})` : ''),
-        role: 'user',
-        timestamp: new Date().toISOString(),
-      };
+  id: `msg-${Date.now()}-${Math.random()}`,
+  role: 'user',
+  text: messageContent
+};
 
       setMessages(prev => [...prev, userMessage]);
       setInputMessage('');
       setUploadedFile(null);
 
-      setTimeout(() => {
-        const aiMessage = {
-          id: `msg-${Date.now()}-assistant`,
-          content: `Simulated response to: "${messageContent}"`,
-          role: 'assistant',
-          timestamp: new Date().toISOString(),
-        };
-        setMessages(prev => [...prev, aiMessage]);
-      }, 1000);
+      try{
+        const res = await axios.post('http://localhost:4000/api/chat', {
+          message: messageContent
+        })
+       const aiMessage = { 
+  id: `msg-${Date.now()}-${Math.random()}`,
+  role: 'ai', 
+  text: res.data.reply.html_content
+};
+        setMessages(prev => [...prev, aiMessage])
+        console.log(messages)
+      } catch (error) {
+        console.error('logs:', error)
+        const errorMsg = { 
+  id: `msg-${Date.now()}-${Math.random()}`,
+  role: 'ai', 
+  text: 'AI failed response' 
+};
+        setMessages((prev) => [...prev, errorMsg])
+      }
+
+      // setTimeout(() => {
+      //   const aiMessage = {
+      //     id: `msg-${Date.now()}-assistant`,
+      //     content: `Simulated response to: "${messageContent}"`,
+      //     role: 'assistant',
+      //     timestamp: new Date().toISOString(),
+      //   };
+      //   setMessages(prev => [...prev, aiMessage]);
+      // }, 1000);
     }
   };
 
@@ -57,7 +142,7 @@ function Chat() {
   };
 
   return (
-    <div className="bg-gray-50  h-full">
+    <div className="bg-gray-50  h-[90%]">
       <div className="w-[340px] ml-auto border-b border-gray-200 bg-white dark:bg-gray-900 shadow-lg flex flex-col justify-between h-full">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-300 px-4 py-3">
@@ -99,7 +184,9 @@ function Chat() {
                       : 'bg-gray-100 text-gray-800'
                   }`}
                 >
-                  {message.content}
+                  {message.role === 'user'
+                    ? message.text
+                    : 'Your page is ready. Click on the button at the bottom to preview.'}
                 </div>
                 {message.role === 'user' && (
                   <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white">
@@ -167,7 +254,79 @@ function Chat() {
           </form>
         </div>
       </div>
+       {lastAI && lastAI.text && (
+          <div className="p-4 flex justify-end">
+            <button
+              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={() => setShowIframe(true)}
+            >
+              Show AI Response
+            </button>
+          </div>
+        )}
+        {/* Canvas area for AI response */}
+        {/* <div className="p-4">
+          <canvas
+            ref={canvasRef}
+            width={300}
+            height={150}
+            style={{ border: '1px solid #ccc', background: '#fff', borderRadius: 8 }}
+          />
+        </div> */}
+        {showIframe && lastAI && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 8,
+              padding: 16,
+              minWidth: 350,
+              minHeight: 200,
+              boxShadow: '0 2px 16px rgba(0,0,0,0.2)',
+              position: 'relative'
+            }}
+          >
+            <button
+              onClick={() => setShowIframe(false)}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: '#eee',
+                border: 'none',
+                borderRadius: '50%',
+                width: 28,
+                height: 28,
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+              title="Close"
+            >×</button>
+            <iframe
+              title="AI Response"
+              srcDoc={lastAI.text}
+              style={{
+                width: 1024,
+                height: 700,
+                border: '1px solid #ccc',
+                borderRadius: 6
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
+    
   );
 }
 

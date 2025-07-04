@@ -8,10 +8,12 @@ import {
   FaSun,
 } from "react-icons/fa";
 import { RotateCcw, RotateCw } from "lucide-react";
-import { FiCode, FiPlay, FiSave } from "react-icons/fi";
+import { FiCode, FiPlay, FiSave,FiPlus, FiMinus } from "react-icons/fi";
 import { SlRefresh } from "react-icons/sl";
 import { motion } from "framer-motion";
 import { useNavigate, Link, useParams } from "react-router-dom";
+import { GrUndo } from "react-icons/gr";
+import { LuUndo, LuRedo  } from "react-icons/lu";
 import {
   HiChevronUpDown,
   HiMiniArrowLeftEndOnRectangle,
@@ -286,8 +288,50 @@ const Navbar = ({
           )}
         </div>
 
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="p-1.5 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
+        </button>
+
+       
+
+      <div className="bg-white dark:bg-gray-900 rounded flex">
+       {/* Zoom */}
+        <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
+          <span
+            className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700"
+            onClick={() => setZoom(Math.max(50, zoom - 10))}
+            title="Zoom Out"
+          >
+            <FiMinus size={14} className="text-gray-700"/>
+          </span>
+          <span>{zoom}%</span>
+          <span
+            className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700"
+            onClick={() => setZoom(Math.min(150, zoom + 10))}
+            title="Zoom In"
+          >
+           <FiPlus size={14} className="text-gray-700" />
+          </span>
+        </div>
+        </div>
+        
+          {/* Refresh button */}
+          <div>
+          <button
+            onClick={onRefreshCanvas}
+            className="p-2  text-gray-800 dark:bg-gray-800  dark:text-white"
+            title="Refresh Canvas"
+          >
+            <SlRefresh  size={18}/>
+          </button>
+        </div>
+
         {/* Undo/Redo */}
-        <div className="bg-white dark:bg-gray-900 rounded flex">
           <div
             onClick={handleUndoClick}
             className={`w-8 h-8 flex items-center justify-center cursor-pointer rounded ${
@@ -297,7 +341,7 @@ const Navbar = ({
             }`}
             title="Undo"
           >
-            <RotateCcw className="w-5 h-5" />
+            <LuUndo className="w-5 h-5" />
           </div>
           <div
             onClick={handleRedoClick}
@@ -308,29 +352,11 @@ const Navbar = ({
             }`}
             title="Redo"
           >
-            <RotateCw className="w-5 h-5" />
+            <LuRedo className="w-5 h-5" />
           </div>
         </div>
 
-        {/* Zoom */}
-        <div className="ml-2 bg-white dark:bg-gray-900 p-1 rounded inline-flex items-center space-x-2 text-sm text-gray-700 dark:text-white">
-          <span
-            className="cursor-pointer w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
-            onClick={() => setZoom(Math.max(50, zoom - 10))}
-            title="Zoom Out"
-          >
-            -
-          </span>
-          <span>{zoom}%</span>
-          <span
-            className="cursor-pointer w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
-            onClick={() => setZoom(Math.min(150, zoom + 10))}
-            title="Zoom In"
-          >
-            +
-          </span>
-        </div>
-      </div>
+       
 
       {/* Center: Device Toggle + Buttons */}
       <div className="flex items-center space-x-4">
@@ -403,25 +429,7 @@ const Navbar = ({
           <FiCode size={20} />
         </button>
 
-        <div>
-          <button
-            onClick={onRefreshCanvas}
-            className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-800 dark:hover:bg-red-700 dark:text-white"
-            title="Refresh Canvas"
-          >
-            <SlRefresh />
-          </button>
-        </div>
-
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={() => setDarkMode((prev) => !prev)}
-          className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
-          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
-        </button>
-
+    
         {/* Mode Switch */}
         <div className="flex border border-gray-300 dark:border-gray-500 rounded-full text-sm font-medium overflow-hidden">
           <button
@@ -463,9 +471,6 @@ const Navbar = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-600 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
-                onClick={() =>
-                  handleDeploy(html, cssWeb, "test1", activePageId)
-                }
                 href={
                   projectPages.filter((page) => page.id == activePageId)[0]?.url
                 }
@@ -478,7 +483,7 @@ const Navbar = ({
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-600 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
                 onClick={() =>
-                  handleDeploy(html, cssWeb, "test1", activePageId)
+                handleDeploy(html, cssWeb, projectPages.filter((page) => page.id == activePageId)[0]?.name, activePageId)
                 }
               >
                 Deploy

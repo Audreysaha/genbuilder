@@ -10,7 +10,7 @@ const [canvasItems, setCanvasItems] = useState([]);
 const [iconSearch, setIconSearch] = useState(""); //icon searchbar
   if (!item)
     return (
-      <div className="p-4 w-50 bg-white border-gray-600 dark:bg-gray-900 ext-gray-500 dark:text-white">No element selected</div>);
+      <div className="p-4 w-[280px] bg-white border-gray-600 dark:bg-gray-900 ext-gray-500 dark:text-white">No element selected</div>);
 
 
   const updateProp = (key, value) => {
