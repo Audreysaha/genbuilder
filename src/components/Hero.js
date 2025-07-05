@@ -1,20 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { inView, motion } from 'framer-motion';
 import { FiCode, FiLayers, FiZap, FiArrowRight, FiPlay } from 'react-icons/fi';
-import { useNavigate, useState } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
   const navigate = useNavigate();
+  const [showVideo, setShowVideo] = useState(false);
 
   const handleGetStartedClick = () => {
-    navigate('/login'); // This will redirect to the interface page
+    navigate('/login');
   };
 
   const handleWatchDemoClick = () => {
-    navigate('/Admin_dashboard'); // This will redirect to the aude page
+    setShowVideo(true);
   };
+
+  const handleCloseVideo = () => {
+    setShowVideo(false);
+  };
+
   return (
-    <div className="min-h-[50vh] bg-gradient-to-b from-indigo-900 to-black text-white pt-0 pb-12 px-9 sm:px-6 flex items-center"> {/*to change the height btw header and hero*/}
+    <div className="min-h-[50vh] bg-gradient-to-b from-indigo-900 to-black text-white pt-0 pb-12 px-9 sm:px-6 flex items-center">
       <div className="max-w-7xl mx-auto w-full">
         {/* Headline Section */}
         <motion.div 
@@ -64,27 +70,40 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-lg font-medium flex items-center justify-center"
-              onClick={handleGetStartedClick} // Add this onClick handler
+              onClick={handleGetStartedClick}
             >
               Start Building <FiArrowRight className="ml-2" />
             </motion.button>
-            
-            <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="flex flex-col sm:flex-row justify-center gap-3"></motion.div>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-gray-800 hover:bg-gray-700 px-6 py-3 rounded-lg font-medium flex items-center justify-center"
-              onClick={handleWatchDemoClick} // Add this onClick handler
+              onClick={handleWatchDemoClick}
             >
               <FiPlay className="mr-2" /> Watch Demo
             </motion.button>
           </motion.div>
         </motion.div>
       </div>
+      {showVideo && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+          <div className="relative w-full max-w-2xl">
+            <button
+              onClick={handleCloseVideo}
+              className="absolute top-2 right-2 text-white text-2xl z-10 bg-black bg-opacity-50 rounded-full px-2"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <video
+              src="/demo.mp4"
+              controls
+              autoPlay
+              className="w-full rounded-lg shadow-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
