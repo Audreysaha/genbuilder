@@ -1497,6 +1497,32 @@ const CanvasItem = ({
     }
   };
 
+  if (isPreviewMode) {
+    // En mode preview, occupe tout l'espace parent (plein écran), 
+    // positionne et scale le contenu à l'intérieur
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: item.x ?? 0,
+          top: item.y ?? 0,
+          width: item.width ?? "auto",
+          height: item.height ?? "auto",
+          pointerEvents: "none",
+          // Pour que l'item occupe tout l'espace parent si width/height non définis
+          minWidth: 0,
+          minHeight: 0,
+          maxWidth: "100vw",
+          maxHeight: "100vh",
+          boxSizing: "border-box",
+          ...item.props,
+        }}
+      >
+        {renderContent()}
+      </div>
+    );
+  }
+
   return (
     <Rnd
       size={{

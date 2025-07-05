@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FiLayers,
   FiSearch,
@@ -18,8 +18,8 @@ export default function SidebarBuilder({
   visualItems,
   mediaElements,
   layoutElements,
-  pages,
-  SidebarPages,
+  showCode,
+  setShowCode,
   setCanvasItems,
   topographyElements,
   projectPages = [],
@@ -27,7 +27,6 @@ export default function SidebarBuilder({
   onSelectPage = () => {},
   handleAddProjectPages,
   fetchProject,
-  handleDeletePage,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredVisual, setFilteredVisual] = useState(visualItems);
@@ -37,7 +36,6 @@ export default function SidebarBuilder({
     useState(topographyElements);
   const [projectPagesName, setProjectPagesName] = useState("");
   const [showAddPageInput, setShowAddPageInput] = useState(false);
-  const [showCode, setShowCode] = useState(false);
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
@@ -176,6 +174,16 @@ export default function SidebarBuilder({
             <CgTemplate size={22} />
           </button>
 
+          <button
+            onClick={() => setShowCode(!showCode)}
+            className={`p-3 rounded-lg ${
+              showCode
+                ? "bg-blue-100 text-white dark:bg-blue-700"
+                : "hover:bg-indigo-200 dark:text-white dark:hover:bg-indigo-700"
+            }`}
+          >
+            <FiCode size={20} />
+          </button>
         </div>
 
         {activeTab === "layers" && (
@@ -222,9 +230,9 @@ export default function SidebarBuilder({
                 <div className="space-y-1">
                   {projectPages
                     ?.filter((p) => p && typeof p.id === "number")
-                      .slice()
-                      .sort((a, b) => a.id - b.id)
-                      .map((page) =>  (
+                    .slice()
+                    .sort((a, b) => a.id - b.id)
+                    .map((page) => (
                       <div
                         key={page.id}
                         className="flex min-w-[200px] items-center gap-2 relative"
@@ -235,7 +243,7 @@ export default function SidebarBuilder({
                               type="text"
                               value={newPageName}
                               onChange={(e) => setNewPageName(e.target.value)}
-                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white text-black dark:text-white"
+                              className="flex-1 px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white text-black"
                             />
                             <button
                               onClick={() => {
@@ -289,7 +297,7 @@ export default function SidebarBuilder({
                                     pageId: page.id,
                                   });
                                 }}
-                                className="cursor-pointer p-1 w-5 h-5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                                className="cursor-pointer p-1 w-5 h-5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                               />
                             </div>
                           </div>

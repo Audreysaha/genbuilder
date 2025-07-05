@@ -324,8 +324,6 @@ const Interface = () => {
       <Navbar
         zoom={zoom}
         setZoom={setZoom}
-        showCode={showCode}
-        setShowCode={setShowCode}
         deviceSize={deviceSize}
         setDeviceSize={setDeviceSize}
         device={device}
@@ -343,11 +341,13 @@ const Interface = () => {
       />
 
       {/* Left Sidebar + Canvas + Right Sidebar */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
         <SidebarBuilder
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           topTab={topTab}
+          showCode={showCode}
+          setShowCode={setShowCode}
           darkMode={darkMode}
           expandedSections={expandedSections}
           toggleSection={toggleSection}
@@ -364,26 +364,45 @@ const Interface = () => {
           setCanvasItems={setCanvasItems}
         />
 
-        <Canvas
-          projectId={projectId}
-          ref={canvasRef}
-          width={width}
-          height={height}
-          zoom={zoom}
-          deviceSize={deviceSize}
-          device={device}
-          project={project}
-          activePageId={activePageId}
-          canvasItems={canvasItems}
-          setCanvasItems={setCanvasItems}
-          addComponentToCanvas={addComponentToCanvas}
-          onSelectWidget={handleSelectWidget}
-        />
+        {/* Wrapper scrollable pour le canvas */}
+        <div
+          className="flex-1 min-w-0 min-h-0 overflow-auto bg-gray-100"
+          style={{ position: "relative" }}
+        >
+          <div
+            style={{
+              minWidth: width,
+              minHeight: height,
+              width: "fit-content",
+              height: "fit-content",
+              margin: "0 auto",
+              position: "relative",
+            }}
+          >
+            <Canvas
+              projectId={projectId}
+              ref={canvasRef}
+              width={width}
+              height={height}
+              zoom={zoom}
+              deviceSize={deviceSize}
+              device={device}
+              project={project}
+              activePageId={activePageId}
+              canvasItems={canvasItems}
+              setCanvasItems={setCanvasItems}
+              addComponentToCanvas={addComponentToCanvas}
+              onSelectWidget={handleSelectWidget}
+            />
+          </div>
+        </div>
 
-
-      {
-        mode === "Edit" ? (
-          <SidebarProperties item={selectedWidget} onUpdate={updateItem} setCanvasItems={setCanvasItems} />
+        {mode === "Edit" ? (
+          <SidebarProperties
+            item={selectedWidget}
+            onUpdate={updateItem}
+            setCanvasItems={setCanvasItems}
+          />
         ) : (
           <Chat />
         )}
