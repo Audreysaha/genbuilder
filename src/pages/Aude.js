@@ -1,9 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 
 const Aude = () => {
   const videoRef = useRef(null);
 
-  useEffect(() => {
+  const handleFullscreen = () => {
     const video = videoRef.current;
     if (video && video.requestFullscreen) {
       video.requestFullscreen();
@@ -14,7 +14,7 @@ const Aude = () => {
     } else if (video && video.msRequestFullscreen) {
       video.msRequestFullscreen();
     }
-  }, []);
+  };
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
@@ -26,6 +26,13 @@ const Aude = () => {
         className="w-full h-full object-contain bg-black"
         style={{ background: "#000" }}
       />
+      <button
+        onClick={handleFullscreen}
+        className="absolute top-4 right-4 bg-gray-900 bg-opacity-80 text-white px-4 py-2 rounded shadow"
+        style={{ zIndex: 10 }}
+      >
+        Plein écran
+      </button>
     </div>
   );
 };
