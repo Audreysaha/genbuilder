@@ -23,6 +23,7 @@ import Navbar from './components/Navbar';
 import LivePreviewCanvas from './components/LivePreviewConvas';
 import ForgotPassword from './pages/FogotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Aude from './pages/Aude';
 
 
 const PrivateRoute = ({ element }) => {
@@ -107,6 +108,7 @@ function App() {
         <Route path="/preview/:projectId" element={<PrivateRoute element={<LivePreviewCanvas />} />} />
         <Route path="/docs" element={<PrivateRoute element={<Docs />} />} />
         <Route path="/chat" element={<PrivateRoute element={<Chat />} />} />
+        <Route path="/aude" element={<Aude />} />
       </Routes>
     </Router>
   );

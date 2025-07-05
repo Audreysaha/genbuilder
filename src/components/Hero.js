@@ -5,18 +5,13 @@ import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
   const navigate = useNavigate();
-  const [showVideo, setShowVideo] = useState(false);
 
   const handleGetStartedClick = () => {
     navigate('/login');
   };
 
   const handleWatchDemoClick = () => {
-    setShowVideo(true);
-  };
-
-  const handleCloseVideo = () => {
-    setShowVideo(false);
+    navigate('/aude');
   };
 
   return (
@@ -85,25 +80,6 @@ const Hero = () => {
           </motion.div>
         </motion.div>
       </div>
-      {showVideo && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-          <div className="relative w-full max-w-2xl">
-            <button
-              onClick={handleCloseVideo}
-              className="absolute top-2 right-2 text-white text-2xl z-10 bg-black bg-opacity-50 rounded-full px-2"
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            <video
-              src="/demo.mp4"
-              controls
-              autoPlay
-              className="w-full rounded-lg shadow-lg"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
