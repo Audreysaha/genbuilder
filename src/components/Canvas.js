@@ -104,7 +104,7 @@ const Canvas = forwardRef(
     };
 
     const debouncedSave = useMemo(
-      () => debounce(saveCanvasToDatabase, 3000),
+      () => debounce(saveCanvasToDatabase, 1000),
       [canvasItems]
     );
 
