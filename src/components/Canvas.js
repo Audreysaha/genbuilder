@@ -8,7 +8,6 @@ import React, {
 import CanvasItem from "./CanvasItem";
 import debounce from "lodash.debounce";
 import API from "../utils/API";
-import { Resizable } from "re-resizable";
 
 const Canvas = forwardRef(
   (
@@ -34,10 +33,6 @@ const Canvas = forwardRef(
       x: 0,
       y: 0,
       itemId: null,
-    });
-    const [canvasSize, setCanvasSize] = useState({
-      width: width,
-      height: height,
     });
     const api = new API();
 
@@ -223,7 +218,7 @@ const Canvas = forwardRef(
 
     return (
       <div
-        className="custom-scrollbar flex-1 overflow-auto p-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 cursor-grab"
+        className=" custom-scrollbar flex-1 overflow-auto p-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 cursor-grab"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={handleCanvasClick}
@@ -259,52 +254,28 @@ const Canvas = forwardRef(
           stroke-width: 1 !important;
         }
       `}</style>
-        <Resizable
-          size={canvasSize}
-          minWidth={320}
-          minHeight={320}
-          maxWidth={2000}
-          maxHeight={2000}
-          onResizeStop={(e, direction, ref, d) => {
-            setCanvasSize({
-              width: ref.offsetWidth,
-              height: ref.offsetHeight,
-            });
-          }}
+        <div
+          className="relative shadow-xl"
           style={{
-            boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-            border: "2px solid #6366f1",
-            borderRadius: 12,
-            background: "#fff",
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            width: `${width}px`,
+            height: `${height}px`,
+            transform: `scale(${zoom / 100})`,
+            transformOrigin: "center center",
+            backgroundColor: "white", // Keep drop area white
           }}
         >
-          <div
-            className="relative shadow-xl"
-            style={{
-              width: `${canvasSize.width}px`,
-              height: `${canvasSize.height}px`,
-              transform: `scale(${zoom / 100})`,
-              transformOrigin: "center center",
-              backgroundColor: "white",
-            }}
-          >
-            <div className="relative w-full h-full bg-white">
-              {canvasItems.map((item) => (
-                <CanvasItem
-                  key={item.id}
-                  item={item}
-                  onUpdate={handleUpdate}
-                  isSelected={selectedItemId === item.id}
-                  onSelect={() => handleSelect(item.id)}
-                />
-              ))}
-            </div>
+          <div className="relative w-full h-full bg-white">
+            {canvasItems.map((item) => (
+              <CanvasItem
+                key={item.id}
+                item={item}
+                onUpdate={handleUpdate}
+                isSelected={selectedItemId === item.id}
+                onSelect={() => handleSelect(item.id)}
+              />
+            ))}
           </div>
-        </Resizable>
+        </div>
         {contextMenu.visible && (
           <div
             style={{
